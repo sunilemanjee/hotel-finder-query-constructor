@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Search Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .result-card {
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1rem;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 0.2rem;
+            border-radius: 0.2rem;
+        }
+        .score {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .weight-controls {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+        }
+        .weight-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .weight-value {
+            font-weight: bold;
+            min-width: 3rem;
+            text-align: right;
+        }
+        .left-pane {
+            width: 300px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            overflow-y: auto;
+            border-right: 1px solid #dee2e6;
+        }
+        .right-pane {
+            margin-left: 300px;
+            padding: 1rem;
+        }
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Column: Fixed width -->
+            <div class="left-pane">
+                <h5 class="mb-3">Search Component Weights</h5>
+                <div class="weight-label">
+                    <label for="ada002Weight">E5 Semantic Search</label>
+                    <span class="weight-value" id="ada002WeightValue">2.0</span>
+                </div>
+                <input type="range" class="form-range" id="ada002Weight" min="0" max="5" step="0.1" value="2.0">
+                
+                <div class="weight-label mt-3">
+                    <label for="elserWeight">ELSER Semantic Search</label>
+                    <span class="weight-value" id="elserWeightValue">1.5</span>
+                </div>
+                <input type="range" class="form-range" id="elserWeight" min="0" max="5" step="0.1" value="1.5">
+                
+                <div class="weight-label mt-3">
+                    <label for="textWeight">Text Match</label>
+                    <span class="weight-value" id="textWeightValue">1.0</span>
+                </div>
+                <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="1.0">
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Search Settings</h6>
+                    <div class="mb-3">
+                        <label for="resultSize" class="form-label">Number of Results</label>
+                        <input type="number" class="form-control form-control-sm" id="resultSize" value="20" min="1" max="100">
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Text Match Fields</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="fieldHotelName" checked>
+                        <label class="form-check-label" for="fieldHotelName">
+                            Hotel Name
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="fieldDescription" checked>
+                        <label class="form-check-label" for="fieldDescription">
+                            Description
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="fieldAddress" checked>
+                        <label class="form-check-label" for="fieldAddress">
+                            Address
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="fieldCityName" checked>
+                        <label class="form-check-label" for="fieldCityName">
+                            City Name
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="fieldHotelFacilities" checked>
+                        <label class="form-check-label" for="fieldHotelFacilities">
+                            Hotel Facilities
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="fieldAttractions" checked>
+                        <label class="form-check-label" for="fieldAttractions">
+                            Attractions
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="mt-4">
+                    <h6 class="mb-3 text-primary fw-bold">Highlight Fields</h6>
+                    <p class="text-muted small mb-3">Configure which fields to highlight in search results and their display options</p>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightHotelName">
+                        <label class="form-check-label" for="highlightHotelName">
+                            Hotel Name
+                        </label>
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightHotelNameOptions">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="position">Position</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightDescription">
+                        <label class="form-check-label" for="highlightDescription">
+                            Description
+                        </label>
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightDescriptionOptions">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="position">Position</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightAddress">
+                        <label class="form-check-label" for="highlightAddress">
+                            Address
+                        </label>
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightAddressOptions">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="position">Position</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightHotelFacilities">
+                        <label class="form-check-label" for="highlightHotelFacilities">
+                            Hotel Facilities
+                        </label>
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightHotelFacilitiesOptions">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="position">Position</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightSemanticE5" checked>
+                        <label class="form-check-label" for="highlightSemanticE5">
+                            Semantic E5
+                        </label>
+                        <div class="highlight-options ms-3 mt-1" id="highlightSemanticE5Options">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="position">Position</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightSemanticElser" checked>
+                        <label class="form-check-label" for="highlightSemanticElser">
+                            Semantic ELSER
+                        </label>
+                        <div class="highlight-options ms-3 mt-1" id="highlightSemanticElserOptions">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="position">Position</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="enableReranking">
+                        <label class="form-check-label" for="enableReranking">
+                            Enable Semantic Reranking
+                        </label>
+                    </div>
+                    <div id="rerankingParams" class="mb-3 d-none">
+                        <div class="mb-2">
+                            <label for="rankWindowSize" class="form-label">Rank Window Size</label>
+                            <input type="number" class="form-control form-control-sm" id="rankWindowSize" value="20" min="1" max="100">
+                        </div>
+                        <div class="mb-2">
+                            <label for="minScore" class="form-label">Minimum Score</label>
+                            <input type="number" class="form-control form-control-sm" id="minScore" value="0.5" min="0" max="1" step="0.1">
+                        </div>
+                    </div>
+                    <button id="wakeElserButton" class="btn btn-warning w-100">Wake Inference Endpoints</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Dynamic width -->
+            <div class="right-pane">
+                <h1 class="mb-4">Hotel Search Interface</h1>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" id="searchQuery" class="form-control" placeholder="Search for hotels by name, description, location, or amenities">
+                    </div>
+                    <div class="col-md-6">
+                        <button id="searchButton" class="btn btn-primary" style="width: 120px;">Search</button>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#queryDetails" aria-expanded="false" aria-controls="queryDetails">
+                        Show Generated Query
+                    </button>
+                    <div class="collapse mt-2" id="queryDetails">
+                        <div class="card card-body">
+                            <textarea id="generatedQuery" class="form-control mb-2" rows="10" style="font-family: monospace;"></textarea>
+                            <button id="executeQueryButton" class="btn btn-primary">Execute Query</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results" class="mt-4">
+                    <!-- Results will be displayed here -->
+                </div>
+
+                <div id="loading" class="text-center d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update weight value displays and query
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            const valueDisplay = document.getElementById(slider.id + 'Value');
+            slider.addEventListener('input', () => {
+                valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+                updateQuery();
+            });
+        });
+
+        document.getElementById('searchButton').addEventListener('click', performSearch);
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Add event listener for search query changes
+        document.getElementById('searchQuery').addEventListener('input', updateQuery);
+
+        // Add event listener for reranking checkbox
+        document.getElementById('enableReranking').addEventListener('change', function() {
+            const rerankingParams = document.getElementById('rerankingParams');
+            rerankingParams.classList.toggle('d-none', !this.checked);
+            updateQuery();
+        });
+
+        // Add event listeners for reranking parameters
+        document.getElementById('rankWindowSize').addEventListener('change', updateQuery);
+        document.getElementById('minScore').addEventListener('change', updateQuery);
+
+        // Add event listener for result size
+        document.getElementById('resultSize').addEventListener('change', updateQuery);
+
+        // Add event listeners for field selection checkboxes
+        document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateQuery);
+        });
+
+        // Add event listeners for highlight field checkboxes
+        document.querySelectorAll('input[type="checkbox"][id^="highlight"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const optionsId = this.id + 'Options';
+                const optionsDiv = document.getElementById(optionsId);
+                if (optionsDiv) {
+                    optionsDiv.classList.toggle('d-none', !this.checked);
+                }
+                updateQuery();
+            });
+        });
+
+        // Add event listeners for highlight options
+        document.querySelectorAll('.highlight-options input, .highlight-options select').forEach(element => {
+            element.addEventListener('change', updateQuery);
+        });
+
+        function getSelectedFields() {
+            const fieldMappings = {
+                'fieldHotelName': 'HotelName',
+                'fieldDescription': 'Description',
+                'fieldAddress': 'Address',
+                'fieldCityName': 'cityName',
+                'fieldHotelFacilities': 'HotelFacilities',
+                'fieldAttractions': 'Attractions'
+            };
+            
+            const selectedFields = [];
+            Object.keys(fieldMappings).forEach(checkboxId => {
+                if (document.getElementById(checkboxId).checked) {
+                    selectedFields.push(fieldMappings[checkboxId]);
+                }
+            });
+            return selectedFields;
+        }
+
+        function getHighlightConfig() {
+            const highlightMappings = {
+                'highlightHotelName': 'HotelName',
+                'highlightDescription': 'Description',
+                'highlightAddress': 'Address',
+                'highlightHotelFacilities': 'HotelFacilities',
+                'highlightSemanticE5': 'semantic_description_e5',
+                'highlightSemanticElser': 'semantic_description_elser'
+            };
+            
+            const highlightConfig = {};
+            Object.keys(highlightMappings).forEach(checkboxId => {
+                if (document.getElementById(checkboxId).checked) {
+                    const fieldName = highlightMappings[checkboxId];
+                    const optionsId = checkboxId + 'Options';
+                    const optionsDiv = document.getElementById(optionsId);
+                    
+                    if (optionsDiv) {
+                        const fragmentsInput = optionsDiv.querySelector('input[type="number"]');
+                        const orderSelect = optionsDiv.querySelector('select');
+                        
+                        const config = {
+                            number_of_fragments: parseInt(fragmentsInput.value),
+                            order: orderSelect.value
+                        };
+                        
+                        // Add semantic type for semantic fields
+                        if (fieldName === 'semantic_description_e5' || fieldName === 'semantic_description_elser') {
+                            config.type = 'semantic';
+                        }
+                        
+                        highlightConfig[fieldName] = config;
+                    }
+                }
+            });
+            return highlightConfig;
+        }
+
+        function updateQuery() {
+            const queryDisplay = document.getElementById('generatedQuery');
+            const searchQuery = document.getElementById('searchQuery').value;
+            
+            if (searchQuery) {
+                const weights = {
+                    ada002: parseFloat(document.getElementById('ada002Weight').value),
+                    elser: parseFloat(document.getElementById('elserWeight').value),
+                    text: parseFloat(document.getElementById('textWeight').value)
+                };
+                const enableReranking = document.getElementById('enableReranking').checked;
+                const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
+                const minScore = parseFloat(document.getElementById('minScore').value);
+                const selectedFields = getSelectedFields();
+                const highlightConfig = getHighlightConfig();
+                const resultSize = parseInt(document.getElementById('resultSize').value);
+                
+                fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: searchQuery,
+                        weights: weights,
+                        enableReranking: enableReranking,
+                        rerankingParams: {
+                            rankWindowSize: rankWindowSize,
+                            minScore: minScore
+                        },
+                        selectedFields: selectedFields,
+                        highlightConfig: highlightConfig,
+                        resultSize: resultSize
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.query) {
+                        queryDisplay.value = JSON.stringify(data.query, null, 2);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating query:', error);
+                });
+            }
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value;
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+
+            // Get weight values
+            const ada002Weight = parseFloat(document.getElementById('ada002Weight').value);
+            const elserWeight = parseFloat(document.getElementById('elserWeight').value);
+            const textWeight = parseFloat(document.getElementById('textWeight').value);
+            const enableReranking = document.getElementById('enableReranking').checked;
+            const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
+            const minScore = parseFloat(document.getElementById('minScore').value);
+            const selectedFields = getSelectedFields();
+            const highlightConfig = getHighlightConfig();
+            const resultSize = parseInt(document.getElementById('resultSize').value);
+
+            if (!query) {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Please enter a search query</div>';
+                return;
+            }
+
+            // Show loading spinner
+            loadingDiv.classList.remove('d-none');
+            resultsDiv.innerHTML = '';
+
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    weights: {
+                        ada002: ada002Weight,
+                        elser: elserWeight,
+                        text: textWeight
+                    },
+                    enableReranking: enableReranking,
+                    rerankingParams: {
+                        rankWindowSize: rankWindowSize,
+                        minScore: minScore
+                    },
+                    selectedFields: selectedFields,
+                    highlightConfig: highlightConfig,
+                    resultSize: resultSize
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.classList.add('d-none');
+                
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    return;
+                }
+
+                // Update the generated query display
+                const queryDisplay = document.getElementById('generatedQuery');
+                queryDisplay.textContent = JSON.stringify(data.query, null, 2);
+
+                if (!data.results || data.results.length === 0) {
+                    resultsDiv.innerHTML = '<div class="alert alert-info">No results found</div>';
+                    return;
+                }
+
+                const resultsHtml = data.results.map(result => {
+                    let highlightsHtml = '';
+                    if (result.highlights && result.highlights.length > 0) {
+                        highlightsHtml = `
+                            <div class="mb-2">
+                                <strong>Highlights:</strong>
+                                ${result.highlights.map(fragment => `<div class="highlight">${fragment}</div>`).join('')}
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="result-card">
+                            <div class="score mb-2">Score: ${result.score.toFixed(2)}</div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-2">
+                                        <strong>Hotel Name:</strong>
+                                        <div>${result.HotelName}</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Description:</strong>
+                                        <div>${result.Description}</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Address:</strong>
+                                        <div>${result.Address}</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>City:</strong>
+                                        <div>${result.cityName}</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Attractions:</strong>
+                                        <div>${result.Attractions}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <strong>Rating:</strong>
+                                        <div>${'⭐'.repeat(result.HotelRating || 0)}</div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Facilities:</strong>
+                                        <div>${result.HotelFacilities}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            ${highlightsHtml}
+                        </div>
+                    `;
+                }).join('');
+
+                resultsDiv.innerHTML = resultsHtml;
+            })
+            .catch(error => {
+                loadingDiv.classList.add('d-none');
+                resultsDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            });
+        }
+
+        // Add ELSER wake-up functionality
+        document.getElementById('wakeElserButton').addEventListener('click', function() {
+            const button = this;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Waking Inference Endpoints...';
+
+            fetch('/wake-elser', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Inference Endpoints Awakened');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.textContent = originalText;
+            });
+        });
+
+        // Add execute query functionality
+        document.getElementById('executeQueryButton').addEventListener('click', function() {
+            const queryText = document.getElementById('generatedQuery').value;
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+
+            try {
+                const query = JSON.parse(queryText);
+                
+                // Show loading spinner
+                loadingDiv.classList.remove('d-none');
+                resultsDiv.innerHTML = '';
+
+                fetch('/execute-query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingDiv.classList.add('d-none');
+                    
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                        return;
+                    }
+
+                    if (!data.results || data.results.length === 0) {
+                        resultsDiv.innerHTML = '<div class="alert alert-info">No results found</div>';
+                        return;
+                    }
+
+                    // Use the same result rendering logic as the search function
+                    const resultsHtml = data.results.map(result => {
+                        let highlightsHtml = '';
+                        if (result.highlights && result.highlights.length > 0) {
+                            highlightsHtml = `
+                                <div class="mb-2">
+                                    <strong>Highlights:</strong>
+                                    ${result.highlights.map(fragment => `<div class="highlight">${fragment}</div>`).join('')}
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <div class="result-card">
+                                <div class="score mb-2">Score: ${result.score.toFixed(2)}</div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="mb-2">
+                                            <strong>Hotel Name:</strong>
+                                            <div>${result.HotelName}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Description:</strong>
+                                            <div>${result.Description}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Address:</strong>
+                                            <div>${result.Address}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>City:</strong>
+                                            <div>${result.cityName}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Attractions:</strong>
+                                            <div>${result.Attractions}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-2">
+                                            <strong>Rating:</strong>
+                                            <div>${'⭐'.repeat(result.HotelRating || 0)}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Facilities:</strong>
+                                            <div>${result.HotelFacilities}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${highlightsHtml}
+                            </div>
+                        `;
+                    }).join('');
+
+                    resultsDiv.innerHTML = resultsHtml;
+                })
+                .catch(error => {
+                    loadingDiv.classList.add('d-none');
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                });
+            } catch (error) {
+                alert('Invalid JSON query: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html> 
