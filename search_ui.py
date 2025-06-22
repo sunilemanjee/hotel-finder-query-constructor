@@ -36,6 +36,10 @@ INDICES = [
     'hotels'
 ]
 
+# At the top of the file, after imports
+ELSER_INFERENCE_ID = os.environ.get("ELSER_INFERENCE_ID", ".elser-2-elasticsearch")
+E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elasticsearch")
+
 def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20):
     if reranking_params is None:
         reranking_params = {
@@ -286,13 +290,13 @@ def wake_elser():
     try:
         # Wake up ELSER model
         elser_response = es.inference.inference(
-            inference_id='.elser-2-elasticsearch',
+            inference_id=ELSER_INFERENCE_ID,
             input=['vector are so much fun']
         )
         
         # Wake up multilingual E5 model
         e5_response = es.inference.inference(
-            inference_id='.multilingual-e5-small-elasticsearch',
+            inference_id=E5_INFERENCE_ID,
             input=['vector are so much fun']
         )
         
