@@ -10,14 +10,24 @@ load_dotenv('variables.env')
 # Elasticsearch configuration
 ES_URL = os.getenv('ES_URL')
 ES_API_KEY = os.getenv('ES_API_KEY')
+ES_PASSWORD = os.getenv('ES_PASSWORD')
+USE_PASSWORD = os.getenv('USE_PASSWORD', 'false').lower() == 'true'
 
 # Initialize Elasticsearch client
-es = Elasticsearch(
-    ES_URL,
-    api_key=ES_API_KEY,
-    verify_certs=False,
-    request_timeout=300
-)
+if USE_PASSWORD:
+    es = Elasticsearch(
+        ES_URL,
+        basic_auth=('elastic', ES_PASSWORD),
+        verify_certs=False,
+        request_timeout=300
+    )
+else:
+    es = Elasticsearch(
+        ES_URL,
+        api_key=ES_API_KEY,
+        verify_certs=False,
+        request_timeout=300
+    )
 
 app = Flask(__name__)
 
