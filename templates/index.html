@@ -7,10 +7,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .result-card {
-            margin-bottom: 1rem;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .result-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+        }
+        .result-card:last-child {
+            margin-bottom: 0;
         }
         .highlight {
             background-color: #fff3cd;
@@ -20,6 +31,12 @@
         .score {
             font-weight: bold;
             color: #0d6efd;
+            background-color: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 1rem;
+            display: inline-block;
         }
         .weight-controls {
             background-color: #f8f9fa;
@@ -51,11 +68,190 @@
         }
         .right-pane {
             margin-left: 300px;
-            padding: 1rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            min-height: 100vh;
         }
         .container-fluid {
             padding-left: 0;
             padding-right: 0;
+        }
+        #weightControls {
+            /* No transition needed for display: none */
+        }
+        #weightControls.hidden {
+            display: none;
+        }
+        .description-container {
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .description-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .description-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .description-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        .description-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .field-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.25rem;
+        }
+        .field-value {
+            margin-bottom: 0.75rem;
+        }
+        .hotel-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.5rem;
+        }
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1.1rem;
+        }
+        .rating-stars .filled-star {
+            color: #ffc107;
+        }
+        .rating-stars .empty-star {
+            color: #e9ecef;
+        }
+        .content-divider {
+            border-top: 1px solid #dee2e6;
+            margin: 1.5rem 0;
+            padding-top: 1rem;
+        }
+        .highlights-section {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .highlights-container {
+            max-height: 100px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            background-color: #fff3cd;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .highlights-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .highlights-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .highlights-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        .highlights-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .highlight-item {
+            margin-bottom: 0.25rem;
+            padding: 0.2rem;
+            border-radius: 0.2rem;
+            background-color: #fff3cd;
+        }
+        .attractions-container {
+            max-height: 80px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .attractions-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .attractions-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .attractions-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        .attractions-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .document-id {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .document-id:hover {
+            background-color: #e9ecef;
+        }
+        .document-id-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #495057;
+        }
+        .document-id-content {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        .document-id-content.show {
+            display: block;
+        }
+        .toggle-icon {
+            transition: transform 0.2s ease;
+        }
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+        .copy-icon {
+            cursor: pointer;
+            color: #6c757d;
+            margin-left: 0.5rem;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        .copy-icon:hover {
+            color: #0d6efd;
+            background-color: #e9ecef;
+        }
+        .copy-icon.copied {
+            color: #198754;
+        }
+        .document-id-left {
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -64,24 +260,56 @@
         <div class="row">
             <!-- Left Column: Fixed width -->
             <div class="left-pane">
+                <h5 class="mb-3">Retriever Type</h5>
+                <div class="mb-3">
+                    <select class="form-select" id="retrieverType">
+                        <option value="linear">Linear Retriever</option>
+                        <option value="rrf">RRF (Reciprocal Rank Fusion)</option>
+                    </select>
+                    <div class="form-text mt-1">
+                        <small class="text-muted">
+                            <strong>Linear:</strong> Combines scores with weights<br>
+                            <strong>RRF:</strong> Fuses rankings without weights
+                        </small>
+                    </div>
+                </div>
+
                 <h5 class="mb-3">Search Component Weights</h5>
-                <div class="weight-label">
-                    <label for="ada002Weight">E5 Semantic Search</label>
-                    <span class="weight-value" id="ada002WeightValue">2.0</span>
+                <div id="weightControls">
+                    <div class="form-text mb-2">
+                        <small class="text-muted">Adjust weights for linear retriever only</small>
+                    </div>
+                    <div class="weight-label">
+                        <label for="ada002Weight">E5 Semantic Search</label>
+                        <span class="weight-value" id="ada002WeightValue">2.0</span>
+                    </div>
+                    <input type="range" class="form-range" id="ada002Weight" min="0" max="5" step="0.1" value="2.0">
+                    
+                    <div class="weight-label mt-3">
+                        <label for="elserWeight">ELSER Semantic Search</label>
+                        <span class="weight-value" id="elserWeightValue">1.5</span>
+                    </div>
+                    <input type="range" class="form-range" id="elserWeight" min="0" max="5" step="0.1" value="1.5">
+                    
+                    <div class="weight-label mt-3">
+                        <label for="textWeight">Text Match</label>
+                        <span class="weight-value" id="textWeightValue">1.0</span>
+                    </div>
+                    <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="1.0">
                 </div>
-                <input type="range" class="form-range" id="ada002Weight" min="0" max="5" step="0.1" value="2.0">
-                
-                <div class="weight-label mt-3">
-                    <label for="elserWeight">ELSER Semantic Search</label>
-                    <span class="weight-value" id="elserWeightValue">1.5</span>
+
+                <div id="rrfControls" class="d-none">
+                    <div class="form-text mb-2">
+                        <small class="text-muted">RRF combines rankings without weights</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rrfRankWindowSize" class="form-label">Rank Window Size</label>
+                        <input type="number" class="form-control form-control-sm" id="rrfRankWindowSize" value="20" min="10" max="200">
+                        <div class="form-text">
+                            <small class="text-muted">Must be ≥ result size (default: 20)</small>
+                        </div>
+                    </div>
                 </div>
-                <input type="range" class="form-range" id="elserWeight" min="0" max="5" step="0.1" value="1.5">
-                
-                <div class="weight-label mt-3">
-                    <label for="textWeight">Text Match</label>
-                    <span class="weight-value" id="textWeightValue">1.0</span>
-                </div>
-                <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="1.0">
 
                 <div class="mt-4">
                     <h6 class="mb-3">Search Settings</h6>
@@ -334,6 +562,33 @@
             });
         });
 
+        // Add event listener for retriever type selection
+        document.getElementById('retrieverType').addEventListener('change', function() {
+            const weightControls = document.getElementById('weightControls');
+            const rrfControls = document.getElementById('rrfControls');
+            const retrieverType = this.value;
+            
+            // Show/hide controls based on retriever type
+            if (retrieverType === 'linear') {
+                weightControls.classList.remove('hidden');
+                rrfControls.classList.add('d-none');
+            } else if (retrieverType === 'rrf') {
+                weightControls.classList.add('hidden');
+                rrfControls.classList.remove('d-none');
+                
+                // Validate RRF rank window size when switching to RRF
+                const resultSize = parseInt(document.getElementById('resultSize').value);
+                const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
+                rrfRankWindowSize.min = resultSize;
+                if (parseInt(rrfRankWindowSize.value) < resultSize) {
+                    rrfRankWindowSize.value = resultSize;
+                    showValidationMessage(`Rank window size adjusted to ${resultSize} (must be ≥ result size)`);
+                }
+            }
+            
+            updateQuery();
+        });
+
         document.getElementById('searchButton').addEventListener('click', performSearch);
         document.getElementById('searchQuery').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -356,7 +611,15 @@
         document.getElementById('minScore').addEventListener('change', updateQuery);
 
         // Add event listener for result size
-        document.getElementById('resultSize').addEventListener('change', updateQuery);
+        document.getElementById('resultSize').addEventListener('change', function() {
+            const resultSize = parseInt(this.value);
+            const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
+            rrfRankWindowSize.min = resultSize;
+            if (parseInt(rrfRankWindowSize.value) < resultSize) {
+                rrfRankWindowSize.value = resultSize;
+            }
+            updateQuery();
+        });
 
         // Add event listeners for field selection checkboxes
         document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
@@ -378,6 +641,49 @@
         // Add event listeners for highlight options
         document.querySelectorAll('.highlight-options input, .highlight-options select').forEach(element => {
             element.addEventListener('change', updateQuery);
+        });
+
+        // Add event listener for RRF rank window size
+        document.getElementById('rrfRankWindowSize').addEventListener('change', function() {
+            const resultSize = parseInt(document.getElementById('resultSize').value);
+            const rrfRankWindowSize = parseInt(this.value);
+            if (rrfRankWindowSize < resultSize) {
+                this.value = resultSize;
+                showValidationMessage(`Rank window size adjusted to ${resultSize} (must be ≥ result size)`);
+            }
+            updateQuery();
+        });
+
+        // Function to show validation messages
+        function showValidationMessage(message) {
+            // Create a temporary alert or use a toast notification
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-warning alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 3000);
+        }
+
+        // Initialize RRF rank window size minimum value
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultSize = parseInt(document.getElementById('resultSize').value);
+            const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
+            rrfRankWindowSize.min = resultSize;
+            
+            // Ensure RRF rank window size is at least equal to result size
+            if (parseInt(rrfRankWindowSize.value) < resultSize) {
+                rrfRankWindowSize.value = resultSize;
+            }
         });
 
         function getSelectedFields() {
@@ -453,6 +759,8 @@
                 const selectedFields = getSelectedFields();
                 const highlightConfig = getHighlightConfig();
                 const resultSize = parseInt(document.getElementById('resultSize').value);
+                const retrieverType = document.getElementById('retrieverType').value;
+                const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
                 
                 fetch('/search', {
                     method: 'POST',
@@ -469,7 +777,9 @@
                         },
                         selectedFields: selectedFields,
                         highlightConfig: highlightConfig,
-                        resultSize: resultSize
+                        resultSize: resultSize,
+                        retrieverType: retrieverType,
+                        rrfRankWindowSize: rrfRankWindowSize
                     })
                 })
                 .then(response => response.json())
@@ -499,6 +809,8 @@
             const selectedFields = getSelectedFields();
             const highlightConfig = getHighlightConfig();
             const resultSize = parseInt(document.getElementById('resultSize').value);
+            const retrieverType = document.getElementById('retrieverType').value;
+            const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
 
             if (!query) {
                 resultsDiv.innerHTML = '<div class="alert alert-warning">Please enter a search query</div>';
@@ -528,7 +840,9 @@
                     },
                     selectedFields: selectedFields,
                     highlightConfig: highlightConfig,
-                    resultSize: resultSize
+                    resultSize: resultSize,
+                    retrieverType: retrieverType,
+                    rrfRankWindowSize: rrfRankWindowSize
                 })
             })
             .then(response => response.json())
@@ -553,51 +867,69 @@
                     let highlightsHtml = '';
                     if (result.highlights && result.highlights.length > 0) {
                         highlightsHtml = `
-                            <div class="mb-2">
-                                <strong>Highlights:</strong>
-                                ${result.highlights.map(fragment => `<div class="highlight">${fragment}</div>`).join('')}
+                            <div class="highlights-section">
+                                <div class="field-label">Highlights:</div>
+                                <div class="highlights-container">
+                                    ${result.highlights.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                                </div>
                             </div>
                         `;
                     }
 
                     return `
                         <div class="result-card">
-                            <div class="score mb-2">Score: ${result.score.toFixed(2)}</div>
+                            <div class="score">Score: ${result.score.toFixed(2)}</div>
+                            <div class="document-id" onclick="toggleDocumentId(this)">
+                                <div class="document-id-header">
+                                    <div class="document-id-left">
+                                        <span>Document ID</span>
+                                        <span class="copy-icon" onclick="copyDocumentId(event, '${result._id || 'N/A'}')" title="Copy Document ID">
+                                            📋
+                                        </span>
+                                    </div>
+                                    <span class="toggle-icon">▼</span>
+                                </div>
+                                <div class="document-id-content">
+                                    ${result._id || 'N/A'}
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="mb-2">
-                                        <strong>Hotel Name:</strong>
-                                        <div>${result.HotelName}</div>
+                                    <div class="hotel-name">${result.HotelName || 'Unknown'}</div>
+                                    <div class="field-value">
+                                        <div class="field-label">Description:</div>
+                                        <div class="description-container">${result.Description || 'Unknown'}</div>
                                     </div>
-                                    <div class="mb-2">
-                                        <strong>Description:</strong>
-                                        <div>${result.Description}</div>
+                                    <div class="field-value">
+                                        <div class="field-label">Address:</div>
+                                        <div>${result.Address || 'Unknown'}</div>
                                     </div>
-                                    <div class="mb-2">
-                                        <strong>Address:</strong>
-                                        <div>${result.Address}</div>
+                                    <div class="field-value">
+                                        <div class="field-label">City:</div>
+                                        <div>${result.cityName || 'Unknown'}</div>
                                     </div>
-                                    <div class="mb-2">
-                                        <strong>City:</strong>
-                                        <div>${result.cityName}</div>
-                                    </div>
-                                    <div class="mb-2">
-                                        <strong>Attractions:</strong>
-                                        <div>${result.Attractions}</div>
+                                    <div class="field-value">
+                                        <div class="field-label">Attractions:</div>
+                                        <div class="attractions-container">${result.Attractions || 'Unknown'}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="mb-2">
-                                        <strong>Rating:</strong>
-                                        <div>${'⭐'.repeat(result.HotelRating || 0)}</div>
+                                    <div class="field-value">
+                                        <div class="field-label">Rating:</div>
+                                        <div class="rating-stars">
+                                            ${result.HotelRating ? 
+                                                '★'.repeat(result.HotelRating) + '☆'.repeat(5 - result.HotelRating) : 
+                                                '☆☆☆☆☆'
+                                            }
+                                        </div>
                                     </div>
-                                    <div class="mb-2">
-                                        <strong>Facilities:</strong>
-                                        <div>${result.HotelFacilities}</div>
+                                    <div class="field-value">
+                                        <div class="field-label">Facilities:</div>
+                                        <div>${result.HotelFacilities || 'Unknown'}</div>
                                     </div>
                                 </div>
                             </div>
-                            ${highlightsHtml}
+                            ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                         </div>
                     `;
                 }).join('');
@@ -678,51 +1010,69 @@
                         let highlightsHtml = '';
                         if (result.highlights && result.highlights.length > 0) {
                             highlightsHtml = `
-                                <div class="mb-2">
-                                    <strong>Highlights:</strong>
-                                    ${result.highlights.map(fragment => `<div class="highlight">${fragment}</div>`).join('')}
+                                <div class="highlights-section">
+                                    <div class="field-label">Highlights:</div>
+                                    <div class="highlights-container">
+                                        ${result.highlights.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                                    </div>
                                 </div>
                             `;
                         }
 
                         return `
                             <div class="result-card">
-                                <div class="score mb-2">Score: ${result.score.toFixed(2)}</div>
+                                <div class="score">Score: ${result.score.toFixed(2)}</div>
+                                <div class="document-id" onclick="toggleDocumentId(this)">
+                                    <div class="document-id-header">
+                                        <div class="document-id-left">
+                                            <span>Document ID</span>
+                                            <span class="copy-icon" onclick="copyDocumentId(event, '${result._id || 'N/A'}')" title="Copy Document ID">
+                                                📋
+                                            </span>
+                                        </div>
+                                        <span class="toggle-icon">▼</span>
+                                    </div>
+                                    <div class="document-id-content">
+                                        ${result._id || 'N/A'}
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <div class="mb-2">
-                                            <strong>Hotel Name:</strong>
-                                            <div>${result.HotelName}</div>
+                                        <div class="hotel-name">${result.HotelName || 'Unknown'}</div>
+                                        <div class="field-value">
+                                            <div class="field-label">Description:</div>
+                                            <div class="description-container">${result.Description || 'Unknown'}</div>
                                         </div>
-                                        <div class="mb-2">
-                                            <strong>Description:</strong>
-                                            <div>${result.Description}</div>
+                                        <div class="field-value">
+                                            <div class="field-label">Address:</div>
+                                            <div>${result.Address || 'Unknown'}</div>
                                         </div>
-                                        <div class="mb-2">
-                                            <strong>Address:</strong>
-                                            <div>${result.Address}</div>
+                                        <div class="field-value">
+                                            <div class="field-label">City:</div>
+                                            <div>${result.cityName || 'Unknown'}</div>
                                         </div>
-                                        <div class="mb-2">
-                                            <strong>City:</strong>
-                                            <div>${result.cityName}</div>
-                                        </div>
-                                        <div class="mb-2">
-                                            <strong>Attractions:</strong>
-                                            <div>${result.Attractions}</div>
+                                        <div class="field-value">
+                                            <div class="field-label">Attractions:</div>
+                                            <div class="attractions-container">${result.Attractions || 'Unknown'}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="mb-2">
-                                            <strong>Rating:</strong>
-                                            <div>${'⭐'.repeat(result.HotelRating || 0)}</div>
+                                        <div class="field-value">
+                                            <div class="field-label">Rating:</div>
+                                            <div class="rating-stars">
+                                                ${result.HotelRating ? 
+                                                    '★'.repeat(result.HotelRating) + '☆'.repeat(5 - result.HotelRating) : 
+                                                    '☆☆☆☆☆'
+                                                }
+                                            </div>
                                         </div>
-                                        <div class="mb-2">
-                                            <strong>Facilities:</strong>
-                                            <div>${result.HotelFacilities}</div>
+                                        <div class="field-value">
+                                            <div class="field-label">Facilities:</div>
+                                            <div>${result.HotelFacilities || 'Unknown'}</div>
                                         </div>
                                     </div>
                                 </div>
-                                ${highlightsHtml}
+                                ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                             </div>
                         `;
                     }).join('');
@@ -737,6 +1087,82 @@
                 alert('Invalid JSON query: ' + error.message);
             }
         });
+
+        // Function to toggle document ID visibility
+        function toggleDocumentId(element) {
+            const content = element.querySelector('.document-id-content');
+            const icon = element.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                icon.classList.remove('rotated');
+            } else {
+                content.classList.add('show');
+                icon.classList.add('rotated');
+            }
+        }
+
+        // Function to copy document ID to clipboard
+        function copyDocumentId(event, documentId) {
+            event.stopPropagation(); // Prevent triggering the toggle function
+            
+            const copyIcon = event.target;
+            const originalText = copyIcon.textContent;
+            
+            // Function to show visual feedback
+            const showFeedback = (success) => {
+                if (success) {
+                    copyIcon.textContent = '✅';
+                    copyIcon.classList.add('copied');
+                    showNotification('Document ID copied to clipboard!', 'success');
+                } else {
+                    copyIcon.textContent = '❌';
+                    showNotification('Failed to copy document ID', 'error');
+                }
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    copyIcon.textContent = originalText;
+                    copyIcon.classList.remove('copied');
+                }, 2000);
+            };
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(documentId)
+                    .then(() => showFeedback(true))
+                    .catch(err => {
+                        console.error('Clipboard API failed: ', err);
+                        // Fallback to older method
+                        fallbackCopyTextToClipboard(documentId, showFeedback);
+                    });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(documentId, showFeedback);
+            }
+        }
+        
+        // Fallback copy method for older browsers
+        function fallbackCopyTextToClipboard(text, callback) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                callback(successful);
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                document.body.removeChild(textArea);
+                callback(false);
+            }
+        }
     </script>
 </body>
 </html> 

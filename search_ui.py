@@ -26,7 +26,7 @@ INDICES = [
     'hotels'
 ]
 
-def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20):
+def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20):
     if reranking_params is None:
         reranking_params = {
             'rank_window_size': 20,
@@ -72,7 +72,14 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
     base_query = {
         "fields": ["HotelName", "Description", "Address", "cityName", "HotelFacilities", "HotelRating", "Attractions"],
         "size": size,
-        "retriever": {
+        "highlight": {
+            "fields": highlight_config
+        }
+    }
+
+    # Build retriever based on type
+    if retriever_type == 'linear':
+        base_query["retriever"] = {
             "linear": {
                 "retrievers": [
                     {
@@ -121,11 +128,46 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                 ],
                 "rank_window_size": 100
             }
-        },
-        "highlight": {
-            "fields": highlight_config
         }
-    }
+    elif retriever_type == 'rrf':
+        base_query["retriever"] = {
+            "rrf": {
+                "retrievers": [
+                    {
+                        "standard": {
+                            "query": {
+                                "semantic": {
+                                    "field": "semantic_description_e5",
+                                    "query": query_text
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "standard": {
+                            "query": {
+                                "semantic": {
+                                    "field": "semantic_description_elser",
+                                    "query": query_text
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "standard": {
+                            "query": {
+                                "multi_match": {
+                                    "query": query_text,
+                                    "fields": selected_fields,
+                                    "type": "best_fields"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "rank_window_size": rrf_rank_window_size
+            }
+        }
 
     # Add reranking if enabled
     if enable_reranking:
@@ -168,6 +210,8 @@ def search():
     selected_fields = data.get('selectedFields', ["HotelName", "Description", "Address", "cityName", "HotelFacilities", "Attractions"])
     highlight_config = data.get('highlightConfig', None)
     result_size = data.get('resultSize', 20)
+    retriever_type = data.get('retrieverType', 'linear')
+    rrf_rank_window_size = data.get('rrfRankWindowSize', 20)
     
     if not query:
         return jsonify({'error': 'Please enter a search query'})
@@ -184,7 +228,9 @@ def search():
             },
             selected_fields,
             highlight_config,
-            result_size
+            result_size,
+            retriever_type,
+            rrf_rank_window_size
         )
         response = es.search(
             index='hotels',  # Always use hotels index
@@ -195,7 +241,8 @@ def search():
         for hit in response['hits']['hits']:
             result = {
                 'score': hit['_score'],
-                'highlights': []
+                'highlights': [],
+                '_id': hit['_id']
             }
             
             # Hotels result processing - using fields format
@@ -262,7 +309,8 @@ def execute_query():
         for hit in response['hits']['hits']:
             result = {
                 'score': hit['_score'],
-                'highlights': []
+                'highlights': [],
+                '_id': hit['_id']
             }
             
             # Hotels result processing - using fields format
