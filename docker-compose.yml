@@ -1,14 +1,8 @@
-version: '3.8'
-
 services:
   search-ui:
     build: .
     ports:
       - "8080:5000"
-    environment:
-      - ES_URL=${ES_URL}
-      - ES_API_KEY=${ES_API_KEY}
-      - ELSER_INFERENCE_ID=${ELSER_INFERENCE_ID}
     env_file:
       - variables.env
     restart: unless-stopped
