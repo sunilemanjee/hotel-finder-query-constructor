@@ -1,4 +1,4 @@
-# Hotel Search Interface - Elasticsearch Hybrid Search
+# Hotel Search Query Tuning - Elasticsearch Hybrid Search
 
 This project provides a web-based interface for performing hybrid searches across hotel data in Elasticsearch, combining semantic search with traditional text matching.
 

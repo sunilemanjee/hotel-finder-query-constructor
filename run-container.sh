@@ -20,16 +20,16 @@ fi
 
 echo "✅ Environment file found"
 
-# Build the Docker image
-echo "🔨 Building Docker image..."
-docker build -t hotel-search-ui .
+# Build the Docker image with no cache
+echo "🔨 Building Docker image (no cache)..."
+docker-compose build --no-cache
 
 echo "✅ Docker image built successfully"
 
-# Run the container
+# Run the container, always rebuilding before starting
 echo "🚀 Starting the search UI container..."
 echo "The application will be available at: http://localhost:8080"
 echo "Press Ctrl+C to stop the container"
 echo ""
 
-docker-compose up 
+docker-compose up --build 

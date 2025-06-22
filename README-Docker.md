@@ -1,6 +1,6 @@
-# Hotel Search UI - Containerized
+# Hotel Search Query Tuning - Containerized
 
-This is the containerized version of the Hotel Search UI, a Flask application that provides a web interface for searching hotel data using Elasticsearch.
+This is the containerized version of the Hotel Search Query Tuning app, a Flask application that provides a web interface for searching hotel data using Elasticsearch.
 
 ## Prerequisites
 
