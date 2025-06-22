@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  search-ui:
+    build: .
+    ports:
+      - "8080:5000"
+    environment:
+      - ES_URL=${ES_URL}
+      - ES_API_KEY=${ES_API_KEY}
+      - ELSER_INFERENCE_ID=${ELSER_INFERENCE_ID}
+    env_file:
+      - variables.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 

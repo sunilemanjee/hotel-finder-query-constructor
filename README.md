@@ -21,13 +21,47 @@ This project provides a web-based interface for performing hybrid searches acros
 
 ## Prerequisites
 
-- Python 3.11 or higher
+- Python 3.11 or higher (for local development)
+- Docker and Docker Compose (for containerized deployment)
 - Elasticsearch cluster with the `hotels` index containing:
   - Hotel information (name, description, address, etc.)
   - Semantic embeddings (`semantic_description_e5`, `semantic_description_elser`)
   - Combined fields for reranking
 
-## Setup
+## Quick Start with Docker (Recommended)
+
+The easiest way to run this application is using Docker:
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/yourusername/hotel-finder-query-constructor.git
+cd hotel-finder-query-constructor
+```
+
+2. **Set up environment variables:**
+```bash
+cp variables.env.template variables.env
+```
+Edit `variables.env` with your Elasticsearch configuration:
+```env
+ES_URL=https://your-cluster.region.elastic.co:9243
+ES_API_KEY=your-api-key-here
+ELSER_INFERENCE_ID=.elser-2-elasticsearch
+```
+
+3. **Run the containerized application:**
+```bash
+./run-container.sh
+```
+
+4. **Access the application:**
+Open your browser and go to `http://localhost:8080`
+
+For detailed Docker instructions, see [README-Docker.md](README-Docker.md).
+
+## Local Development Setup
+
+If you prefer to run the application locally without Docker:
 
 1. **Clone the repository:**
 ```bash
@@ -74,6 +108,13 @@ Before using the UI, you must ingest hotel data into your Elasticsearch `hotels`
 
 ## Running the Application
 
+### With Docker (Recommended)
+```bash
+./run-container.sh
+```
+Access at: `http://localhost:8080`
+
+### Local Development
 1. Start the Flask application:
 ```bash
 python search_ui.py
@@ -109,6 +150,15 @@ The project consists of two main components:
 
 1. `search_ui.py`: Flask application handling the backend logic
 2. `templates/index.html`: Frontend interface with Bootstrap styling
+
+## Containerization
+
+This project includes Docker support for easy deployment:
+
+- **Dockerfile**: Multi-stage build for production-ready container
+- **docker-compose.yml**: Easy orchestration with environment variables
+- **run-container.sh**: Helper script for building and running
+- **README-Docker.md**: Detailed Docker documentation
 
 ## License
 
