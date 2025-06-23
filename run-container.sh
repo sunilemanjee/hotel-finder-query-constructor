@@ -57,3 +57,4 @@ else
     echo "Press Ctrl+C to stop the container"
     echo ""
     docker-compose up --build 
+fi 
