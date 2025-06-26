@@ -44,6 +44,7 @@ INDICES = [
 # At the top of the file, after imports
 ELSER_INFERENCE_ID = os.environ.get("ELSER_INFERENCE_ID", ".elser-2-elasticsearch")
 E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elasticsearch")
+RERANKER_INFERENCE_ID = os.environ.get("RERANKER_INFERENCE_ID", ".rerank-v1-elasticsearch")
 
 def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, rating_params=None):
     print("DEBUG: get_search_query called with weights:", weights)
@@ -266,8 +267,8 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
             "fields": base_query.get("fields", ["text"]),
             "retriever": {
                 "text_similarity_reranker": {
-                    "field": "combined_fields",
-                    "inference_id": ".rerank-v1-elasticsearch",
+                    "field": "Description",
+                    "inference_id": RERANKER_INFERENCE_ID,
                     "inference_text": query_text,
                     "rank_window_size": reranking_params['rank_window_size'],
                     "retriever": base_query["retriever"]
@@ -346,6 +347,16 @@ def search():
                 'ELSER (elser)': retrievers[2]['weight']
             })
         
+        # Debug logging for reranker configuration
+        if enable_reranking:
+            print("DEBUG: Reranker enabled with config:", {
+                'field': search_query['retriever']['text_similarity_reranker']['field'],
+                'inference_id': search_query['retriever']['text_similarity_reranker']['inference_id'],
+                'rank_window_size': search_query['retriever']['text_similarity_reranker']['rank_window_size']
+            })
+        
+        print("DEBUG: Executing search query:", json.dumps(search_query, indent=2))
+        
         response = es.search(
             index='hotels',  # Always use hotels index
             body=search_query
@@ -381,9 +392,24 @@ def search():
         })
         
     except ValueError as e:
+        print(f"ERROR: ValueError in search: {str(e)}")
         return jsonify({'error': str(e)})
     except Exception as e:
-        return jsonify({'error': str(e)})
+        print(f"ERROR: Exception in search: {str(e)}")
+        print(f"ERROR: Exception type: {type(e).__name__}")
+        import traceback
+        print(f"ERROR: Full traceback: {traceback.format_exc()}")
+        
+        # Provide more specific error messages for common issues
+        error_msg = str(e)
+        if "text_similarity_reranker" in error_msg:
+            error_msg = f"Reranker error: {error_msg}. Please check if the reranker model is available in your Elasticsearch cluster."
+        elif "inference_id" in error_msg:
+            error_msg = f"Inference model error: {error_msg}. Please check if the required models are deployed."
+        elif "field" in error_msg and "combined_fields" in error_msg:
+            error_msg = "Field error: The specified field does not exist in the index."
+        
+        return jsonify({'error': error_msg})
 
 @app.route('/wake-elser', methods=['POST'])
 def wake_elser():
@@ -402,6 +428,19 @@ def wake_elser():
         
         return jsonify({'success': True})
     except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/check-reranker', methods=['POST'])
+def check_reranker():
+    try:
+        # Check if reranker model is available
+        response = es.inference.inference(
+            inference_id=RERANKER_INFERENCE_ID,
+            input=['test query for reranker availability check']
+        )
+        return jsonify({'success': True, 'message': 'Reranker model is available'})
+    except Exception as e:
+        print(f"ERROR: Reranker check failed: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/execute-query', methods=['POST'])

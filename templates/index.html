@@ -1022,7 +1022,31 @@
                 loadingDiv.classList.add('d-none');
                 
                 if (data.error) {
-                    resultsDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    // Enhanced error handling for reranker issues
+                    let errorMessage = data.error;
+                    let errorClass = 'alert-danger';
+                    
+                    if (data.error.includes('Reranker error') || data.error.includes('text_similarity_reranker')) {
+                        errorMessage = `
+                            <strong>Reranker Error:</strong> ${data.error}<br><br>
+                            <strong>Troubleshooting steps:</strong><br>
+                            1. Click "Wake Inference Endpoints" to activate the models<br>
+                            2. Wait a few moments and try again<br>
+                            3. Check if your Elasticsearch cluster has the required models deployed
+                        `;
+                        errorClass = 'alert-warning';
+                    } else if (data.error.includes('Inference model error')) {
+                        errorMessage = `
+                            <strong>Inference Model Error:</strong> ${data.error}<br><br>
+                            <strong>Troubleshooting steps:</strong><br>
+                            1. Click "Wake Inference Endpoints" to activate the models<br>
+                            2. Wait a few moments and try again<br>
+                            3. Check if your Elasticsearch cluster has the required models deployed
+                        `;
+                        errorClass = 'alert-warning';
+                    }
+                    
+                    resultsDiv.innerHTML = `<div class="alert ${errorClass}">${errorMessage}</div>`;
                     return;
                 }
 
