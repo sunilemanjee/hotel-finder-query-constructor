@@ -3,6 +3,11 @@ from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
 import os
 import json
+import warnings
+from urllib3.exceptions import InsecureRequestWarning
+
+# Suppress the SSL warning for unverified HTTPS requests
+warnings.filterwarnings('ignore', category=InsecureRequestWarning)
 
 # Load environment variables
 load_dotenv('variables.env')
@@ -40,11 +45,10 @@ INDICES = [
 ELSER_INFERENCE_ID = os.environ.get("ELSER_INFERENCE_ID", ".elser-2-elasticsearch")
 E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elasticsearch")
 
-def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20):
+def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, rating_params=None):
     if reranking_params is None:
         reranking_params = {
-            'rank_window_size': 20,
-            'min_score': 0.5
+            'rank_window_size': 10
         }
     
     # Default fields if none selected
@@ -91,51 +95,112 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
         }
     }
 
+    # Prepare geo filter if location filtering is enabled
+    geo_filter = None
+    if enable_location_filter and location_params:
+        lat = location_params.get('latitude')
+        lon = location_params.get('longitude')
+        distance_miles = location_params.get('distance', 10)
+        
+        if lat is not None and lon is not None:
+            geo_filter = {
+                "bool": {
+                    "must": [
+                        {
+                            "geo_distance": {
+                                "distance": f"{distance_miles}mi",
+                                "location": {
+                                    "lat": lat,
+                                    "lon": lon
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+
+    # Prepare rating filter if rating filtering is enabled
+    rating_filter = None
+    if rating_params:
+        min_rating = rating_params.get('minRating')
+        max_rating = rating_params.get('maxRating')
+        
+        if min_rating is not None and max_rating is not None and min_rating > 0:
+            # Only apply filter if minimum rating is greater than 0
+            rating_filter = {
+                "bool": {
+                    "must": [
+                        {
+                            "range": {
+                                "HotelRating": {
+                                    "gte": min_rating
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+
+    # Combine filters if both are present
+    combined_filter = None
+    if geo_filter and rating_filter:
+        combined_filter = {
+            "bool": {
+                "must": [
+                    geo_filter,
+                    rating_filter
+                ]
+            }
+        }
+    elif geo_filter:
+        combined_filter = geo_filter
+    elif rating_filter:
+        combined_filter = rating_filter
+
     # Build retriever based on type
     if retriever_type == 'linear':
+        # Prepare standard retriever base with optional geo filter
+        def create_standard_retriever(query_part):
+            retriever = {
+                "standard": {
+                    "query": query_part
+                }
+            }
+            if combined_filter:
+                retriever["standard"]["filter"] = [combined_filter]
+            return retriever
+
         base_query["retriever"] = {
             "linear": {
                 "retrievers": [
                     {
-                        "retriever": {
-                            "standard": {
-                                "query": {
-                                    "semantic": {
-                                        "field": "semantic_description_e5",
-                                        "query": query_text
-                                    }
-                                }
+                        "retriever": create_standard_retriever({
+                            "semantic": {
+                                "field": "semantic_description_e5",
+                                "query": query_text
                             }
-                        },
+                        }),
                         "weight": weights['ada002'],  # Using ada002 weight for E5
                         "normalizer": "minmax"
                     },
                     {
-                        "retriever": {
-                            "standard": {
-                                "query": {
-                                    "multi_match": {
-                                        "query": query_text,
-                                        "fields": selected_fields,
-                                        "type": "best_fields"
-                                    }
-                                }
+                        "retriever": create_standard_retriever({
+                            "multi_match": {
+                                "query": query_text,
+                                "fields": selected_fields,
+                                "type": "best_fields"
                             }
-                        },
+                        }),
                         "weight": weights['text'],
                         "normalizer": "minmax"
                     },
                     {
-                        "retriever": {
-                            "standard": {
-                                "query": {
-                                    "semantic": {
-                                        "field": "semantic_description_elser",
-                                        "query": query_text
-                                    }
-                                }
+                        "retriever": create_standard_retriever({
+                            "semantic": {
+                                "field": "semantic_description_elser",
+                                "query": query_text
                             }
-                        },
+                        }),
                         "weight": weights['elser'],
                         "normalizer": "minmax"
                     }
@@ -144,40 +209,39 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
             }
         }
     elif retriever_type == 'rrf':
+        # Prepare standard retriever base with optional geo filter
+        def create_standard_retriever(query_part):
+            retriever = {
+                "standard": {
+                    "query": query_part
+                }
+            }
+            if combined_filter:
+                retriever["standard"]["filter"] = [combined_filter]
+            return retriever
+
         base_query["retriever"] = {
             "rrf": {
                 "retrievers": [
-                    {
-                        "standard": {
-                            "query": {
-                                "semantic": {
-                                    "field": "semantic_description_e5",
-                                    "query": query_text
-                                }
-                            }
+                    create_standard_retriever({
+                        "semantic": {
+                            "field": "semantic_description_e5",
+                            "query": query_text
                         }
-                    },
-                    {
-                        "standard": {
-                            "query": {
-                                "semantic": {
-                                    "field": "semantic_description_elser",
-                                    "query": query_text
-                                }
-                            }
+                    }),
+                    create_standard_retriever({
+                        "semantic": {
+                            "field": "semantic_description_elser",
+                            "query": query_text
                         }
-                    },
-                    {
-                        "standard": {
-                            "query": {
-                                "multi_match": {
-                                    "query": query_text,
-                                    "fields": selected_fields,
-                                    "type": "best_fields"
-                                }
-                            }
+                    }),
+                    create_standard_retriever({
+                        "multi_match": {
+                            "query": query_text,
+                            "fields": selected_fields,
+                            "type": "best_fields"
                         }
-                    }
+                    })
                 ],
                 "rank_window_size": rrf_rank_window_size
             }
@@ -194,7 +258,6 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                     "inference_id": ".rerank-v1-elasticsearch",
                     "inference_text": query_text,
                     "rank_window_size": reranking_params['rank_window_size'],
-                    "min_score": reranking_params['min_score'],
                     "retriever": base_query["retriever"]
                 }
             },
@@ -218,14 +281,16 @@ def search():
     })
     enable_reranking = data.get('enableReranking', False)
     reranking_params = data.get('rerankingParams', {
-        'rankWindowSize': 20,
-        'minScore': 0.5
+        'rankWindowSize': 10
     })
     selected_fields = data.get('selectedFields', ["HotelName", "Description", "Address", "cityName", "HotelFacilities", "Attractions"])
     highlight_config = data.get('highlightConfig', None)
     result_size = data.get('resultSize', 20)
     retriever_type = data.get('retrieverType', 'linear')
     rrf_rank_window_size = data.get('rrfRankWindowSize', 20)
+    enable_location_filter = data.get('enableLocationFilter', False)
+    location_params = data.get('locationParams', None)
+    rating_params = data.get('ratingParams', None)
     
     if not query:
         return jsonify({'error': 'Please enter a search query'})
@@ -237,14 +302,16 @@ def search():
             'hotels',  # Always use hotels index
             enable_reranking,
             {
-                'rank_window_size': reranking_params['rankWindowSize'],
-                'min_score': reranking_params['minScore']
+                'rank_window_size': reranking_params['rankWindowSize']
             },
             selected_fields,
             highlight_config,
             result_size,
             retriever_type,
-            rrf_rank_window_size
+            rrf_rank_window_size,
+            enable_location_filter,
+            location_params,
+            rating_params
         )
         response = es.search(
             index='hotels',  # Always use hotels index

@@ -253,6 +253,22 @@
             display: flex;
             align-items: center;
         }
+        .clickable-stars {
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .clickable-stars .star {
+            transition: all 0.2s ease;
+            padding: 0.1rem;
+            border-radius: 0.2rem;
+        }
+        .clickable-stars .star:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.1);
+        }
+        .clickable-stars .filled-star {
+            color: #ffc107;
+        }
     </style>
 </head>
 <body>
@@ -316,6 +332,57 @@
                     <div class="mb-3">
                         <label for="resultSize" class="form-label">Number of Results</label>
                         <input type="number" class="form-control form-control-sm" id="resultSize" value="20" min="1" max="100">
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Location Filter</h6>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="enableLocationFilter">
+                        <label class="form-check-label" for="enableLocationFilter">
+                            Filter by Location (Latitude/Longitude)
+                        </label>
+                    </div>
+                    <div id="locationParams" class="mb-3 d-none">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="latitude" class="form-label">Latitude</label>
+                                <input type="number" class="form-control form-control-sm" id="latitude" step="any" placeholder="e.g., 40.7128">
+                            </div>
+                            <div class="col-6">
+                                <label for="longitude" class="form-label">Longitude</label>
+                                <input type="number" class="form-control form-control-sm" id="longitude" step="any" placeholder="e.g., -74.0060">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <label for="distance" class="form-label">Distance (miles)</label>
+                                <input type="number" class="form-control form-control-sm" id="distance" value="10" min="0.1" max="1000" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-text mt-1">
+                            <small class="text-muted">Filter hotels within specified distance from coordinates</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Star Rating Filter</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Minimum Rating</label>
+                        <div class="mb-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="noMinimumBtn">No minimum</button>
+                        </div>
+                        <div class="rating-stars clickable-stars" id="ratingFilterStars">
+                            <span class="star" data-rating="1">☆</span>
+                            <span class="star" data-rating="2">☆</span>
+                            <span class="star" data-rating="3">☆</span>
+                            <span class="star" data-rating="4">☆</span>
+                            <span class="star" data-rating="5">☆</span>
+                        </div>
+                        <div class="form-text mt-1">
+                            <small class="text-muted">Click on stars to set minimum rating</small>
+                        </div>
                     </div>
                 </div>
 
@@ -502,11 +569,7 @@
                     <div id="rerankingParams" class="mb-3 d-none">
                         <div class="mb-2">
                             <label for="rankWindowSize" class="form-label">Rank Window Size</label>
-                            <input type="number" class="form-control form-control-sm" id="rankWindowSize" value="20" min="1" max="100">
-                        </div>
-                        <div class="mb-2">
-                            <label for="minScore" class="form-label">Minimum Score</label>
-                            <input type="number" class="form-control form-control-sm" id="minScore" value="0.5" min="0" max="1" step="0.1">
+                            <input type="number" class="form-control form-control-sm" id="rankWindowSize" value="10" min="1" max="100">
                         </div>
                     </div>
                     <button id="wakeElserButton" class="btn btn-warning w-100">Wake Inference Endpoints</button>
@@ -608,7 +671,6 @@
 
         // Add event listeners for reranking parameters
         document.getElementById('rankWindowSize').addEventListener('change', updateQuery);
-        document.getElementById('minScore').addEventListener('change', updateQuery);
 
         // Add event listener for result size
         document.getElementById('resultSize').addEventListener('change', function() {
@@ -624,6 +686,68 @@
         // Add event listeners for field selection checkboxes
         document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
             checkbox.addEventListener('change', updateQuery);
+        });
+
+        // Add event listeners for location filter controls
+        document.getElementById('enableLocationFilter').addEventListener('change', function() {
+            const locationParams = document.getElementById('locationParams');
+            locationParams.classList.toggle('d-none', !this.checked);
+            updateQuery();
+        });
+
+        // Add event listeners for location parameters
+        document.getElementById('latitude').addEventListener('input', updateQuery);
+        document.getElementById('longitude').addEventListener('input', updateQuery);
+        document.getElementById('distance').addEventListener('input', updateQuery);
+
+        // Add event listeners for rating parameters
+        document.getElementById('ratingFilterStars').addEventListener('click', function(e) {
+            if (e.target.classList.contains('star')) {
+                const clickedRating = parseInt(e.target.dataset.rating);
+                const currentRating = getCurrentRating();
+                
+                // If clicking the same star that's already selected, deselect it
+                if (clickedRating === currentRating) {
+                    const stars = document.querySelectorAll('.rating-stars.clickable-stars .star');
+                    stars.forEach(star => {
+                        star.textContent = '☆';
+                        star.classList.remove('filled-star');
+                    });
+                    // Update "No minimum" button state
+                    document.getElementById('noMinimumBtn').classList.remove('btn-outline-secondary');
+                    document.getElementById('noMinimumBtn').classList.add('btn-primary');
+                } else {
+                    // Select up to the clicked star
+                    const stars = document.querySelectorAll('.rating-stars.clickable-stars .star');
+                    stars.forEach(star => {
+                        const starRating = parseInt(star.dataset.rating);
+                        if (starRating <= clickedRating) {
+                            star.textContent = '★';
+                            star.classList.add('filled-star');
+                        } else {
+                            star.textContent = '☆';
+                            star.classList.remove('filled-star');
+                        }
+                    });
+                    // Update "No minimum" button state
+                    document.getElementById('noMinimumBtn').classList.remove('btn-primary');
+                    document.getElementById('noMinimumBtn').classList.add('btn-outline-secondary');
+                }
+                updateQuery();
+            }
+        });
+
+        // Add event listener for "No minimum" button
+        document.getElementById('noMinimumBtn').addEventListener('click', function() {
+            const stars = document.querySelectorAll('.rating-stars.clickable-stars .star');
+            stars.forEach(star => {
+                star.textContent = '☆';
+                star.classList.remove('filled-star');
+            });
+            // Update button state to show it's active
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-primary');
+            updateQuery();
         });
 
         // Add event listeners for highlight field checkboxes
@@ -654,95 +778,6 @@
             updateQuery();
         });
 
-        // Function to show validation messages
-        function showValidationMessage(message) {
-            // Create a temporary alert or use a toast notification
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-warning alert-dismissible fade show position-fixed';
-            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 300px;';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.body.appendChild(alertDiv);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 3000);
-        }
-
-        // Initialize RRF rank window size minimum value
-        document.addEventListener('DOMContentLoaded', function() {
-            const resultSize = parseInt(document.getElementById('resultSize').value);
-            const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
-            rrfRankWindowSize.min = resultSize;
-            
-            // Ensure RRF rank window size is at least equal to result size
-            if (parseInt(rrfRankWindowSize.value) < resultSize) {
-                rrfRankWindowSize.value = resultSize;
-            }
-        });
-
-        function getSelectedFields() {
-            const fieldMappings = {
-                'fieldHotelName': 'HotelName',
-                'fieldDescription': 'Description',
-                'fieldAddress': 'Address',
-                'fieldCityName': 'cityName',
-                'fieldHotelFacilities': 'HotelFacilities',
-                'fieldAttractions': 'Attractions'
-            };
-            
-            const selectedFields = [];
-            Object.keys(fieldMappings).forEach(checkboxId => {
-                if (document.getElementById(checkboxId).checked) {
-                    selectedFields.push(fieldMappings[checkboxId]);
-                }
-            });
-            return selectedFields;
-        }
-
-        function getHighlightConfig() {
-            const highlightMappings = {
-                'highlightHotelName': 'HotelName',
-                'highlightDescription': 'Description',
-                'highlightAddress': 'Address',
-                'highlightHotelFacilities': 'HotelFacilities',
-                'highlightSemanticE5': 'semantic_description_e5',
-                'highlightSemanticElser': 'semantic_description_elser'
-            };
-            
-            const highlightConfig = {};
-            Object.keys(highlightMappings).forEach(checkboxId => {
-                if (document.getElementById(checkboxId).checked) {
-                    const fieldName = highlightMappings[checkboxId];
-                    const optionsId = checkboxId + 'Options';
-                    const optionsDiv = document.getElementById(optionsId);
-                    
-                    if (optionsDiv) {
-                        const fragmentsInput = optionsDiv.querySelector('input[type="number"]');
-                        const orderSelect = optionsDiv.querySelector('select');
-                        
-                        const config = {
-                            number_of_fragments: parseInt(fragmentsInput.value),
-                            order: orderSelect.value
-                        };
-                        
-                        // Add semantic type for semantic fields
-                        if (fieldName === 'semantic_description_e5' || fieldName === 'semantic_description_elser') {
-                            config.type = 'semantic';
-                        }
-                        
-                        highlightConfig[fieldName] = config;
-                    }
-                }
-            });
-            return highlightConfig;
-        }
-
         function updateQuery() {
             const queryDisplay = document.getElementById('generatedQuery');
             const searchQuery = document.getElementById('searchQuery').value;
@@ -755,32 +790,57 @@
                 };
                 const enableReranking = document.getElementById('enableReranking').checked;
                 const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
-                const minScore = parseFloat(document.getElementById('minScore').value);
                 const selectedFields = getSelectedFields();
                 const highlightConfig = getHighlightConfig();
                 const resultSize = parseInt(document.getElementById('resultSize').value);
                 const retrieverType = document.getElementById('retrieverType').value;
                 const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
                 
+                // Get location filter parameters
+                const enableLocationFilter = document.getElementById('enableLocationFilter').checked;
+                const latitude = parseFloat(document.getElementById('latitude').value);
+                const longitude = parseFloat(document.getElementById('longitude').value);
+                const distance = parseFloat(document.getElementById('distance').value);
+                
+                // Get rating filter parameters (only if stars are selected)
+                const minRating = getCurrentRating();
+                const maxRating = 5;
+                
+                // Only include rating parameters if stars are selected
+                const requestBody = {
+                    query: searchQuery,
+                    weights: weights,
+                    enableReranking: enableReranking,
+                    rerankingParams: {
+                        rankWindowSize: rankWindowSize
+                    },
+                    selectedFields: selectedFields,
+                    highlightConfig: highlightConfig,
+                    resultSize: resultSize,
+                    retrieverType: retrieverType,
+                    rrfRankWindowSize: rrfRankWindowSize,
+                    enableLocationFilter: enableLocationFilter,
+                    locationParams: {
+                        latitude: latitude,
+                        longitude: longitude,
+                        distance: distance
+                    }
+                };
+                
+                // Only add rating parameters if stars are selected
+                if (minRating > 0) {
+                    requestBody.ratingParams = {
+                        minRating: minRating,
+                        maxRating: maxRating
+                    };
+                }
+                
                 fetch('/search', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        query: searchQuery,
-                        weights: weights,
-                        enableReranking: enableReranking,
-                        rerankingParams: {
-                            rankWindowSize: rankWindowSize,
-                            minScore: minScore
-                        },
-                        selectedFields: selectedFields,
-                        highlightConfig: highlightConfig,
-                        resultSize: resultSize,
-                        retrieverType: retrieverType,
-                        rrfRankWindowSize: rrfRankWindowSize
-                    })
+                    body: JSON.stringify(requestBody)
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -805,12 +865,21 @@
             const textWeight = parseFloat(document.getElementById('textWeight').value);
             const enableReranking = document.getElementById('enableReranking').checked;
             const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
-            const minScore = parseFloat(document.getElementById('minScore').value);
             const selectedFields = getSelectedFields();
             const highlightConfig = getHighlightConfig();
             const resultSize = parseInt(document.getElementById('resultSize').value);
             const retrieverType = document.getElementById('retrieverType').value;
             const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
+
+            // Get location filter parameters
+            const enableLocationFilter = document.getElementById('enableLocationFilter').checked;
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const distance = parseFloat(document.getElementById('distance').value);
+
+            // Get rating filter parameters (only if stars are selected)
+            const minRating = getCurrentRating();
+            const maxRating = 5;
 
             if (!query) {
                 resultsDiv.innerHTML = '<div class="alert alert-warning">Please enter a search query</div>';
@@ -821,29 +890,45 @@
             loadingDiv.classList.remove('d-none');
             resultsDiv.innerHTML = '';
 
+            // Only include rating parameters if stars are selected
+            const requestBody = {
+                query: query,
+                weights: {
+                    ada002: ada002Weight,
+                    elser: elserWeight,
+                    text: textWeight
+                },
+                enableReranking: enableReranking,
+                rerankingParams: {
+                    rankWindowSize: rankWindowSize
+                },
+                selectedFields: selectedFields,
+                highlightConfig: highlightConfig,
+                resultSize: resultSize,
+                retrieverType: retrieverType,
+                rrfRankWindowSize: rrfRankWindowSize,
+                enableLocationFilter: enableLocationFilter,
+                locationParams: {
+                    latitude: latitude,
+                    longitude: longitude,
+                    distance: distance
+                }
+            };
+            
+            // Only add rating parameters if stars are selected
+            if (minRating > 0) {
+                requestBody.ratingParams = {
+                    minRating: minRating,
+                    maxRating: maxRating
+                };
+            }
+
             fetch('/search', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    query: query,
-                    weights: {
-                        ada002: ada002Weight,
-                        elser: elserWeight,
-                        text: textWeight
-                    },
-                    enableReranking: enableReranking,
-                    rerankingParams: {
-                        rankWindowSize: rankWindowSize,
-                        minScore: minScore
-                    },
-                    selectedFields: selectedFields,
-                    highlightConfig: highlightConfig,
-                    resultSize: resultSize,
-                    retrieverType: retrieverType,
-                    rrfRankWindowSize: rrfRankWindowSize
-                })
+                body: JSON.stringify(requestBody)
             })
             .then(response => response.json())
             .then(data => {
@@ -1162,6 +1247,111 @@
                 document.body.removeChild(textArea);
                 callback(false);
             }
+        }
+
+        // Function to show validation messages
+        function showValidationMessage(message) {
+            // Create a temporary alert or use a toast notification
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-warning alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 3000);
+        }
+
+        // Initialize RRF rank window size minimum value
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultSize = parseInt(document.getElementById('resultSize').value);
+            const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
+            rrfRankWindowSize.min = resultSize;
+            
+            // Ensure RRF rank window size is at least equal to result size
+            if (parseInt(rrfRankWindowSize.value) < resultSize) {
+                rrfRankWindowSize.value = resultSize;
+            }
+        });
+
+        function getSelectedFields() {
+            const fieldMappings = {
+                'fieldHotelName': 'HotelName',
+                'fieldDescription': 'Description',
+                'fieldAddress': 'Address',
+                'fieldCityName': 'cityName',
+                'fieldHotelFacilities': 'HotelFacilities',
+                'fieldAttractions': 'Attractions'
+            };
+            
+            const selectedFields = [];
+            Object.keys(fieldMappings).forEach(checkboxId => {
+                if (document.getElementById(checkboxId).checked) {
+                    selectedFields.push(fieldMappings[checkboxId]);
+                }
+            });
+            return selectedFields;
+        }
+
+        function getHighlightConfig() {
+            const highlightMappings = {
+                'highlightHotelName': 'HotelName',
+                'highlightDescription': 'Description',
+                'highlightAddress': 'Address',
+                'highlightHotelFacilities': 'HotelFacilities',
+                'highlightSemanticE5': 'semantic_description_e5',
+                'highlightSemanticElser': 'semantic_description_elser'
+            };
+            
+            const highlightConfig = {};
+            Object.keys(highlightMappings).forEach(checkboxId => {
+                if (document.getElementById(checkboxId).checked) {
+                    const fieldName = highlightMappings[checkboxId];
+                    const optionsId = checkboxId + 'Options';
+                    const optionsDiv = document.getElementById(optionsId);
+                    
+                    if (optionsDiv) {
+                        const fragmentsInput = optionsDiv.querySelector('input[type="number"]');
+                        const orderSelect = optionsDiv.querySelector('select');
+                        
+                        const config = {
+                            number_of_fragments: parseInt(fragmentsInput.value),
+                            order: orderSelect.value
+                        };
+                        
+                        // Add semantic type for semantic fields
+                        if (fieldName === 'semantic_description_e5' || fieldName === 'semantic_description_elser') {
+                            config.type = 'semantic';
+                        }
+                        
+                        highlightConfig[fieldName] = config;
+                    }
+                }
+            });
+            return highlightConfig;
+        }
+
+        function getCurrentRating() {
+            const filledStars = document.querySelectorAll('.rating-stars.clickable-stars .filled-star');
+            if (filledStars.length === 0) {
+                return 0;
+            }
+            // Get the highest rating from filled stars
+            let maxRating = 0;
+            filledStars.forEach(star => {
+                const rating = parseInt(star.dataset.rating);
+                if (rating > maxRating) {
+                    maxRating = rating;
+                }
+            });
+            return maxRating;
         }
     </script>
 </body>
