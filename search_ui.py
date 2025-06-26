@@ -15,6 +15,7 @@ load_dotenv('variables.env')
 # Elasticsearch configuration
 ES_URL = os.getenv('ES_URL')
 ES_API_KEY = os.getenv('ES_API_KEY')
+ES_USERNAME = os.getenv('ES_USERNAME', 'elastic')
 ES_PASSWORD = os.getenv('ES_PASSWORD')
 USE_PASSWORD = os.getenv('USE_PASSWORD', 'false').lower() == 'true'
 
@@ -22,7 +23,7 @@ USE_PASSWORD = os.getenv('USE_PASSWORD', 'false').lower() == 'true'
 if USE_PASSWORD:
     es = Elasticsearch(
         ES_URL,
-        basic_auth=('elastic', ES_PASSWORD),
+        basic_auth=(ES_USERNAME, ES_PASSWORD),
         verify_certs=False,
         request_timeout=300
     )
