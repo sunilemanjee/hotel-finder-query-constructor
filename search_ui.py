@@ -46,6 +46,12 @@ ELSER_INFERENCE_ID = os.environ.get("ELSER_INFERENCE_ID", ".elser-2-elasticsearc
 E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elasticsearch")
 
 def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, rating_params=None):
+    print("DEBUG: get_search_query called with weights:", weights)
+    print("DEBUG: weights type:", type(weights))
+    print("DEBUG: individual weight values - ada002:", weights.get('ada002'), "type:", type(weights.get('ada002')))
+    print("DEBUG: individual weight values - elser:", weights.get('elser'), "type:", type(weights.get('elser')))
+    print("DEBUG: individual weight values - text:", weights.get('text'), "type:", type(weights.get('text')))
+    
     if reranking_params is None:
         reranking_params = {
             'rank_window_size': 10
@@ -208,6 +214,12 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                 "rank_window_size": 100
             }
         }
+        
+        # Debug: Print the actual weights being used in the query
+        print("DEBUG: Final retriever weights in query:")
+        print("  - E5 (ada002):", base_query["retriever"]["linear"]["retrievers"][0]["weight"])
+        print("  - Text (text):", base_query["retriever"]["linear"]["retrievers"][1]["weight"])
+        print("  - ELSER (elser):", base_query["retriever"]["linear"]["retrievers"][2]["weight"])
     elif retriever_type == 'rrf':
         # Prepare standard retriever base with optional geo filter
         def create_standard_retriever(query_part):
@@ -274,11 +286,22 @@ def index():
 def search():
     data = request.get_json()
     query = data.get('query')
-    weights = data.get('weights', {
-        'ada002': 2.0,
-        'elser': 1.5,
-        'text': 1.0
-    })
+    
+    # Get weights from request, but only use defaults if weights are not provided at all
+    weights_data = data.get('weights')
+    if weights_data is None:
+        # Only use defaults if weights object is completely missing
+        weights = {
+            'ada002': 2.0,
+            'elser': 1.5,
+            'text': 1.0
+        }
+        print("DEBUG: Using default weights:", weights)
+    else:
+        # Use the weights exactly as provided, even if they are 0
+        weights = weights_data
+        print("DEBUG: Received weights from frontend:", weights)
+    
     enable_reranking = data.get('enableReranking', False)
     reranking_params = data.get('rerankingParams', {
         'rankWindowSize': 10
@@ -313,6 +336,16 @@ def search():
             location_params,
             rating_params
         )
+        
+        # Debug logging for the final query weights
+        if retriever_type == 'linear' and 'retriever' in search_query and 'linear' in search_query['retriever']:
+            retrievers = search_query['retriever']['linear']['retrievers']
+            print("DEBUG: Final query weights:", {
+                'E5 (ada002)': retrievers[0]['weight'],
+                'Text (text)': retrievers[1]['weight'],
+                'ELSER (elser)': retrievers[2]['weight']
+            })
+        
         response = es.search(
             index='hotels',  # Always use hotels index
             body=search_query

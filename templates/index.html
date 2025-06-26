@@ -312,6 +312,15 @@
                         <span class="weight-value" id="textWeightValue">1.0</span>
                     </div>
                     <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="1.0">
+                    
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetWeights()">
+                            Reset All Weights to 0
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="forceClearAndRefreshQuery()">
+                            Clear & Refresh
+                        </button>
+                    </div>
                 </div>
 
                 <div id="rrfControls" class="d-none">
@@ -617,10 +626,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Update weight value displays and query
+        let updateQueryTimeout;
         document.querySelectorAll('input[type="range"]').forEach(slider => {
             const valueDisplay = document.getElementById(slider.id + 'Value');
             slider.addEventListener('input', () => {
-                valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+                const exactValue = parseFloat(slider.value);
+                const displayValue = exactValue.toFixed(1);
+                valueDisplay.textContent = displayValue;
+                
+                // Debug: Show the exact value vs displayed value
+                console.log(`Slider ${slider.id}: exact value = ${exactValue}, displayed = ${displayValue}`);
+                
+                // Debounce the query update to prevent too many rapid requests
+                clearTimeout(updateQueryTimeout);
+                updateQueryTimeout = setTimeout(() => {
+                    console.log(`Debounced update for slider ${slider.id}`);
+                    updateQuery();
+                }, 300); // Wait 300ms after slider stops moving
+            });
+            
+            // Force update when user stops dragging
+            slider.addEventListener('change', () => {
+                console.log(`Slider ${slider.id} change event - forcing immediate update`);
+                clearTimeout(updateQueryTimeout);
                 updateQuery();
             });
         });
@@ -782,12 +810,22 @@
             const queryDisplay = document.getElementById('generatedQuery');
             const searchQuery = document.getElementById('searchQuery').value;
             
+            console.log('updateQuery() called');
+            console.log('Search query:', searchQuery);
+            
+            // Add visual indicator that query is updating
+            if (queryDisplay) {
+                queryDisplay.style.borderColor = '#ffc107'; // Yellow border to indicate updating
+                queryDisplay.placeholder = 'Updating query...';
+            }
+            
             if (searchQuery) {
-                const weights = {
-                    ada002: parseFloat(document.getElementById('ada002Weight').value),
-                    elser: parseFloat(document.getElementById('elserWeight').value),
-                    text: parseFloat(document.getElementById('textWeight').value)
-                };
+                const weights = getRoundedWeights();
+                
+                // Debug logging
+                console.log('Current weights being sent:', weights);
+                console.log('ELSER weight specifically:', weights.elser);
+                
                 const enableReranking = document.getElementById('enableReranking').checked;
                 const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
                 const selectedFields = getSelectedFields();
@@ -835,6 +873,10 @@
                     };
                 }
                 
+                // Debug logging
+                console.log('Full request body being sent:', JSON.stringify(requestBody, null, 2));
+                console.log('Request body weights:', requestBody.weights);
+                
                 fetch('/search', {
                     method: 'POST',
                     headers: {
@@ -844,13 +886,64 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Response received from backend:', data);
+                    console.log('Full response data:', JSON.stringify(data, null, 2));
                     if (data.query) {
+                        console.log('Query from response:', JSON.stringify(data.query, null, 2));
                         queryDisplay.value = JSON.stringify(data.query, null, 2);
+                        
+                        // Reset visual indicator
+                        queryDisplay.style.borderColor = '#28a745'; // Green border to indicate success
+                        queryDisplay.placeholder = '';
+                        
+                        // Debug logging for the generated query
+                        console.log('Generated query weights:', {
+                            'E5 (ada002)': data.query.retriever.linear.retrievers[0].weight,
+                            'Text (text)': data.query.retriever.linear.retrievers[1].weight,
+                            'ELSER (elser)': data.query.retriever.linear.retrievers[2].weight
+                        });
+                        console.log('ELSER weight in response:', data.query.retriever.linear.retrievers[2].weight);
+                        
+                        // Check if the display was actually updated
+                        setTimeout(() => {
+                            console.log('Display value after update:', queryDisplay.value);
+                            // Check if the weight values in the display match what we expect
+                            try {
+                                const displayedQuery = JSON.parse(queryDisplay.value);
+                                if (displayedQuery.retriever && displayedQuery.retriever.linear && displayedQuery.retriever.linear.retrievers) {
+                                    const displayedWeights = {
+                                        'E5 (ada002)': displayedQuery.retriever.linear.retrievers[0].weight,
+                                        'Text (text)': displayedQuery.retriever.linear.retrievers[1].weight,
+                                        'ELSER (elser)': displayedQuery.retriever.linear.retrievers[2].weight
+                                    };
+                                    console.log('Weights in displayed query:', displayedWeights);
+                                }
+                            } catch (e) {
+                                console.log('Could not parse displayed query:', e);
+                            }
+                        }, 100);
+                    } else {
+                        console.log('No query in response');
+                        // Reset visual indicator on error
+                        queryDisplay.style.borderColor = '#dc3545'; // Red border to indicate error
+                        queryDisplay.placeholder = 'Error updating query';
                     }
                 })
                 .catch(error => {
                     console.error('Error updating query:', error);
+                    // Reset visual indicator on error
+                    if (queryDisplay) {
+                        queryDisplay.style.borderColor = '#dc3545'; // Red border to indicate error
+                        queryDisplay.placeholder = 'Error updating query';
+                    }
                 });
+            } else {
+                console.log('No search query, skipping updateQuery');
+                // Reset visual indicator
+                if (queryDisplay) {
+                    queryDisplay.style.borderColor = '';
+                    queryDisplay.placeholder = '';
+                }
             }
         }
 
@@ -859,10 +952,8 @@
             const resultsDiv = document.getElementById('results');
             const loadingDiv = document.getElementById('loading');
 
-            // Get weight values
-            const ada002Weight = parseFloat(document.getElementById('ada002Weight').value);
-            const elserWeight = parseFloat(document.getElementById('elserWeight').value);
-            const textWeight = parseFloat(document.getElementById('textWeight').value);
+            // Get weight values using rounded weights
+            const weights = getRoundedWeights();
             const enableReranking = document.getElementById('enableReranking').checked;
             const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
             const selectedFields = getSelectedFields();
@@ -893,11 +984,7 @@
             // Only include rating parameters if stars are selected
             const requestBody = {
                 query: query,
-                weights: {
-                    ada002: ada002Weight,
-                    elser: elserWeight,
-                    text: textWeight
-                },
+                weights: weights,
                 enableReranking: enableReranking,
                 rerankingParams: {
                     rankWindowSize: rankWindowSize
@@ -941,7 +1028,7 @@
 
                 // Update the generated query display
                 const queryDisplay = document.getElementById('generatedQuery');
-                queryDisplay.textContent = JSON.stringify(data.query, null, 2);
+                queryDisplay.value = JSON.stringify(data.query, null, 2);
 
                 if (!data.results || data.results.length === 0) {
                     resultsDiv.innerHTML = '<div class="alert alert-info">No results found</div>';
@@ -1353,6 +1440,48 @@
             });
             return maxRating;
         }
+
+        function resetWeights() {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                slider.value = 0;
+                const valueDisplay = document.getElementById(slider.id + 'Value');
+                valueDisplay.textContent = '0.0';
+            });
+            updateQuery();
+        }
+        
+        // Function to get properly rounded weight values
+        function getRoundedWeights() {
+            const weights = {
+                ada002: Math.round(parseFloat(document.getElementById('ada002Weight').value) * 10) / 10,
+                elser: Math.round(parseFloat(document.getElementById('elserWeight').value) * 10) / 10,
+                text: Math.round(parseFloat(document.getElementById('textWeight').value) * 10) / 10
+            };
+            console.log('getRoundedWeights() called, returning:', weights);
+            return weights;
+        }
+        
+        // Function to force clear and refresh the query display
+        function forceClearAndRefreshQuery() {
+            console.log('Force clearing and refreshing query display...');
+            const queryDisplay = document.getElementById('generatedQuery');
+            queryDisplay.value = ''; // Clear the display first
+            setTimeout(() => {
+                updateQuery(); // Then refresh with new data
+            }, 100);
+        }
+
+        // Initialize page and update query with current values
+        function initializePage() {
+            console.log('Page initialized. Current weights:', getRoundedWeights());
+            // Update query if there's already a search query
+            if (document.getElementById('searchQuery').value) {
+                updateQuery();
+            }
+        }
+        
+        // Call initialization when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
 </html> 
