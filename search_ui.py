@@ -321,7 +321,7 @@ def search():
         results = []
         for hit in response['hits']['hits']:
             result = {
-                'score': hit['_score'],
+                'score': str(hit['_score']),
                 'highlights': [],
                 '_id': hit['_id']
             }
@@ -389,7 +389,7 @@ def execute_query():
         results = []
         for hit in response['hits']['hits']:
             result = {
-                'score': hit['_score'],
+                'score': str(hit['_score']),
                 'highlights': [],
                 '_id': hit['_id']
             }

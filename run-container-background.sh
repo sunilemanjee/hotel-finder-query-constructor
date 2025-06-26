@@ -22,7 +22,8 @@ echo "✅ Environment file found"
 
 # Build the Docker image with no cache
 echo "🔨 Building Docker image (no cache)..."
-docker-compose build --no-cache
+#docker-compose build --no-cache
+docker-compose build
 
 echo "✅ Docker image built successfully"
 
