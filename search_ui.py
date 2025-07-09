@@ -48,7 +48,7 @@ ELSER_INFERENCE_ID = os.environ.get("ELSER_INFERENCE_ID", ".elser-2-elasticsearc
 E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elasticsearch")
 RERANKER_INFERENCE_ID = os.environ.get("RERANKER_INFERENCE_ID", ".rerank-v1-elasticsearch")
 
-def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, rating_params=None):
+def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, price_params=None):
     print("DEBUG: get_search_query called with weights:", weights)
     print("DEBUG: weights type:", type(weights))
     print("DEBUG: individual weight values - ada002:", weights.get('ada002'), "type:", type(weights.get('ada002')))
@@ -135,25 +135,33 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
 
     # Prepare price filter if price filtering is enabled
     price_filter = None
-    if rating_params:  # Reusing rating_params for price filtering
-        min_price = rating_params.get('minRating')  # Reusing minRating for minPrice
-        max_price = rating_params.get('maxRating')  # Reusing maxRating for maxPrice
+    if price_params:
+        min_price = price_params.get('minPrice')
+        max_price = price_params.get('maxPrice')
         
-        if min_price is not None and max_price is not None and min_price > 0:
-            # Only apply filter if minimum price is greater than 0
-            price_filter = {
-                "bool": {
-                    "must": [
-                        {
-                            "range": {
-                                "home-price": {
-                                    "gte": min_price
-                                }
+        if min_price is not None and max_price is not None:
+            # Build range filter
+            range_filter = {"home-price": {}}
+            
+            # Add minimum price if greater than 0
+            if min_price > 0:
+                range_filter["home-price"]["gte"] = min_price
+            
+            # Add maximum price if less than 10M (treat 10M as no upper limit)
+            if max_price < 10000000:
+                range_filter["home-price"]["lte"] = max_price
+            
+            # Only create filter if we have at least one condition
+            if range_filter["home-price"]:
+                price_filter = {
+                    "bool": {
+                        "must": [
+                            {
+                                "range": range_filter
                             }
-                        }
-                    ]
+                        ]
+                    }
                 }
-            }
 
     # Combine filters if both are present
     combined_filter = None
@@ -269,7 +277,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
 
     # Add reranking if enabled
     if enable_reranking:
-        reranker_field = reranking_params.get('reranker_field', 'property-description')
+        reranker_field = reranking_params.get('reranker_field', 'meta_description')
         base_query = {
             "_source": base_query.get("_source", False),
             "fields": base_query.get("fields", ["text"]),
@@ -323,7 +331,7 @@ def search():
     rrf_rank_window_size = data.get('rrfRankWindowSize', 20)
     enable_location_filter = data.get('enableLocationFilter', False)
     location_params = data.get('locationParams', None)
-    rating_params = data.get('ratingParams', None)
+    price_params = data.get('priceParams', None)
     
     if not query:
         return jsonify({'error': 'Please enter a search query'})
@@ -345,7 +353,7 @@ def search():
             rrf_rank_window_size,
             enable_location_filter,
             location_params,
-            rating_params
+            price_params
         )
         
         # Debug logging for the final query weights
@@ -440,6 +448,132 @@ def wake_elser():
         e5_response = es.inference.inference(
             inference_id=E5_INFERENCE_ID,
             input=['vector are so much fun']
+        )
+        
+        # Wake up reranker endpoint by running a query with text_similarity_reranker
+        reranker_query = {
+            "_source": False,
+            "fields": [
+                "title",
+                "property-description",
+                "property-features",
+                "meta_description",
+                "headings",
+                "listing-agent-info",
+                "property-status",
+                "number-of-bedrooms",
+                "number-of-bathrooms",
+                "square-footage",
+                "home-price",
+                "annual-tax",
+                "maintenance-fee"
+            ],
+            "highlight": {
+                "fields": {}
+            },
+            "retriever": {
+                "text_similarity_reranker": {
+                    "field": "meta_description",
+                    "inference_id": ".rerank-v1-elasticsearch",
+                    "inference_text": "beach",
+                    "rank_window_size": 5,
+                    "retriever": {
+                        "rrf": {
+                            "rank_window_size": 10,
+                            "retrievers": [
+                                {
+                                    "standard": {
+                                        "filter": [
+                                            {
+                                                "bool": {
+                                                    "must": [
+                                                        {
+                                                            "range": {
+                                                                "home-price": {
+                                                                    "lte": 3720000
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "query": {
+                                            "semantic": {
+                                                "field": "body_content_e5",
+                                                "query": "beach"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "standard": {
+                                        "filter": [
+                                            {
+                                                "bool": {
+                                                    "must": [
+                                                        {
+                                                            "range": {
+                                                                "home-price": {
+                                                                    "lte": 3720000
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "query": {
+                                            "semantic": {
+                                                "field": "body_content_semantic",
+                                                "query": "beach"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "standard": {
+                                        "filter": [
+                                            {
+                                                "bool": {
+                                                    "must": [
+                                                        {
+                                                            "range": {
+                                                                "home-price": {
+                                                                    "lte": 3720000
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "query": {
+                                            "multi_match": {
+                                                "fields": [
+                                                    "title",
+                                                    "property-description",
+                                                    "property-features",
+                                                    "meta_description",
+                                                    "headings"
+                                                ],
+                                                "query": "beach",
+                                                "type": "best_fields"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        
+        # Execute the reranker query to wake up the reranking endpoint
+        reranker_response = es.search(
+            index=ES_INDEX,
+            body=reranker_query
         )
         
         return jsonify({'success': True})

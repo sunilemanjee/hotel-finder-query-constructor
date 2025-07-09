@@ -114,7 +114,7 @@
         .field-value {
             margin-bottom: 0.75rem;
         }
-        .hotel-name {
+        .property-name {
             font-size: 1.1rem;
             font-weight: 600;
             color: #212529;
@@ -378,21 +378,31 @@
                 <div class="mt-4">
                     <h6 class="mb-3">Price Filter</h6>
                     <div class="mb-3">
-                        <label class="form-label">Minimum Price</label>
-                        <div class="mb-2">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" id="noMinimumBtn">No minimum</button>
+                        <div class="mb-3">
+                            <label class="form-label">Min Price</label>
+                            <div class="row">
+                                <div class="col-8">
+                                    <input type="range" class="form-range" id="minPriceSlider" min="0" max="10000000" value="0" step="10000">
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted" id="minPriceDisplay">$0</small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="price-buttons" id="priceFilterButtons">
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="100000">$100K</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="200000">$200K</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="300000">$300K</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="400000">$400K</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="500000">$500K</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="750000">$750K</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="1000000">$1M</button>
+                        <div class="mb-3">
+                            <label class="form-label">Max Price</label>
+                            <div class="row">
+                                <div class="col-8">
+                                    <input type="range" class="form-range" id="maxPriceSlider" min="0" max="10000000" value="10000000" step="10000">
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted" id="maxPriceDisplay">$10M</small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-text mt-1">
-                            <small class="text-muted">Click on price buttons to set minimum price</small>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">$0</small>
+                            <small class="text-muted">$10M</small>
                         </div>
                     </div>
                 </div>
@@ -767,51 +777,35 @@
         document.getElementById('longitude').addEventListener('input', updateQuery);
         document.getElementById('distance').addEventListener('input', updateQuery);
 
-        // Add event listeners for price parameters
-        document.getElementById('priceFilterButtons').addEventListener('click', function(e) {
-            if (e.target.classList.contains('btn') && e.target.dataset.price) {
-                const clickedPrice = parseInt(e.target.dataset.price);
-                const currentPrice = getCurrentPrice();
-                
-                // If clicking the same price that's already selected, deselect it
-                if (clickedPrice === currentPrice) {
-                    const buttons = document.querySelectorAll('.price-buttons .btn');
-                    buttons.forEach(btn => {
-                        btn.classList.remove('btn-primary');
-                        btn.classList.add('btn-outline-secondary');
-                    });
-                    // Update "No minimum" button state
-                    document.getElementById('noMinimumBtn').classList.remove('btn-outline-secondary');
-                    document.getElementById('noMinimumBtn').classList.add('btn-primary');
-                } else {
-                    // Select the clicked price button
-                    const buttons = document.querySelectorAll('.price-buttons .btn');
-                    buttons.forEach(btn => {
-                        btn.classList.remove('btn-primary');
-                        btn.classList.add('btn-outline-secondary');
-                    });
-                    e.target.classList.remove('btn-outline-secondary');
-                    e.target.classList.add('btn-primary');
-                    // Update "No minimum" button state
-                    document.getElementById('noMinimumBtn').classList.remove('btn-primary');
-                    document.getElementById('noMinimumBtn').classList.add('btn-outline-secondary');
-                }
-                updateQuery();
-            }
-        });
+        // Add event listeners for price filter
+        document.getElementById('minPriceSlider').addEventListener('input', updatePriceFilter);
+        document.getElementById('maxPriceSlider').addEventListener('input', updatePriceFilter);
 
-        // Add event listener for "No minimum" button
-        document.getElementById('noMinimumBtn').addEventListener('click', function() {
-            const buttons = document.querySelectorAll('.price-buttons .btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-secondary');
-            });
-            // Update button state to show it's active
-            this.classList.remove('btn-outline-secondary');
-            this.classList.add('btn-primary');
+        function updatePriceFilter() {
+            const minPrice = parseInt(document.getElementById('minPriceSlider').value);
+            const maxPrice = parseInt(document.getElementById('maxPriceSlider').value);
+            
+            // Update displays
+            updatePriceDisplay('minPriceDisplay', minPrice);
+            updatePriceDisplay('maxPriceDisplay', maxPrice);
+            
             updateQuery();
-        });
+        }
+
+        function updatePriceDisplay(displayId, price) {
+            const display = document.getElementById(displayId);
+            display.textContent = formatPrice(price);
+        }
+
+        function formatPrice(price) {
+            if (price >= 1000000) {
+                return `$${(price / 1000000).toFixed(1)}M`;
+            } else if (price >= 1000) {
+                return `$${(price / 1000).toFixed(0)}K`;
+            } else {
+                return `$${price.toLocaleString()}`;
+            }
+        }
 
         // Add event listeners for highlight field checkboxes
         document.querySelectorAll('input[type="checkbox"][id^="highlight"]').forEach(checkbox => {
@@ -1006,9 +1000,9 @@
             const longitude = parseFloat(document.getElementById('longitude').value);
             const distance = parseFloat(document.getElementById('distance').value);
 
-            // Get rating filter parameters (only if stars are selected)
-            const minRating = getCurrentRating();
-            const maxRating = 5;
+            // Get price filter parameters
+            const minPrice = getCurrentPrice();
+            const maxPrice = getCurrentMaxPrice();
 
             if (!query) {
                 resultsDiv.innerHTML = '<div class="alert alert-warning">Please enter a search query</div>';
@@ -1019,7 +1013,7 @@
             loadingDiv.classList.remove('d-none');
             resultsDiv.innerHTML = '';
 
-            // Only include rating parameters if stars are selected
+            // Always include price parameters
             const requestBody = {
                 query: query,
                 weights: weights,
@@ -1038,16 +1032,12 @@
                     latitude: latitude,
                     longitude: longitude,
                     distance: distance
+                },
+                priceParams: {
+                    minPrice: minPrice,
+                    maxPrice: maxPrice
                 }
             };
-            
-            // Only add rating parameters if stars are selected
-            if (minRating > 0) {
-                requestBody.ratingParams = {
-                    minRating: minRating,
-                    maxRating: maxRating
-                };
-            }
 
             fetch('/search', {
                 method: 'POST',
@@ -1130,7 +1120,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="hotel-name">${result.title || 'Unknown'}</div>
+                                    <div class="property-name">${result.title || 'Unknown'}</div>
                                     <div class="field-value">
                                         <div class="field-label">Property Description:</div>
                                         <div class="description-container">${result['property-description'] || 'Unknown'}</div>
@@ -1292,7 +1282,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <div class="hotel-name">${result.title || 'Unknown'}</div>
+                                        <div class="property-name">${result.title || 'Unknown'}</div>
                                         <div class="field-value">
                                             <div class="field-label">Property Description:</div>
                                             <div class="description-container">${result['property-description'] || 'Unknown'}</div>
@@ -1520,11 +1510,11 @@
         }
 
         function getCurrentPrice() {
-            const selectedButton = document.querySelector('.price-buttons .btn-primary');
-            if (selectedButton) {
-                return parseInt(selectedButton.dataset.price);
-            }
-            return 0;
+            return parseInt(document.getElementById('minPriceSlider').value) || 0;
+        }
+
+        function getCurrentMaxPrice() {
+            return parseInt(document.getElementById('maxPriceSlider').value) || 10000000;
         }
 
         function resetWeights() {
@@ -1560,6 +1550,8 @@
         // Initialize page and update query with current values
         function initializePage() {
             console.log('Page initialized. Current weights:', getRoundedWeights());
+            // Initialize price filter displays
+            updatePriceFilter();
             // Update query if there's already a search query
             if (document.getElementById('searchQuery').value) {
                 updateQuery();
