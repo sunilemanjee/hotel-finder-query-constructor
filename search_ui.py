@@ -17,6 +17,7 @@ ES_URL = os.getenv('ES_URL')
 ES_API_KEY = os.getenv('ES_API_KEY')
 ES_USERNAME = os.getenv('ES_USERNAME', 'elastic')
 ES_PASSWORD = os.getenv('ES_PASSWORD')
+ES_INDEX = os.getenv('ES_INDEX', 'properties')
 USE_PASSWORD = os.getenv('USE_PASSWORD', 'false').lower() == 'true'
 
 # Initialize Elasticsearch client
@@ -39,7 +40,7 @@ app = Flask(__name__)
 
 # Available indices
 INDICES = [
-    'hotels'
+    ES_INDEX
 ]
 
 # At the top of the file, after imports
@@ -56,47 +57,52 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
     
     if reranking_params is None:
         reranking_params = {
-            'rank_window_size': 10
+            'rank_window_size': 5,
+            'reranker_field': 'meta_description'
         }
     
     # Default fields if none selected
     if selected_fields is None:
-        selected_fields = ["HotelName", "Description", "Address", "cityName", "HotelFacilities", "Attractions"]
+        selected_fields = ["title", "property-description", "property-features", "meta_description", "headings"]
 
     # Default highlight config if none provided
     if highlight_config is None:
         highlight_config = {
-            "HotelName": {
+            "title": {
                 "number_of_fragments": 1,
                 "order": "score"
             },
-            "Description": {
+            "property-description": {
                 "number_of_fragments": 2,
                 "order": "score"
             },
-            "Address": {
+            "property-features": {
                 "number_of_fragments": 1,
                 "order": "score"
             },
-            "HotelFacilities": {
+            "meta_description": {
                 "number_of_fragments": 1,
                 "order": "score"
             },
-            "semantic_description_e5": {
+            "headings": {
+                "number_of_fragments": 1,
+                "order": "score"
+            },
+            "body_content_e5": {
                 "type": "semantic",
                 "number_of_fragments": 2,
                 "order": "score"
             },
-            "semantic_description_elser": {
+            "body_content_semantic": {
                 "type": "semantic",
                 "number_of_fragments": 2,
                 "order": "score"
             }
         }
 
-    # Hotels search query
+    # Properties search query
     base_query = {
-        "fields": ["HotelName", "Description", "Address", "cityName", "HotelFacilities", "HotelRating", "Attractions"],
+        "fields": ["title", "property-description", "property-features", "meta_description", "headings", "listing-agent-info", "property-status", "number-of-bedrooms", "number-of-bathrooms", "square-footage", "home-price", "annual-tax", "maintenance-fee"],
         "size": size,
         "highlight": {
             "fields": highlight_config
@@ -127,21 +133,21 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                 }
             }
 
-    # Prepare rating filter if rating filtering is enabled
-    rating_filter = None
-    if rating_params:
-        min_rating = rating_params.get('minRating')
-        max_rating = rating_params.get('maxRating')
+    # Prepare price filter if price filtering is enabled
+    price_filter = None
+    if rating_params:  # Reusing rating_params for price filtering
+        min_price = rating_params.get('minRating')  # Reusing minRating for minPrice
+        max_price = rating_params.get('maxRating')  # Reusing maxRating for maxPrice
         
-        if min_rating is not None and max_rating is not None and min_rating > 0:
-            # Only apply filter if minimum rating is greater than 0
-            rating_filter = {
+        if min_price is not None and max_price is not None and min_price > 0:
+            # Only apply filter if minimum price is greater than 0
+            price_filter = {
                 "bool": {
                     "must": [
                         {
                             "range": {
-                                "HotelRating": {
-                                    "gte": min_rating
+                                "home-price": {
+                                    "gte": min_price
                                 }
                             }
                         }
@@ -151,19 +157,19 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
 
     # Combine filters if both are present
     combined_filter = None
-    if geo_filter and rating_filter:
+    if geo_filter and price_filter:
         combined_filter = {
             "bool": {
                 "must": [
                     geo_filter,
-                    rating_filter
+                    price_filter
                 ]
             }
         }
     elif geo_filter:
         combined_filter = geo_filter
-    elif rating_filter:
-        combined_filter = rating_filter
+    elif price_filter:
+        combined_filter = price_filter
 
     # Build retriever based on type
     if retriever_type == 'linear':
@@ -184,7 +190,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                     {
                         "retriever": create_standard_retriever({
                             "semantic": {
-                                "field": "semantic_description_e5",
+                                "field": "body_content_e5",
                                 "query": query_text
                             }
                         }),
@@ -205,7 +211,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                     {
                         "retriever": create_standard_retriever({
                             "semantic": {
-                                "field": "semantic_description_elser",
+                                "field": "body_content_semantic",
                                 "query": query_text
                             }
                         }),
@@ -239,13 +245,13 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                 "retrievers": [
                     create_standard_retriever({
                         "semantic": {
-                            "field": "semantic_description_e5",
+                            "field": "body_content_e5",
                             "query": query_text
                         }
                     }),
                     create_standard_retriever({
                         "semantic": {
-                            "field": "semantic_description_elser",
+                            "field": "body_content_semantic",
                             "query": query_text
                         }
                     }),
@@ -263,12 +269,13 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
 
     # Add reranking if enabled
     if enable_reranking:
+        reranker_field = reranking_params.get('reranker_field', 'property-description')
         base_query = {
             "_source": base_query.get("_source", False),
             "fields": base_query.get("fields", ["text"]),
             "retriever": {
                 "text_similarity_reranker": {
-                    "field": "Description",
+                    "field": reranker_field,
                     "inference_id": RERANKER_INFERENCE_ID,
                     "inference_text": query_text,
                     "rank_window_size": reranking_params['rank_window_size'],
@@ -306,9 +313,10 @@ def search():
     
     enable_reranking = data.get('enableReranking', False)
     reranking_params = data.get('rerankingParams', {
-        'rankWindowSize': 10
+        'rankWindowSize': 5,
+        'rerankerField': 'meta_description'
     })
-    selected_fields = data.get('selectedFields', ["HotelName", "Description", "Address", "cityName", "HotelFacilities", "Attractions"])
+    selected_fields = data.get('selectedFields', ["title", "property-description", "property-features", "meta_description", "headings"])
     highlight_config = data.get('highlightConfig', None)
     result_size = data.get('resultSize', 20)
     retriever_type = data.get('retrieverType', 'linear')
@@ -324,10 +332,11 @@ def search():
         search_query = get_search_query(
             query, 
             weights, 
-            'hotels',  # Always use hotels index
+            ES_INDEX,  # Use ES_INDEX
             enable_reranking,
             {
-                'rank_window_size': reranking_params['rankWindowSize']
+                'rank_window_size': reranking_params['rankWindowSize'],
+                'reranker_field': reranking_params['rerankerField']
             },
             selected_fields,
             highlight_config,
@@ -359,7 +368,7 @@ def search():
         print("DEBUG: Executing search query:", json.dumps(search_query, indent=2))
         
         response = es.search(
-            index='hotels',  # Always use hotels index
+            index=ES_INDEX,  # Use ES_INDEX
             body=search_query
         )
         
@@ -371,15 +380,21 @@ def search():
                 '_id': hit['_id']
             }
             
-            # Hotels result processing - using fields format
+            # Properties result processing - using fields format
             fields = hit.get('fields', {})
-            result['HotelName'] = fields.get('HotelName', ['N/A'])[0] if fields.get('HotelName') else 'N/A'
-            result['Description'] = fields.get('Description', ['N/A'])[0] if fields.get('Description') else 'N/A'
-            result['Address'] = fields.get('Address', ['N/A'])[0] if fields.get('Address') else 'N/A'
-            result['HotelFacilities'] = fields.get('HotelFacilities', ['N/A'])[0] if fields.get('HotelFacilities') else 'N/A'
-            result['HotelRating'] = fields.get('HotelRating', [0])[0] if fields.get('HotelRating') else 0
-            result['cityName'] = fields.get('cityName', ['N/A'])[0] if fields.get('cityName') else 'N/A'
-            result['Attractions'] = fields.get('Attractions', ['N/A'])[0] if fields.get('Attractions') else 'N/A'
+            result['title'] = fields.get('title', ['N/A'])[0] if fields.get('title') else 'N/A'
+            result['property-description'] = fields.get('property-description', ['N/A'])[0] if fields.get('property-description') else 'N/A'
+            result['property-features'] = fields.get('property-features', ['N/A'])[0] if fields.get('property-features') else 'N/A'
+            result['meta_description'] = fields.get('meta_description', ['N/A'])[0] if fields.get('meta_description') else 'N/A'
+            result['headings'] = fields.get('headings', ['N/A'])[0] if fields.get('headings') else 'N/A'
+            result['listing-agent-info'] = fields.get('listing-agent-info', ['N/A'])[0] if fields.get('listing-agent-info') else 'N/A'
+            result['property-status'] = fields.get('property-status', ['N/A'])[0] if fields.get('property-status') else 'N/A'
+            result['number-of-bedrooms'] = fields.get('number-of-bedrooms', [0])[0] if fields.get('number-of-bedrooms') else 0
+            result['number-of-bathrooms'] = fields.get('number-of-bathrooms', [0])[0] if fields.get('number-of-bathrooms') else 0
+            result['square-footage'] = fields.get('square-footage', [0])[0] if fields.get('square-footage') else 0
+            result['home-price'] = fields.get('home-price', [0])[0] if fields.get('home-price') else 0
+            result['annual-tax'] = fields.get('annual-tax', [0])[0] if fields.get('annual-tax') else 0
+            result['maintenance-fee'] = fields.get('maintenance-fee', [0])[0] if fields.get('maintenance-fee') else 0
             
             if 'highlight' in hit:
                 for field, fragments in hit['highlight'].items():
@@ -453,9 +468,9 @@ def execute_query():
         if not query:
             return jsonify({'error': 'No query provided'})
         
-        # Execute the query on hotels index
+        # Execute the query on properties index
         response = es.search(
-            index='hotels',  # Always use hotels index
+            index=ES_INDEX,  # Use ES_INDEX
             body=query
         )
         
@@ -467,15 +482,21 @@ def execute_query():
                 '_id': hit['_id']
             }
             
-            # Hotels result processing - using fields format
+            # Properties result processing - using fields format
             fields = hit.get('fields', {})
-            result['HotelName'] = fields.get('HotelName', ['N/A'])[0] if fields.get('HotelName') else 'N/A'
-            result['Description'] = fields.get('Description', ['N/A'])[0] if fields.get('Description') else 'N/A'
-            result['Address'] = fields.get('Address', ['N/A'])[0] if fields.get('Address') else 'N/A'
-            result['HotelFacilities'] = fields.get('HotelFacilities', ['N/A'])[0] if fields.get('HotelFacilities') else 'N/A'
-            result['HotelRating'] = fields.get('HotelRating', [0])[0] if fields.get('HotelRating') else 0
-            result['cityName'] = fields.get('cityName', ['N/A'])[0] if fields.get('cityName') else 'N/A'
-            result['Attractions'] = fields.get('Attractions', ['N/A'])[0] if fields.get('Attractions') else 'N/A'
+            result['title'] = fields.get('title', ['N/A'])[0] if fields.get('title') else 'N/A'
+            result['property-description'] = fields.get('property-description', ['N/A'])[0] if fields.get('property-description') else 'N/A'
+            result['property-features'] = fields.get('property-features', ['N/A'])[0] if fields.get('property-features') else 'N/A'
+            result['meta_description'] = fields.get('meta_description', ['N/A'])[0] if fields.get('meta_description') else 'N/A'
+            result['headings'] = fields.get('headings', ['N/A'])[0] if fields.get('headings') else 'N/A'
+            result['listing-agent-info'] = fields.get('listing-agent-info', ['N/A'])[0] if fields.get('listing-agent-info') else 'N/A'
+            result['property-status'] = fields.get('property-status', ['N/A'])[0] if fields.get('property-status') else 'N/A'
+            result['number-of-bedrooms'] = fields.get('number-of-bedrooms', [0])[0] if fields.get('number-of-bedrooms') else 0
+            result['number-of-bathrooms'] = fields.get('number-of-bathrooms', [0])[0] if fields.get('number-of-bathrooms') else 0
+            result['square-footage'] = fields.get('square-footage', [0])[0] if fields.get('square-footage') else 0
+            result['home-price'] = fields.get('home-price', [0])[0] if fields.get('home-price') else 0
+            result['annual-tax'] = fields.get('annual-tax', [0])[0] if fields.get('annual-tax') else 0
+            result['maintenance-fee'] = fields.get('maintenance-fee', [0])[0] if fields.get('maintenance-fee') else 0
             
             if 'highlight' in hit:
                 for field, fragments in hit['highlight'].items():

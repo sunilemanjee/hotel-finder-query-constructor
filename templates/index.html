@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Search Query Tuning</title>
+    <title>Home Search Query Tuning</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .result-card {
@@ -376,21 +376,23 @@
                 </div>
 
                 <div class="mt-4">
-                    <h6 class="mb-3">Star Rating Filter</h6>
+                    <h6 class="mb-3">Price Filter</h6>
                     <div class="mb-3">
-                        <label class="form-label">Minimum Rating</label>
+                        <label class="form-label">Minimum Price</label>
                         <div class="mb-2">
                             <button type="button" class="btn btn-outline-secondary btn-sm" id="noMinimumBtn">No minimum</button>
                         </div>
-                        <div class="rating-stars clickable-stars" id="ratingFilterStars">
-                            <span class="star" data-rating="1">☆</span>
-                            <span class="star" data-rating="2">☆</span>
-                            <span class="star" data-rating="3">☆</span>
-                            <span class="star" data-rating="4">☆</span>
-                            <span class="star" data-rating="5">☆</span>
+                        <div class="price-buttons" id="priceFilterButtons">
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="100000">$100K</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="200000">$200K</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="300000">$300K</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="400000">$400K</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="500000">$500K</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="750000">$750K</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" data-price="1000000">$1M</button>
                         </div>
                         <div class="form-text mt-1">
-                            <small class="text-muted">Click on stars to set minimum rating</small>
+                            <small class="text-muted">Click on price buttons to set minimum price</small>
                         </div>
                     </div>
                 </div>
@@ -398,39 +400,33 @@
                 <div class="mt-4">
                     <h6 class="mb-3">Text Match Fields</h6>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldHotelName" checked>
-                        <label class="form-check-label" for="fieldHotelName">
-                            Hotel Name
+                        <input class="form-check-input" type="checkbox" id="fieldTitle" checked>
+                        <label class="form-check-label" for="fieldTitle">
+                            Title
                         </label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldDescription" checked>
-                        <label class="form-check-label" for="fieldDescription">
-                            Description
+                        <input class="form-check-input" type="checkbox" id="fieldPropertyDescription" checked>
+                        <label class="form-check-label" for="fieldPropertyDescription">
+                            Property Description
                         </label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldAddress" checked>
-                        <label class="form-check-label" for="fieldAddress">
-                            Address
+                        <input class="form-check-input" type="checkbox" id="fieldPropertyFeatures" checked>
+                        <label class="form-check-label" for="fieldPropertyFeatures">
+                            Property Features
                         </label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldCityName" checked>
-                        <label class="form-check-label" for="fieldCityName">
-                            City Name
+                        <input class="form-check-input" type="checkbox" id="fieldMetaDescription" checked>
+                        <label class="form-check-label" for="fieldMetaDescription">
+                            Meta Description
                         </label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldHotelFacilities" checked>
-                        <label class="form-check-label" for="fieldHotelFacilities">
-                            Hotel Facilities
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldAttractions" checked>
-                        <label class="form-check-label" for="fieldAttractions">
-                            Attractions
+                        <input class="form-check-input" type="checkbox" id="fieldHeadings" checked>
+                        <label class="form-check-label" for="fieldHeadings">
+                            Headings
                         </label>
                     </div>
                 </div>
@@ -441,126 +437,147 @@
                     <h6 class="mb-3 text-primary fw-bold">Highlight Fields</h6>
                     <p class="text-muted small mb-3">Configure which fields to highlight in search results and their display options</p>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightHotelName">
-                        <label class="form-check-label" for="highlightHotelName">
-                            Hotel Name
+                        <input class="form-check-input" type="checkbox" id="highlightTitle">
+                        <label class="form-check-label" for="highlightTitle">
+                            Title
                         </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightHotelNameOptions">
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightTitleOptions">
                             <div class="row">
                                 <div class="col-6">
-                                    <label class="form-label small">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Order</label>
+                                    <label class="form-label">Order</label>
                                     <select class="form-select form-select-sm">
                                         <option value="score">Score</option>
-                                        <option value="position">Position</option>
+                                        <option value="none">None</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightDescription">
-                        <label class="form-check-label" for="highlightDescription">
-                            Description
+                        <input class="form-check-input" type="checkbox" id="highlightPropertyDescription">
+                        <label class="form-check-label" for="highlightPropertyDescription">
+                            Property Description
                         </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightDescriptionOptions">
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightPropertyDescriptionOptions">
                             <div class="row">
                                 <div class="col-6">
-                                    <label class="form-label small">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="10">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Order</label>
+                                    <label class="form-label">Order</label>
                                     <select class="form-select form-select-sm">
                                         <option value="score">Score</option>
-                                        <option value="position">Position</option>
+                                        <option value="none">None</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightAddress">
-                        <label class="form-check-label" for="highlightAddress">
-                            Address
+                        <input class="form-check-input" type="checkbox" id="highlightPropertyFeatures">
+                        <label class="form-check-label" for="highlightPropertyFeatures">
+                            Property Features
                         </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightAddressOptions">
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightPropertyFeaturesOptions">
                             <div class="row">
                                 <div class="col-6">
-                                    <label class="form-label small">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Order</label>
+                                    <label class="form-label">Order</label>
                                     <select class="form-select form-select-sm">
                                         <option value="score">Score</option>
-                                        <option value="position">Position</option>
+                                        <option value="none">None</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightHotelFacilities">
-                        <label class="form-check-label" for="highlightHotelFacilities">
-                            Hotel Facilities
+                        <input class="form-check-input" type="checkbox" id="highlightMetaDescription">
+                        <label class="form-check-label" for="highlightMetaDescription">
+                            Meta Description
                         </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightHotelFacilitiesOptions">
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightMetaDescriptionOptions">
                             <div class="row">
                                 <div class="col-6">
-                                    <label class="form-label small">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1" max="10">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Order</label>
+                                    <label class="form-label">Order</label>
                                     <select class="form-select form-select-sm">
                                         <option value="score">Score</option>
-                                        <option value="position">Position</option>
+                                        <option value="none">None</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightSemanticE5" checked>
-                        <label class="form-check-label" for="highlightSemanticE5">
-                            Semantic E5
+                        <input class="form-check-input" type="checkbox" id="highlightHeadings">
+                        <label class="form-check-label" for="highlightHeadings">
+                            Headings
                         </label>
-                        <div class="highlight-options ms-3 mt-1" id="highlightSemanticE5Options">
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightHeadingsOptions">
                             <div class="row">
                                 <div class="col-6">
-                                    <label class="form-label small">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="10">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Order</label>
+                                    <label class="form-label">Order</label>
                                     <select class="form-select form-select-sm">
                                         <option value="score">Score</option>
-                                        <option value="position">Position</option>
+                                        <option value="none">None</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightSemanticElser" checked>
-                        <label class="form-check-label" for="highlightSemanticElser">
-                            Semantic ELSER
+                        <input class="form-check-input" type="checkbox" id="highlightBodyContentE5">
+                        <label class="form-check-label" for="highlightBodyContentE5">
+                            Body Content E5
                         </label>
-                        <div class="highlight-options ms-3 mt-1" id="highlightSemanticElserOptions">
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightBodyContentE5Options">
                             <div class="row">
                                 <div class="col-6">
-                                    <label class="form-label small">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="10">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Order</label>
+                                    <label class="form-label">Order</label>
                                     <select class="form-select form-select-sm">
                                         <option value="score">Score</option>
-                                        <option value="position">Position</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="highlightBodyContentSemantic">
+                        <label class="form-check-label" for="highlightBodyContentSemantic">
+                            Body Content Semantic (ELSER)
+                        </label>
+                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightBodyContentSemanticOptions">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">Fragments</label>
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Order</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value="score">Score</option>
+                                        <option value="none">None</option>
                                     </select>
                                 </div>
                             </div>
@@ -569,6 +586,7 @@
                 </div>
 
                 <div class="mt-4">
+                    <h6 class="mb-3">Reranking</h6>
                     <div class="form-check mb-3">
                         <input class="form-check-input" type="checkbox" id="enableReranking">
                         <label class="form-check-label" for="enableReranking">
@@ -576,11 +594,31 @@
                         </label>
                     </div>
                     <div id="rerankingParams" class="mb-3 d-none">
-                        <div class="mb-2">
+                        <div class="mb-3">
+                            <label for="rerankerField" class="form-label">Reranker Field</label>
+                            <select class="form-select form-select-sm" id="rerankerField">
+                                <option value="meta_description">Meta Description</option>
+                                <option value="property-description">Property Description</option>
+                                <option value="title">Title</option>
+                                <option value="property-features">Property Features</option>
+                                <option value="headings">Headings</option>
+                                <option value="body_content">Body Content</option>
+                            </select>
+                            <div class="form-text">
+                                <small class="text-muted">Select which field to use for semantic reranking</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
                             <label for="rankWindowSize" class="form-label">Rank Window Size</label>
-                            <input type="number" class="form-control form-control-sm" id="rankWindowSize" value="10" min="1" max="100">
+                            <input type="number" class="form-control form-control-sm" id="rankWindowSize" value="5" min="1" max="100">
+                            <div class="form-text">
+                                <small class="text-muted">Number of top results to rerank (default: 5)</small>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="mt-4">
                     <button id="wakeElserButton" class="btn btn-warning w-100">Wake Inference Endpoints</button>
                 </div>
             </div>
@@ -697,7 +735,8 @@
             updateQuery();
         });
 
-        // Add event listeners for reranking parameters
+        // Add listeners for reranking parameters
+        document.getElementById('rerankerField').addEventListener('change', updateQuery);
         document.getElementById('rankWindowSize').addEventListener('change', updateQuery);
 
         // Add event listener for result size
@@ -728,35 +767,31 @@
         document.getElementById('longitude').addEventListener('input', updateQuery);
         document.getElementById('distance').addEventListener('input', updateQuery);
 
-        // Add event listeners for rating parameters
-        document.getElementById('ratingFilterStars').addEventListener('click', function(e) {
-            if (e.target.classList.contains('star')) {
-                const clickedRating = parseInt(e.target.dataset.rating);
-                const currentRating = getCurrentRating();
+        // Add event listeners for price parameters
+        document.getElementById('priceFilterButtons').addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn') && e.target.dataset.price) {
+                const clickedPrice = parseInt(e.target.dataset.price);
+                const currentPrice = getCurrentPrice();
                 
-                // If clicking the same star that's already selected, deselect it
-                if (clickedRating === currentRating) {
-                    const stars = document.querySelectorAll('.rating-stars.clickable-stars .star');
-                    stars.forEach(star => {
-                        star.textContent = '☆';
-                        star.classList.remove('filled-star');
+                // If clicking the same price that's already selected, deselect it
+                if (clickedPrice === currentPrice) {
+                    const buttons = document.querySelectorAll('.price-buttons .btn');
+                    buttons.forEach(btn => {
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-outline-secondary');
                     });
                     // Update "No minimum" button state
                     document.getElementById('noMinimumBtn').classList.remove('btn-outline-secondary');
                     document.getElementById('noMinimumBtn').classList.add('btn-primary');
                 } else {
-                    // Select up to the clicked star
-                    const stars = document.querySelectorAll('.rating-stars.clickable-stars .star');
-                    stars.forEach(star => {
-                        const starRating = parseInt(star.dataset.rating);
-                        if (starRating <= clickedRating) {
-                            star.textContent = '★';
-                            star.classList.add('filled-star');
-                        } else {
-                            star.textContent = '☆';
-                            star.classList.remove('filled-star');
-                        }
+                    // Select the clicked price button
+                    const buttons = document.querySelectorAll('.price-buttons .btn');
+                    buttons.forEach(btn => {
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-outline-secondary');
                     });
+                    e.target.classList.remove('btn-outline-secondary');
+                    e.target.classList.add('btn-primary');
                     // Update "No minimum" button state
                     document.getElementById('noMinimumBtn').classList.remove('btn-primary');
                     document.getElementById('noMinimumBtn').classList.add('btn-outline-secondary');
@@ -767,10 +802,10 @@
 
         // Add event listener for "No minimum" button
         document.getElementById('noMinimumBtn').addEventListener('click', function() {
-            const stars = document.querySelectorAll('.rating-stars.clickable-stars .star');
-            stars.forEach(star => {
-                star.textContent = '☆';
-                star.classList.remove('filled-star');
+            const buttons = document.querySelectorAll('.price-buttons .btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-secondary');
             });
             // Update button state to show it's active
             this.classList.remove('btn-outline-secondary');
@@ -827,6 +862,7 @@
                 console.log('ELSER weight specifically:', weights.elser);
                 
                 const enableReranking = document.getElementById('enableReranking').checked;
+                const rerankerField = document.getElementById('rerankerField').value;
                 const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
                 const selectedFields = getSelectedFields();
                 const highlightConfig = getHighlightConfig();
@@ -840,16 +876,17 @@
                 const longitude = parseFloat(document.getElementById('longitude').value);
                 const distance = parseFloat(document.getElementById('distance').value);
                 
-                // Get rating filter parameters (only if stars are selected)
-                const minRating = getCurrentRating();
-                const maxRating = 5;
+                // Get price filter parameters (only if price is selected)
+                const minPrice = getCurrentPrice();
+                const maxPrice = 10000000; // $10M max
                 
-                // Only include rating parameters if stars are selected
+                // Only include price parameters if price is selected
                 const requestBody = {
                     query: searchQuery,
                     weights: weights,
                     enableReranking: enableReranking,
                     rerankingParams: {
+                        rerankerField: rerankerField,
                         rankWindowSize: rankWindowSize
                     },
                     selectedFields: selectedFields,
@@ -865,11 +902,11 @@
                     }
                 };
                 
-                // Only add rating parameters if stars are selected
-                if (minRating > 0) {
+                // Only add price parameters if price is selected
+                if (minPrice > 0) {
                     requestBody.ratingParams = {
-                        minRating: minRating,
-                        maxRating: maxRating
+                        minRating: minPrice,
+                        maxRating: maxPrice
                     };
                 }
                 
@@ -955,6 +992,7 @@
             // Get weight values using rounded weights
             const weights = getRoundedWeights();
             const enableReranking = document.getElementById('enableReranking').checked;
+            const rerankerField = document.getElementById('rerankerField').value;
             const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
             const selectedFields = getSelectedFields();
             const highlightConfig = getHighlightConfig();
@@ -987,6 +1025,7 @@
                 weights: weights,
                 enableReranking: enableReranking,
                 rerankingParams: {
+                    rerankerField: rerankerField,
                     rankWindowSize: rankWindowSize
                 },
                 selectedFields: selectedFields,
@@ -1091,37 +1130,56 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="hotel-name">${result.HotelName || 'Unknown'}</div>
+                                    <div class="hotel-name">${result.title || 'Unknown'}</div>
                                     <div class="field-value">
-                                        <div class="field-label">Description:</div>
-                                        <div class="description-container">${result.Description || 'Unknown'}</div>
+                                        <div class="field-label">Property Description:</div>
+                                        <div class="description-container">${result['property-description'] || 'Unknown'}</div>
                                     </div>
                                     <div class="field-value">
-                                        <div class="field-label">Address:</div>
-                                        <div>${result.Address || 'Unknown'}</div>
+                                        <div class="field-label">Property Features:</div>
+                                        <div>${result['property-features'] || 'Unknown'}</div>
                                     </div>
                                     <div class="field-value">
-                                        <div class="field-label">City:</div>
-                                        <div>${result.cityName || 'Unknown'}</div>
+                                        <div class="field-label">Meta Description:</div>
+                                        <div>${result.meta_description || 'Unknown'}</div>
                                     </div>
                                     <div class="field-value">
-                                        <div class="field-label">Attractions:</div>
-                                        <div class="attractions-container">${result.Attractions || 'Unknown'}</div>
+                                        <div class="field-label">Headings:</div>
+                                        <div>${result.headings || 'Unknown'}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="field-value">
-                                        <div class="field-label">Rating:</div>
-                                        <div class="rating-stars">
-                                            ${result.HotelRating ? 
-                                                '★'.repeat(result.HotelRating) + '☆'.repeat(5 - result.HotelRating) : 
-                                                '☆☆☆☆☆'
-                                            }
-                                        </div>
+                                        <div class="field-label">Listing Agent Info:</div>
+                                        <div>${result['listing-agent-info'] || 'Unknown'}</div>
                                     </div>
                                     <div class="field-value">
-                                        <div class="field-label">Facilities:</div>
-                                        <div>${result.HotelFacilities || 'Unknown'}</div>
+                                        <div class="field-label">Property Status:</div>
+                                        <div>${result['property-status'] || 'Unknown'}</div>
+                                    </div>
+                                    <div class="field-value">
+                                        <div class="field-label">Bedrooms:</div>
+                                        <div>${result['number-of-bedrooms']}</div>
+                                    </div>
+                                    <div class="field-value">
+                                        <div class="field-label">Bathrooms:</div>
+                                        <div>${result['number-of-bathrooms']}</div>
+                                    </div>
+                                    <div class="field-value">
+                                        <div class="field-label">Square Footage:</div>
+                                        <div>${result['square-footage']}</div>
+                                    </div>
+                                    <div class="field-value">
+                                        <div class="field-label">Home Price:</div>
+                                        <div>${result['home-price']}</div>
+                                    </div>
+                                    <div class="field-value">
+                                        <div class="field-label">Annual Tax:</div>
+                                        <div>${result['annual-tax']}</div>
+                                    </div>
+                                    <div class="field-value">
+                                        <div class="field-label">Maintenance Fee:</div>
+                                        <div>${result['maintenance-fee']}</div>
                                     </div>
                                 </div>
                             </div>
@@ -1234,37 +1292,56 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <div class="hotel-name">${result.HotelName || 'Unknown'}</div>
+                                        <div class="hotel-name">${result.title || 'Unknown'}</div>
                                         <div class="field-value">
-                                            <div class="field-label">Description:</div>
-                                            <div class="description-container">${result.Description || 'Unknown'}</div>
+                                            <div class="field-label">Property Description:</div>
+                                            <div class="description-container">${result['property-description'] || 'Unknown'}</div>
                                         </div>
                                         <div class="field-value">
-                                            <div class="field-label">Address:</div>
-                                            <div>${result.Address || 'Unknown'}</div>
+                                            <div class="field-label">Property Features:</div>
+                                            <div>${result['property-features'] || 'Unknown'}</div>
                                         </div>
                                         <div class="field-value">
-                                            <div class="field-label">City:</div>
-                                            <div>${result.cityName || 'Unknown'}</div>
+                                            <div class="field-label">Meta Description:</div>
+                                            <div>${result.meta_description || 'Unknown'}</div>
                                         </div>
                                         <div class="field-value">
-                                            <div class="field-label">Attractions:</div>
-                                            <div class="attractions-container">${result.Attractions || 'Unknown'}</div>
+                                            <div class="field-label">Headings:</div>
+                                            <div>${result.headings || 'Unknown'}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="field-value">
-                                            <div class="field-label">Rating:</div>
-                                            <div class="rating-stars">
-                                                ${result.HotelRating ? 
-                                                    '★'.repeat(result.HotelRating) + '☆'.repeat(5 - result.HotelRating) : 
-                                                    '☆☆☆☆☆'
-                                                }
-                                            </div>
+                                            <div class="field-label">Listing Agent Info:</div>
+                                            <div>${result['listing-agent-info'] || 'Unknown'}</div>
                                         </div>
                                         <div class="field-value">
-                                            <div class="field-label">Facilities:</div>
-                                            <div>${result.HotelFacilities || 'Unknown'}</div>
+                                            <div class="field-label">Property Status:</div>
+                                            <div>${result['property-status'] || 'Unknown'}</div>
+                                        </div>
+                                        <div class="field-value">
+                                            <div class="field-label">Bedrooms:</div>
+                                            <div>${result['number-of-bedrooms']}</div>
+                                        </div>
+                                        <div class="field-value">
+                                            <div class="field-label">Bathrooms:</div>
+                                            <div>${result['number-of-bathrooms']}</div>
+                                        </div>
+                                        <div class="field-value">
+                                            <div class="field-label">Square Footage:</div>
+                                            <div>${result['square-footage']}</div>
+                                        </div>
+                                        <div class="field-value">
+                                            <div class="field-label">Home Price:</div>
+                                            <div>${result['home-price']}</div>
+                                        </div>
+                                        <div class="field-value">
+                                            <div class="field-label">Annual Tax:</div>
+                                            <div>${result['annual-tax']}</div>
+                                        </div>
+                                        <div class="field-value">
+                                            <div class="field-label">Maintenance Fee:</div>
+                                            <div>${result['maintenance-fee']}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1394,14 +1471,12 @@
 
         function getSelectedFields() {
             const fieldMappings = {
-                'fieldHotelName': 'HotelName',
-                'fieldDescription': 'Description',
-                'fieldAddress': 'Address',
-                'fieldCityName': 'cityName',
-                'fieldHotelFacilities': 'HotelFacilities',
-                'fieldAttractions': 'Attractions'
+                'fieldTitle': 'title',
+                'fieldPropertyDescription': 'property-description',
+                'fieldPropertyFeatures': 'property-features',
+                'fieldMetaDescription': 'meta_description',
+                'fieldHeadings': 'headings'
             };
-            
             const selectedFields = [];
             Object.keys(fieldMappings).forEach(checkboxId => {
                 if (document.getElementById(checkboxId).checked) {
@@ -1413,35 +1488,30 @@
 
         function getHighlightConfig() {
             const highlightMappings = {
-                'highlightHotelName': 'HotelName',
-                'highlightDescription': 'Description',
-                'highlightAddress': 'Address',
-                'highlightHotelFacilities': 'HotelFacilities',
-                'highlightSemanticE5': 'semantic_description_e5',
-                'highlightSemanticElser': 'semantic_description_elser'
+                'highlightTitle': 'title',
+                'highlightPropertyDescription': 'property-description',
+                'highlightPropertyFeatures': 'property-features',
+                'highlightMetaDescription': 'meta_description',
+                'highlightHeadings': 'headings',
+                'highlightBodyContentSemantic': 'body_content_semantic',
+                'highlightBodyContentE5': 'body_content_e5'
             };
-            
             const highlightConfig = {};
             Object.keys(highlightMappings).forEach(checkboxId => {
                 if (document.getElementById(checkboxId).checked) {
                     const fieldName = highlightMappings[checkboxId];
                     const optionsId = checkboxId + 'Options';
                     const optionsDiv = document.getElementById(optionsId);
-                    
                     if (optionsDiv) {
                         const fragmentsInput = optionsDiv.querySelector('input[type="number"]');
                         const orderSelect = optionsDiv.querySelector('select');
-                        
                         const config = {
                             number_of_fragments: parseInt(fragmentsInput.value),
                             order: orderSelect.value
                         };
-                        
-                        // Add semantic type for semantic fields
-                        if (fieldName === 'semantic_description_e5' || fieldName === 'semantic_description_elser') {
+                        if (fieldName === 'body_content_semantic' || fieldName === 'body_content_e5') {
                             config.type = 'semantic';
                         }
-                        
                         highlightConfig[fieldName] = config;
                     }
                 }
@@ -1449,20 +1519,12 @@
             return highlightConfig;
         }
 
-        function getCurrentRating() {
-            const filledStars = document.querySelectorAll('.rating-stars.clickable-stars .filled-star');
-            if (filledStars.length === 0) {
-                return 0;
+        function getCurrentPrice() {
+            const selectedButton = document.querySelector('.price-buttons .btn-primary');
+            if (selectedButton) {
+                return parseInt(selectedButton.dataset.price);
             }
-            // Get the highest rating from filled stars
-            let maxRating = 0;
-            filledStars.forEach(star => {
-                const rating = parseInt(star.dataset.rating);
-                if (rating > maxRating) {
-                    maxRating = rating;
-                }
-            });
-            return maxRating;
+            return 0;
         }
 
         function resetWeights() {
