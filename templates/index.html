@@ -321,21 +321,21 @@
                     </div>
                     <div class="weight-label">
                         <label for="ada002Weight">E5 Semantic Search</label>
-                        <span class="weight-value" id="ada002WeightValue">2.0</span>
+                        <span class="weight-value" id="ada002WeightValue">0.0</span>
                     </div>
-                    <input type="range" class="form-range" id="ada002Weight" min="0" max="5" step="0.1" value="2.0">
+                    <input type="range" class="form-range" id="ada002Weight" min="0" max="5" step="0.1" value="0.0">
                     
                     <div class="weight-label mt-3">
                         <label for="elserWeight">ELSER Semantic Search</label>
-                        <span class="weight-value" id="elserWeightValue">1.5</span>
+                        <span class="weight-value" id="elserWeightValue">0.0</span>
                     </div>
-                    <input type="range" class="form-range" id="elserWeight" min="0" max="5" step="0.1" value="1.5">
+                    <input type="range" class="form-range" id="elserWeight" min="0" max="5" step="0.1" value="0.0">
                     
                     <div class="weight-label mt-3">
                         <label for="textWeight">Text Match</label>
-                        <span class="weight-value" id="textWeightValue">1.0</span>
+                        <span class="weight-value" id="textWeightValue">0.0</span>
                     </div>
-                    <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="1.0">
+                    <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="0.0">
                     
                     <div class="mt-3">
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetWeights()">
@@ -456,7 +456,7 @@
                     </div>
                     <div class="form-check mb-2">
                         <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldTitle" checked>
+                            <input class="form-check-input" type="checkbox" id="fieldTitle">
                             <label class="form-check-label me-2" for="fieldTitle">
                                 Title
                             </label>
@@ -494,7 +494,7 @@
                     </div>
                     <div class="form-check mb-2">
                         <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldPropertyFeatures" checked>
+                            <input class="form-check-input" type="checkbox" id="fieldPropertyFeatures">
                             <label class="form-check-label me-2" for="fieldPropertyFeatures">
                                 Property Features
                             </label>
@@ -513,7 +513,7 @@
                     </div>
                     <div class="form-check mb-2">
                         <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldMetaDescription" checked>
+                            <input class="form-check-input" type="checkbox" id="fieldMetaDescription">
                             <label class="form-check-label me-2" for="fieldMetaDescription">
                                 Meta Description
                             </label>
@@ -532,7 +532,7 @@
                     </div>
                     <div class="form-check mb-2">
                         <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldHeadings" checked>
+                            <input class="form-check-input" type="checkbox" id="fieldHeadings">
                             <label class="form-check-label me-2" for="fieldHeadings">
                                 Headings
                             </label>
@@ -543,6 +543,25 @@
                                         <label class="form-check-label" for="fieldHeadingsBoostCheck">Boost</label>
                                     </div>
                                     <div class="boost-value d-none" id="fieldHeadingsBoostValue">
+                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="fieldBodyContent" checked>
+                            <label class="form-check-label me-2" for="fieldBodyContent">
+                                Body Content
+                            </label>
+                            <div class="field-boost ms-auto d-none" id="fieldBodyContentBoost">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input" type="checkbox" id="fieldBodyContentBoostCheck">
+                                        <label class="form-check-label" for="fieldBodyContentBoostCheck">Boost</label>
+                                    </div>
+                                    <div class="boost-value d-none" id="fieldBodyContentBoostValue">
                                         <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
                                     </div>
                                 </div>
@@ -1811,7 +1830,8 @@
                 'fieldPropertyDescription': 'property-description',
                 'fieldPropertyFeatures': 'property-features',
                 'fieldMetaDescription': 'meta_description',
-                'fieldHeadings': 'headings'
+                'fieldHeadings': 'headings',
+                'fieldBodyContent': 'body_content'
             };
             const selectedFields = [];
             Object.keys(fieldMappings).forEach(checkboxId => {
