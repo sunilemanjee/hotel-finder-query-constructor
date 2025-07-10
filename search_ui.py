@@ -289,6 +289,30 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
     # Add reranking if enabled
     if enable_reranking:
         reranker_field = reranking_params.get('reranker_field', 'meta_description')
+        
+        print(f"DEBUG: Using reranker field: {reranker_field}")
+        
+        # When reranking is enabled, use a simpler retriever structure similar to wake-elser
+        # Prepare standard retriever base with optional geo filter
+        def create_standard_retriever(query_part):
+            retriever = {
+                "standard": {
+                    "query": query_part
+                }
+            }
+            if combined_filter:
+                retriever["standard"]["filter"] = [combined_filter]
+            return retriever
+        
+        # Create a simple retriever for reranking (similar to wake-elser function)
+        simple_retriever = create_standard_retriever({
+            "multi_match": {
+                "query": query_text,
+                "fields": selected_fields,
+                "type": multi_match_type
+            }
+        })
+        
         base_query = {
             "_source": base_query.get("_source", False),
             "fields": base_query.get("fields", ["text"]),
@@ -298,7 +322,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                     "inference_id": RERANKER_INFERENCE_ID,
                     "inference_text": query_text,
                     "rank_window_size": reranking_params['rank_window_size'],
-                    "retriever": base_query["retriever"]
+                    "retriever": simple_retriever
                 }
             },
             "highlight": base_query["highlight"]
