@@ -56,7 +56,7 @@
             text-align: right;
         }
         .left-pane {
-            width: 300px;
+            width: 350px;
             position: fixed;
             left: 0;
             top: 0;
@@ -67,7 +67,7 @@
             border-right: 1px solid #dee2e6;
         }
         .right-pane {
-            margin-left: 300px;
+            margin-left: 350px;
             padding: 1.5rem;
             background-color: #f8f9fa;
             min-height: 100vh;
@@ -113,6 +113,16 @@
         }
         .field-value {
             margin-bottom: 0.75rem;
+        }
+        .field-boost {
+            min-width: 150px;
+        }
+        .field-boost .form-check {
+            margin-bottom: 0;
+        }
+        .field-boost .form-check-label {
+            font-size: 0.8rem;
+            margin-bottom: 0;
         }
         .property-name {
             font-size: 1.1rem;
@@ -269,6 +279,20 @@
         .clickable-stars .filled-star {
             color: #ffc107;
         }
+        .explanation-json {
+            white-space: pre-wrap; /* Preserve whitespace and break lines */
+            word-wrap: break-word; /* Break long words */
+            font-size: 0.85em;
+            line-height: 1.4;
+            color: #343a40;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1em;
+            margin-top: 0.5em;
+            max-height: 300px;
+            overflow: auto;
+        }
     </style>
 </head>
 <body>
@@ -342,6 +366,17 @@
                         <label for="resultSize" class="form-label">Number of Results</label>
                         <input type="number" class="form-control form-control-sm" id="resultSize" value="20" min="1" max="100">
                     </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enableExplain" role="switch">
+                            <label class="form-check-label" for="enableExplain">
+                                Enable Explain
+                            </label>
+                        </div>
+                        <div class="form-text">
+                            <small class="text-muted">Adds "explain": true to the query for detailed scoring information</small>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-4">
@@ -409,35 +444,115 @@
 
                 <div class="mt-4">
                     <h6 class="mb-3">Text Match Fields</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldTitle" checked>
-                        <label class="form-check-label" for="fieldTitle">
-                            Title
-                        </label>
+                    <div class="mb-3">
+                        <label for="multiMatchType" class="form-label">Multi-Match Type</label>
+                        <select class="form-select" id="multiMatchType">
+                            <option value="best_fields">Best Fields (default)</option>
+                            <option value="most_fields">Most Fields</option>
+                        </select>
+                        <div class="form-text" id="multiMatchDescription">
+                            <strong>Best Fields:</strong> Uses the score from the best matching field
+                        </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldPropertyDescription" checked>
-                        <label class="form-check-label" for="fieldPropertyDescription">
-                            Property Description
-                        </label>
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="fieldTitle" checked>
+                            <label class="form-check-label me-2" for="fieldTitle">
+                                Title
+                            </label>
+                            <div class="field-boost ms-auto d-none" id="fieldTitleBoost">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input" type="checkbox" id="fieldTitleBoostCheck">
+                                        <label class="form-check-label" for="fieldTitleBoostCheck">Boost</label>
+                                    </div>
+                                    <div class="boost-value d-none" id="fieldTitleBoostValue">
+                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldPropertyFeatures" checked>
-                        <label class="form-check-label" for="fieldPropertyFeatures">
-                            Property Features
-                        </label>
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="fieldPropertyDescription" checked>
+                            <label class="form-check-label me-2" for="fieldPropertyDescription">
+                                Property Description
+                            </label>
+                            <div class="field-boost ms-auto d-none" id="fieldPropertyDescriptionBoost">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input" type="checkbox" id="fieldPropertyDescriptionBoostCheck">
+                                        <label class="form-check-label" for="fieldPropertyDescriptionBoostCheck">Boost</label>
+                                    </div>
+                                    <div class="boost-value d-none" id="fieldPropertyDescriptionBoostValue">
+                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldMetaDescription" checked>
-                        <label class="form-check-label" for="fieldMetaDescription">
-                            Meta Description
-                        </label>
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="fieldPropertyFeatures" checked>
+                            <label class="form-check-label me-2" for="fieldPropertyFeatures">
+                                Property Features
+                            </label>
+                            <div class="field-boost ms-auto d-none" id="fieldPropertyFeaturesBoost">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input" type="checkbox" id="fieldPropertyFeaturesBoostCheck">
+                                        <label class="form-check-label" for="fieldPropertyFeaturesBoostCheck">Boost</label>
+                                    </div>
+                                    <div class="boost-value d-none" id="fieldPropertyFeaturesBoostValue">
+                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="fieldHeadings" checked>
-                        <label class="form-check-label" for="fieldHeadings">
-                            Headings
-                        </label>
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="fieldMetaDescription" checked>
+                            <label class="form-check-label me-2" for="fieldMetaDescription">
+                                Meta Description
+                            </label>
+                            <div class="field-boost ms-auto d-none" id="fieldMetaDescriptionBoost">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input" type="checkbox" id="fieldMetaDescriptionBoostCheck">
+                                        <label class="form-check-label" for="fieldMetaDescriptionBoostCheck">Boost</label>
+                                    </div>
+                                    <div class="boost-value d-none" id="fieldMetaDescriptionBoostValue">
+                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-2">
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="fieldHeadings" checked>
+                            <label class="form-check-label me-2" for="fieldHeadings">
+                                Headings
+                            </label>
+                            <div class="field-boost ms-auto d-none" id="fieldHeadingsBoost">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input" type="checkbox" id="fieldHeadingsBoostCheck">
+                                        <label class="form-check-label" for="fieldHeadingsBoostCheck">Boost</label>
+                                    </div>
+                                    <div class="boost-value d-none" id="fieldHeadingsBoostValue">
+                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetFieldBoosts()">
+                            Reset All Boosts
+                        </button>
                     </div>
                 </div>
 
@@ -635,7 +750,7 @@
 
             <!-- Right Column: Dynamic width -->
             <div class="right-pane">
-                <h1 class="mb-4">Hotel Search Query Tuning</h1>
+                <h1 class="mb-4">Home Search Query Tuning</h1>
                 
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -749,6 +864,12 @@
         document.getElementById('rerankerField').addEventListener('change', updateQuery);
         document.getElementById('rankWindowSize').addEventListener('change', updateQuery);
 
+        // Add event listener for multi-match type
+        document.getElementById('multiMatchType').addEventListener('change', function() {
+            updateMultiMatchDescription();
+            updateQuery();
+        });
+
         // Add event listener for result size
         document.getElementById('resultSize').addEventListener('change', function() {
             const resultSize = parseInt(this.value);
@@ -760,9 +881,28 @@
             updateQuery();
         });
 
-        // Add event listeners for field selection checkboxes
+        // Add event listener for explain checkbox
+        document.getElementById('enableExplain').addEventListener('change', updateQuery);
+
+        // Add listeners for field selection checkboxes
         document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
-            checkbox.addEventListener('change', updateQuery);
+            checkbox.addEventListener('change', function() {
+                toggleFieldBoost(this);
+                updateQuery();
+            });
+        });
+
+        // Add event listeners for boost checkboxes
+        document.querySelectorAll('input[type="checkbox"][id$="BoostCheck"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                toggleBoostValue(this);
+                updateQuery();
+            });
+        });
+
+        // Add event listeners for boost value inputs
+        document.querySelectorAll('.boost-value input[type="number"]').forEach(input => {
+            input.addEventListener('input', updateQuery);
         });
 
         // Add event listeners for location filter controls
@@ -859,10 +999,14 @@
                 const rerankerField = document.getElementById('rerankerField').value;
                 const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
                 const selectedFields = getSelectedFields();
+                const multiMatchType = document.getElementById('multiMatchType').value;
                 const highlightConfig = getHighlightConfig();
                 const resultSize = parseInt(document.getElementById('resultSize').value);
                 const retrieverType = document.getElementById('retrieverType').value;
                 const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
+                
+                // Get explain parameter
+                const enableExplain = document.getElementById('enableExplain').checked;
                 
                 // Get location filter parameters
                 const enableLocationFilter = document.getElementById('enableLocationFilter').checked;
@@ -884,10 +1028,12 @@
                         rankWindowSize: rankWindowSize
                     },
                     selectedFields: selectedFields,
+                    multiMatchType: multiMatchType,
                     highlightConfig: highlightConfig,
                     resultSize: resultSize,
                     retrieverType: retrieverType,
                     rrfRankWindowSize: rrfRankWindowSize,
+                    enableExplain: enableExplain,
                     enableLocationFilter: enableLocationFilter,
                     locationParams: {
                         latitude: latitude,
@@ -989,10 +1135,14 @@
             const rerankerField = document.getElementById('rerankerField').value;
             const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
             const selectedFields = getSelectedFields();
+            const multiMatchType = document.getElementById('multiMatchType').value;
             const highlightConfig = getHighlightConfig();
             const resultSize = parseInt(document.getElementById('resultSize').value);
             const retrieverType = document.getElementById('retrieverType').value;
             const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
+
+            // Get explain parameter
+            const enableExplain = document.getElementById('enableExplain').checked;
 
             // Get location filter parameters
             const enableLocationFilter = document.getElementById('enableLocationFilter').checked;
@@ -1023,10 +1173,12 @@
                     rankWindowSize: rankWindowSize
                 },
                 selectedFields: selectedFields,
+                multiMatchType: multiMatchType,
                 highlightConfig: highlightConfig,
                 resultSize: resultSize,
                 retrieverType: retrieverType,
                 rrfRankWindowSize: rrfRankWindowSize,
+                enableExplain: enableExplain,
                 enableLocationFilter: enableLocationFilter,
                 locationParams: {
                     latitude: latitude,
@@ -1173,6 +1325,15 @@
                                     </div>
                                 </div>
                             </div>
+                            ${result.explanation ? `
+                            <div class="mt-3">
+                                <button class="btn btn-outline-info btn-sm mb-2" type="button" onclick="toggleExplanationSummary('explanation-summary-${result._id}', 'explanation-json-${result._id}')">Show Raw JSON</button>
+                                <div id="explanation-summary-${result._id}" class="explanation-summary">
+                                    ${renderExplanationSummary(result.explanation, result._id)}
+                                </div>
+                                <pre id="explanation-json-${result._id}" class="explanation-json d-none" style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:4px; padding:1em; margin-top:0.5em; max-height:300px; overflow:auto;">${JSON.stringify(result.explanation, null, 2)}</pre>
+                            </div>
+                            ` : ''}
                             ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                         </div>
                     `;
@@ -1199,13 +1360,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Inference Endpoints Awakened');
+                    showTemporaryMessage('Inference Endpoints Awakened', 'success', 30000);
                 } else {
-                    alert('Error: ' + data.error);
+                    showTemporaryMessage('Error: ' + data.error, 'error');
                 }
             })
             .catch(error => {
-                alert('Error: ' + error.message);
+                showTemporaryMessage('Error: ' + error.message, 'error');
             })
             .finally(() => {
                 button.disabled = false;
@@ -1447,6 +1608,40 @@
             }, 3000);
         }
 
+        // Function to show temporary messages (replaces alert popups)
+        function showTemporaryMessage(message, type = 'info', duration = 3000) {
+            const alertDiv = document.createElement('div');
+            let alertClass = 'alert-info';
+            
+            if (type === 'success') {
+                alertClass = 'alert-success';
+            } else if (type === 'error') {
+                alertClass = 'alert-danger';
+            } else if (type === 'warning') {
+                alertClass = 'alert-warning';
+            }
+            
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after specified duration (default 3 seconds)
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, duration);
+        }
+
+        // Function to show notifications (used by copy functionality)
+        function showNotification(message, type = 'info') {
+            showTemporaryMessage(message, type);
+        }
+
         // Initialize RRF rank window size minimum value
         document.addEventListener('DOMContentLoaded', function() {
             const resultSize = parseInt(document.getElementById('resultSize').value);
@@ -1470,7 +1665,19 @@
             const selectedFields = [];
             Object.keys(fieldMappings).forEach(checkboxId => {
                 if (document.getElementById(checkboxId).checked) {
-                    selectedFields.push(fieldMappings[checkboxId]);
+                    const fieldName = fieldMappings[checkboxId];
+                    const boostCheckId = checkboxId + 'BoostCheck';
+                    const boostCheck = document.getElementById(boostCheckId);
+                    
+                    // Only add boost if the boost checkbox is checked
+                    if (boostCheck && boostCheck.checked) {
+                        const boostValueId = checkboxId + 'BoostValue';
+                        const boostInput = document.querySelector(`#${boostValueId} input[type="number"]`);
+                        const boostValue = boostInput ? parseFloat(boostInput.value) : 2.0;
+                        selectedFields.push(`${fieldName}^${boostValue}`);
+                    } else {
+                        selectedFields.push(fieldName);
+                    }
                 }
             });
             return selectedFields;
@@ -1525,6 +1732,42 @@
             });
             updateQuery();
         }
+
+        function toggleFieldBoost(checkbox) {
+            const boostId = checkbox.id + 'Boost';
+            const boostDiv = document.getElementById(boostId);
+            if (boostDiv) {
+                boostDiv.classList.toggle('d-none', !checkbox.checked);
+            }
+        }
+
+        function toggleBoostValue(checkbox) {
+            const boostValueId = checkbox.id.replace('Check', 'Value');
+            const boostValueDiv = document.getElementById(boostValueId);
+            if (boostValueDiv) {
+                boostValueDiv.classList.toggle('d-none', !checkbox.checked);
+            }
+        }
+
+        function resetFieldBoosts() {
+            // Uncheck all boost checkboxes
+            document.querySelectorAll('input[type="checkbox"][id$="BoostCheck"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            // Reset all boost values to 2.0
+            document.querySelectorAll('.boost-value input[type="number"]').forEach(input => {
+                input.value = '2.0';
+            });
+            // Hide all boost controls
+            document.querySelectorAll('.field-boost').forEach(div => {
+                div.classList.add('d-none');
+            });
+            // Hide all boost value inputs
+            document.querySelectorAll('.boost-value').forEach(div => {
+                div.classList.add('d-none');
+            });
+            updateQuery();
+        }
         
         // Function to get properly rounded weight values
         function getRoundedWeights() {
@@ -1547,11 +1790,41 @@
             }, 100);
         }
 
+        // Function to update multi-match description based on selection
+        function updateMultiMatchDescription() {
+            const multiMatchType = document.getElementById('multiMatchType').value;
+            const descriptionDiv = document.getElementById('multiMatchDescription');
+            
+            if (multiMatchType === 'best_fields') {
+                descriptionDiv.innerHTML = '<strong>Best Fields:</strong> Uses the score from the best matching field';
+            } else if (multiMatchType === 'most_fields') {
+                descriptionDiv.innerHTML = '<strong>Most Fields:</strong> Combines scores from all matching fields';
+            }
+        }
+
+        // Function to toggle explanation visibility
+        function toggleExplanation(explanationId) {
+            const explanationDiv = document.getElementById(explanationId);
+            if (explanationDiv) {
+                explanationDiv.classList.toggle('d-none');
+            }
+        }
+
         // Initialize page and update query with current values
         function initializePage() {
             console.log('Page initialized. Current weights:', getRoundedWeights());
             // Initialize price filter displays
             updatePriceFilter();
+            // Initialize multi-match description
+            updateMultiMatchDescription();
+            // Initialize field boost controls visibility
+            document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
+                toggleFieldBoost(checkbox);
+            });
+            // Initialize boost value visibility
+            document.querySelectorAll('input[type="checkbox"][id$="BoostCheck"]').forEach(checkbox => {
+                toggleBoostValue(checkbox);
+            });
             // Update query if there's already a search query
             if (document.getElementById('searchQuery').value) {
                 updateQuery();
@@ -1560,6 +1833,204 @@
         
         // Call initialization when page loads
         document.addEventListener('DOMContentLoaded', initializePage);
+
+        // Add this JS function after the result rendering logic:
+        function toggleExplanationSummary(summaryId, jsonId) {
+            const summaryDiv = document.getElementById(summaryId);
+            const jsonDiv = document.getElementById(jsonId);
+            if (summaryDiv && jsonDiv) {
+                summaryDiv.classList.toggle('d-none');
+                jsonDiv.classList.toggle('d-none');
+                // Change button text
+                const btn = event.target;
+                if (btn.innerText.includes('Raw')) {
+                    btn.innerText = 'Show Summary';
+                } else {
+                    btn.innerText = 'Show Raw JSON';
+                }
+            }
+        }
+
+        // Render summary table and bar chart for explanation
+        function renderExplanationSummary(explanation, id) {
+            // Try to extract weighted linear combination details
+            let rows = '';
+            let bars = '';
+            let total = null;
+            let weights = [];
+            let scores = [];
+            let contributions = [];
+            let found = false;
+            let componentDetails = [];
+            
+            // Find the weighted linear combination node
+            if (explanation.details && Array.isArray(explanation.details)) {
+                for (const detail of explanation.details) {
+                    if (detail.description && detail.description.startsWith('weighted linear combination score')) {
+                        // Extract weights and scores from description
+                        const scoreMatch = detail.description.match(/score: \[([\d.,\s]+)\].*normalized scores \[([\d.,\s]+)\] and weights \[([\d.,\s]+)\]/);
+                        if (scoreMatch) {
+                            total = parseFloat(scoreMatch[1].split(',')[0]);
+                            scores = scoreMatch[2].split(',').map(s => parseFloat(s.trim()));
+                            weights = scoreMatch[3].split(',').map(s => parseFloat(s.trim()));
+                            contributions = weights.map((w, i) => w * (scores[i] || 0));
+                            found = true;
+                            
+                            // Extract detailed breakdown for each component
+                            if (detail.details && Array.isArray(detail.details)) {
+                                componentDetails = detail.details.map((compDetail, index) => {
+                                    return extractComponentDetails(compDetail, index);
+                                });
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            if (found && weights.length > 0) {
+                // Define meaningful component names
+                const componentNames = ['E5 Semantic Search', 'Text Match', 'ELSER Semantic Search'];
+                
+                // Table rows with expandable details
+                rows = weights.map((w, i) => {
+                    const details = componentDetails[i] || {};
+                    const detailsHtml = renderComponentDetails(details, i);
+                    return `
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span>${componentNames[i] || `Component ${i+1}`}</span>
+                                    ${detailsHtml ? `<button class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleComponentDetails('details-${id}-${i}')" style="font-size:0.8em;">Details</button>` : ''}
+                                </div>
+                                ${detailsHtml ? `<div id="details-${id}-${i}" class="component-details d-none mt-2">${detailsHtml}</div>` : ''}
+                            </td>
+                            <td>${w}</td>
+                            <td>${(scores[i] || 0).toFixed(3)}</td>
+                            <td>${contributions[i].toFixed(3)}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // Bar chart
+                const maxContribution = Math.max(...contributions.map(Math.abs), 1);
+                bars = contributions.map((c, i) => `
+                    <div style="display:flex;align-items:center;margin-bottom:2px;">
+                        <span style="min-width:120px;font-size:0.9em;">${componentNames[i] || `Component ${i+1}`}</span>
+                        <div style="background:#0d6efd;height:18px;width:${Math.abs(c)/maxContribution*120}px;margin-left:8px;border-radius:3px;"></div>
+                        <span style="margin-left:8px;font-size:0.9em;">${c.toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+            
+            return found ? `
+                <div style="margin-bottom:0.5em;"><strong>Score breakdown (weighted sum):</strong></div>
+                <table class="table table-sm table-bordered" style="width:auto;max-width:100%;font-size:0.95em;">
+                    <thead><tr><th>Component</th><th>Weight</th><th>Norm. Score</th><th>Contribution</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                    <tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>${total !== null ? total.toFixed(3) : ''}</strong></td></tr></tfoot>
+                </table>
+                <div style="margin-bottom:0.5em;"><strong>Contribution Bar Chart:</strong></div>
+                <div>${bars}</div>
+            ` : '<div class="text-muted">No summary available for this explanation.</div>';
+        }
+
+        // Extract detailed information for each component
+        function extractComponentDetails(componentDetail, index) {
+            const details = {
+                description: componentDetail.description || '',
+                value: componentDetail.value || 0,
+                fieldMatches: [],
+                filters: [],
+                boosts: []
+            };
+            
+            // Recursively search for field matches, filters, and boosts
+            function searchDetails(node, path = '') {
+                if (!node) return;
+                
+                // Look for field matches
+                if (node.description && node.description.includes('weight(') && node.description.includes(')')) {
+                    const fieldMatch = node.description.match(/weight\(([^:]+):([^)]+)\)/);
+                    if (fieldMatch) {
+                        details.fieldMatches.push({
+                            field: fieldMatch[1],
+                            term: fieldMatch[2],
+                            boost: node.value || 1,
+                            description: node.description
+                        });
+                    }
+                }
+                
+                // Look for filters
+                if (node.description && (node.description.includes('filter') || node.description.includes('range'))) {
+                    details.filters.push({
+                        description: node.description,
+                        value: node.value
+                    });
+                }
+                
+                // Look for boosts
+                if (node.description && node.description.includes('boost')) {
+                    details.boosts.push({
+                        description: node.description,
+                        value: node.value
+                    });
+                }
+                
+                // Recursively search child details
+                if (node.details && Array.isArray(node.details)) {
+                    node.details.forEach((child, i) => {
+                        searchDetails(child, `${path}.${i}`);
+                    });
+                }
+            }
+            
+            searchDetails(componentDetail);
+            return details;
+        }
+
+        // Render detailed breakdown for a component
+        function renderComponentDetails(details, index) {
+            let html = '';
+            
+            if (details.fieldMatches && details.fieldMatches.length > 0) {
+                html += '<div class="mb-2"><strong>Field Matches:</strong></div>';
+                html += '<ul class="list-unstyled ms-3" style="font-size:0.9em;">';
+                details.fieldMatches.forEach(match => {
+                    html += `<li>• <strong>${match.field}</strong>: "${match.term}" (boost: ${match.boost})</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            if (details.filters && details.filters.length > 0) {
+                html += '<div class="mb-2"><strong>Filters Applied:</strong></div>';
+                html += '<ul class="list-unstyled ms-3" style="font-size:0.9em;">';
+                details.filters.forEach(filter => {
+                    html += `<li>• ${filter.description}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            if (details.boosts && details.boosts.length > 0) {
+                html += '<div class="mb-2"><strong>Boosts:</strong></div>';
+                html += '<ul class="list-unstyled ms-3" style="font-size:0.9em;">';
+                details.boosts.forEach(boost => {
+                    html += `<li>• ${boost.description}: ${boost.value}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            return html || '<div class="text-muted">No detailed breakdown available</div>';
+        }
+
+        // Toggle component details visibility
+        function toggleComponentDetails(detailsId) {
+            const detailsDiv = document.getElementById(detailsId);
+            if (detailsDiv) {
+                detailsDiv.classList.toggle('d-none');
+            }
+        }
     </script>
 </body>
 </html> 

@@ -48,7 +48,7 @@ ELSER_INFERENCE_ID = os.environ.get("ELSER_INFERENCE_ID", ".elser-2-elasticsearc
 E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elasticsearch")
 RERANKER_INFERENCE_ID = os.environ.get("RERANKER_INFERENCE_ID", ".rerank-v1-elasticsearch")
 
-def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, price_params=None):
+def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, price_params=None, multi_match_type='best_fields', enable_explain=False):
     print("DEBUG: get_search_query called with weights:", weights)
     print("DEBUG: weights type:", type(weights))
     print("DEBUG: individual weight values - ada002:", weights.get('ada002'), "type:", type(weights.get('ada002')))
@@ -108,6 +108,10 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
             "fields": highlight_config
         }
     }
+    
+    # Add explain parameter if enabled
+    if enable_explain:
+        base_query["explain"] = True
 
     # Prepare geo filter if location filtering is enabled
     geo_filter = None
@@ -210,7 +214,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                             "multi_match": {
                                 "query": query_text,
                                 "fields": selected_fields,
-                                "type": "best_fields"
+                                "type": multi_match_type
                             }
                         }),
                         "weight": weights['text'],
@@ -267,7 +271,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                         "multi_match": {
                             "query": query_text,
                             "fields": selected_fields,
-                            "type": "best_fields"
+                            "type": multi_match_type
                         }
                     })
                 ],
@@ -325,6 +329,7 @@ def search():
         'rerankerField': 'meta_description'
     })
     selected_fields = data.get('selectedFields', ["title", "property-description", "property-features", "meta_description", "headings"])
+    multi_match_type = data.get('multiMatchType', 'best_fields')
     highlight_config = data.get('highlightConfig', None)
     result_size = data.get('resultSize', 20)
     retriever_type = data.get('retrieverType', 'linear')
@@ -332,6 +337,7 @@ def search():
     enable_location_filter = data.get('enableLocationFilter', False)
     location_params = data.get('locationParams', None)
     price_params = data.get('priceParams', None)
+    enable_explain = data.get('enableExplain', False)
     
     if not query:
         return jsonify({'error': 'Please enter a search query'})
@@ -353,7 +359,9 @@ def search():
             rrf_rank_window_size,
             enable_location_filter,
             location_params,
-            price_params
+            price_params,
+            multi_match_type,
+            enable_explain
         )
         
         # Debug logging for the final query weights
@@ -407,6 +415,10 @@ def search():
             if 'highlight' in hit:
                 for field, fragments in hit['highlight'].items():
                     result['highlights'].extend(fragments)
+            
+            # Add explanation if available
+            if '_explanation' in hit:
+                result['explanation'] = hit['_explanation']
             
             results.append(result)
         
