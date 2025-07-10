@@ -5,6 +5,7 @@ import os
 import json
 import warnings
 from urllib3.exceptions import InsecureRequestWarning
+import requests
 
 # Suppress the SSL warning for unverified HTTPS requests
 warnings.filterwarnings('ignore', category=InsecureRequestWarning)
@@ -19,6 +20,12 @@ ES_USERNAME = os.getenv('ES_USERNAME', 'elastic')
 ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_INDEX = os.getenv('ES_INDEX', 'properties')
 USE_PASSWORD = os.getenv('USE_PASSWORD', 'false').lower() == 'true'
+
+# LLM/Azure OpenAI configuration
+OPENAI_ENDPOINT = os.getenv('OPENAI_ENDPOINT')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_MODEL = os.getenv('OPENAI_MODEL')
+OPENAI_API_VERSION = os.getenv('OPENAI_API_VERSION')
 
 # Initialize Elasticsearch client
 if USE_PASSWORD:
@@ -656,6 +663,68 @@ def execute_query():
         
     except Exception as e:
         return jsonify({'error': str(e)})
+
+@app.route('/ai-summary-chat', methods=['POST'])
+def ai_summary_chat():
+    try:
+        data = request.get_json()
+        explain = data.get('explain')
+        messages = data.get('messages', [])  # List of {role, content}
+        search_query = data.get('search_query', '')  # Add search query parameter
+        if not explain:
+            return jsonify({'error': 'Missing explain data'}), 400
+        if not OPENAI_ENDPOINT or not OPENAI_API_KEY or not OPENAI_MODEL or not OPENAI_API_VERSION:
+            return jsonify({'error': 'LLM credentials not configured'}), 500
+
+        # Prepare system prompt and user messages
+        system_prompt = (
+            "You are an AI assistant that summarizes and explains Elasticsearch 'explain' JSON for search results. "
+            "Provide clear, user-friendly explanations for non-technical users. "
+            "If the user asks follow-up questions, answer them based on the explain JSON and previous context. "
+            "When summarizing, keep your response under 80 words. "
+            "Focus on explaining which specific document fields (like title, property-description, meta_description, headings, etc.) contributed most to the score. "
+            "Avoid technical terms like 'weighted linear combination' or 'embeddings'. Instead, explain what content matched and why it was relevant. "
+            f"The original search query was: '{search_query}'. Use this context to provide better guidance when users ask about improving their search. "
+            "IMPORTANT: The user has access to a search tuning interface with these capabilities: "
+            "1. Weight controls for three search components: E5 Semantic Search (0-5), ELSER Semantic Search (0-5), and Text Match (0-5) "
+            "2. Field boost options for: title, property-description, property-features, meta_description, and headings (with customizable boost values) "
+            "3. Retriever types: Linear (uses weights) and RRF (Reciprocal Rank Fusion, no weights) "
+            "4. Location filtering by coordinates and distance "
+            "5. Price range filtering "
+            "6. Multi-match type selection (best_fields vs most_fields) "
+            "7. Result size adjustment (1-100) "
+            "When users ask about improving search results, provide specific recommendations using these UI controls. "
+            "For example: 'Try increasing the Text Match weight to 2.0 and adding a boost of 3.0 to the title field' or 'Switch to Linear retriever and increase E5 Semantic Search weight to 3.0'."
+        )
+        # First message: summary request
+        if not messages:
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Explain this search result in user-friendly terms (max 80 words). Focus on which specific document fields (title, description, features, etc.) contributed most to the score and why they matched the search query '{search_query}': {json.dumps(explain)}"}
+            ]
+        else:
+            # Always prepend system prompt
+            messages = [{"role": "system", "content": system_prompt}] + messages
+
+        # Azure OpenAI API call
+        url = f"{OPENAI_ENDPOINT}/openai/deployments/{OPENAI_MODEL}/chat/completions?api-version={OPENAI_API_VERSION}"
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": OPENAI_API_KEY
+        }
+        payload = {
+            "messages": messages,
+            "max_tokens": 512,
+            "temperature": 0.3
+        }
+        resp = requests.post(url, headers=headers, json=payload, timeout=30)
+        if resp.status_code != 200:
+            return jsonify({'error': f'LLM API error: {resp.status_code} {resp.text}'}), 500
+        result = resp.json()
+        ai_message = result['choices'][0]['message']['content'] if 'choices' in result and result['choices'] else ''
+        return jsonify({'ai_message': ai_message})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001) 
