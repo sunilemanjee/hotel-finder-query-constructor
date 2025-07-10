@@ -204,10 +204,3 @@ This project includes Docker support for easy deployment:
 - **run-container.sh**: Helper script for building and running
 - **README-Docker.md**: Detailed Docker documentation
 
-## License
-
-[Your License Here]
-
-## Contributing
-
-[Your Contributing Guidelines Here] 
