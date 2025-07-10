@@ -14,6 +14,12 @@ This project provides a web-based interface for performing hybrid searches acros
   - ELSER Semantic Search
   - Text Match
 
+- **AI Summary Chat**: Intelligent explanations of search results with:
+  - 🤖 "Help me understand" button for each result with explain data
+  - Resizable chat pane for follow-up questions
+  - UI-aware recommendations for improving search performance
+  - Context-aware guidance based on your search query
+
 - Real-time search results with highlighting
 - Modern, responsive UI built with Bootstrap
 - Query visualization for debugging
@@ -27,6 +33,10 @@ This project provides a web-based interface for performing hybrid searches acros
   - Hotel information (name, description, address, etc.)
   - Semantic embeddings (`semantic_description_e5`, `semantic_description_elser`)
   - Combined fields for reranking
+- **Azure OpenAI account** (for AI Summary Chat feature):
+  - OpenAI endpoint URL
+  - API key
+  - Model deployment (e.g., gpt-4o-global)
 
 ## Quick Start with Docker (Recommended)
 
@@ -42,11 +52,17 @@ cd hotel-finder-query-constructor
 ```bash
 cp variables.env.template variables.env
 ```
-Edit `variables.env` with your Elasticsearch configuration:
+Edit `variables.env` with your Elasticsearch and OpenAI configuration:
 ```env
 ES_URL=https://your-cluster.region.elastic.co:9243
 ES_API_KEY=your-api-key-here
 ELSER_INFERENCE_ID=.elser-2-elasticsearch
+
+# OpenAI/Azure Configuration for AI Summary Chat
+OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+OPENAI_API_KEY=your-azure-openai-api-key-here
+OPENAI_MODEL=gpt-4o-global
+OPENAI_API_VERSION=2025-01-01-preview
 ```
 
 3. **Run the containerized application:**
@@ -69,14 +85,21 @@ git clone https://github.com/yourusername/hotel-finder-query-constructor.git
 cd hotel-finder-query-constructor
 ```
 
-2. **Create a `variables.env` file with your Elasticsearch configuration:**
+2. **Create a `variables.env` file with your Elasticsearch and OpenAI configuration:**
 ```bash
 cat > variables.env << EOL
 ES_URL=your_elasticsearch_url
 ES_API_KEY=your_elasticsearch_api_key
+ELSER_INFERENCE_ID=.elser-2-elasticsearch
+
+# OpenAI/Azure Configuration for AI Summary Chat
+OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+OPENAI_API_KEY=your-azure-openai-api-key-here
+OPENAI_MODEL=gpt-4o-global
+OPENAI_API_VERSION=2025-01-01-preview
 EOL
 ```
-Replace `your_elasticsearch_url` and `your_elasticsearch_api_key` with your actual Elasticsearch credentials.
+Replace the placeholder values with your actual credentials.
 
 > **Note:** The `variables.env` file contains sensitive information and should not be committed to version control. It is automatically added to `.gitignore`.
 
@@ -134,6 +157,27 @@ python search_ui.py
 5. View the results with highlighted matches
 6. Click "Show Generated Query" to see the Elasticsearch query structure
 
+### AI Summary Chat Feature
+
+For results with explain data enabled:
+
+1. **Click "🤖 Help me understand"** next to any result to open the AI chat pane
+2. **Read the AI summary** explaining which document fields contributed most to the score
+3. **Ask follow-up questions** like:
+   - "How can I make the title field more important?"
+   - "What weights should I adjust to improve this result?"
+   - "Why did this result score higher than others?"
+4. **Get UI-specific recommendations** based on the available tuning controls
+5. **Resize the chat pane** by dragging the handle on the left edge
+6. **Close the chat** when done to clear the session
+
+The AI assistant understands all UI capabilities and provides actionable recommendations for:
+- Weight adjustments (E5, ELSER, Text Match)
+- Field boosts (title, description, features, etc.)
+- Retriever type selection (Linear vs RRF)
+- Location and price filtering
+- Multi-match type configuration
+
 ## Search Fields
 
 The search covers the following hotel fields:
@@ -148,8 +192,8 @@ The search covers the following hotel fields:
 
 The project consists of two main components:
 
-1. `search_ui.py`: Flask application handling the backend logic
-2. `templates/index.html`: Frontend interface with Bootstrap styling
+1. `search_ui.py`: Flask application handling the backend logic and AI chat integration
+2. `templates/index.html`: Frontend interface with Bootstrap styling and resizable chat pane
 
 ## Containerization
 
