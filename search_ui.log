@@ -1,0 +1,55 @@
+2025-07-16 11:23:46,967 - WARNING -  * Debugger is active!
+2025-07-16 11:23:46,996 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:23:53,075 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:23:53,391 - WARNING -  * Debugger is active!
+2025-07-16 11:23:53,405 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:23:58,452 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:23:58,774 - WARNING -  * Debugger is active!
+2025-07-16 11:23:58,797 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:24:04,869 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:24:05,148 - WARNING -  * Debugger is active!
+2025-07-16 11:24:05,199 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:24:12,286 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:24:12,600 - WARNING -  * Debugger is active!
+2025-07-16 11:24:12,624 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:24:21,730 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:24:22,039 - WARNING -  * Debugger is active!
+2025-07-16 11:24:22,059 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:24:36,204 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:24:36,514 - WARNING -  * Debugger is active!
+2025-07-16 11:24:36,539 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:24:44,616 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:24:44,897 - WARNING -  * Debugger is active!
+2025-07-16 11:24:44,906 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:24:59,046 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:24:59,463 - WARNING -  * Debugger is active!
+2025-07-16 11:24:59,483 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:08,575 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:08,862 - WARNING -  * Debugger is active!
+2025-07-16 11:25:08,895 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:14,957 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:15,263 - WARNING -  * Debugger is active!
+2025-07-16 11:25:15,282 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:25,390 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:25,681 - WARNING -  * Debugger is active!
+2025-07-16 11:25:25,713 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:32,783 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:33,079 - WARNING -  * Debugger is active!
+2025-07-16 11:25:33,119 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:37,162 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:37,431 - WARNING -  * Debugger is active!
+2025-07-16 11:25:37,449 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:48,568 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:48,862 - WARNING -  * Debugger is active!
+2025-07-16 11:25:48,870 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:25:57,980 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:25:58,282 - WARNING -  * Debugger is active!
+2025-07-16 11:25:58,328 - INFO -  * Debugger PIN: 112-803-709
+2025-07-16 11:26:09,473 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-07-16 11:26:09,745 - INFO - Starting Hotel Finder Search UI...
+2025-07-16 11:26:09,745 - INFO - Elasticsearch URL: https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443
+2025-07-16 11:26:09,745 - INFO - Elasticsearch Index: properties_instruqt
+2025-07-16 11:26:09,745 - INFO - Using password auth: False
+2025-07-16 11:26:09,745 - INFO - Azure OpenAI configured: https://sa-openai.openai.azure.com/
+2025-07-16 11:26:09,766 - WARNING -  * Debugger is active!
+2025-07-16 11:26:09,791 - INFO -  * Debugger PIN: 112-803-709

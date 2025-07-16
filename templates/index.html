@@ -1861,7 +1861,7 @@
                 'highlightPropertyFeatures': 'property-features',
                 'highlightMetaDescription': 'meta_description',
                 'highlightHeadings': 'headings',
-                'highlightBodyContentSemantic': 'body_content_semantic',
+                'highlightBodyContentSemantic': 'body_content_elser',
                 'highlightBodyContentE5': 'body_content_e5'
             };
             const highlightConfig = {};
@@ -1877,7 +1877,7 @@
                             number_of_fragments: parseInt(fragmentsInput.value),
                             order: orderSelect.value
                         };
-                        if (fieldName === 'body_content_semantic' || fieldName === 'body_content_e5') {
+                        if (fieldName === 'body_content_elser' || fieldName === 'body_content_e5') {
                             config.type = 'semantic';
                         }
                         highlightConfig[fieldName] = config;

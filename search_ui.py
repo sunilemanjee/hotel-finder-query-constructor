@@ -6,9 +6,22 @@ import json
 import warnings
 from urllib3.exceptions import InsecureRequestWarning
 import requests
+import logging
+from datetime import datetime
 
 # Suppress the SSL warning for unverified HTTPS requests
 warnings.filterwarnings('ignore', category=InsecureRequestWarning)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler('search_ui.log')  # File output
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv('variables.env')
@@ -32,14 +45,12 @@ if USE_PASSWORD:
     es = Elasticsearch(
         ES_URL,
         basic_auth=(ES_USERNAME, ES_PASSWORD),
-        verify_certs=False,
         request_timeout=300
     )
 else:
     es = Elasticsearch(
         ES_URL,
         api_key=ES_API_KEY,
-        verify_certs=False,
         request_timeout=300
     )
 
@@ -56,11 +67,9 @@ E5_INFERENCE_ID = os.environ.get("E5_INFERENCE_ID", ".multilingual-e5-small-elas
 RERANKER_INFERENCE_ID = os.environ.get("RERANKER_INFERENCE_ID", ".rerank-v1-elasticsearch")
 
 def get_search_query(query_text, weights, index, enable_reranking=False, reranking_params=None, selected_fields=None, highlight_config=None, size=20, retriever_type='linear', rrf_rank_window_size=20, enable_location_filter=False, location_params=None, price_params=None, multi_match_type='best_fields', enable_explain=False):
-    print("DEBUG: get_search_query called with weights:", weights)
-    print("DEBUG: weights type:", type(weights))
-    print("DEBUG: individual weight values - ada002:", weights.get('ada002'), "type:", type(weights.get('ada002')))
-    print("DEBUG: individual weight values - elser:", weights.get('elser'), "type:", type(weights.get('elser')))
-    print("DEBUG: individual weight values - text:", weights.get('text'), "type:", type(weights.get('text')))
+    logger.info(f"Building search query for: '{query_text}' with retriever_type: {retriever_type}")
+    logger.debug(f"Weights configuration: {weights}")
+    logger.debug(f"Weight types - ada002: {type(weights.get('ada002'))}, elser: {type(weights.get('elser'))}, text: {type(weights.get('text'))}")
     
     if reranking_params is None:
         reranking_params = {
@@ -100,7 +109,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                 "number_of_fragments": 2,
                 "order": "score"
             },
-            "body_content_semantic": {
+            "body_content_elser": {
                 "type": "semantic",
                 "number_of_fragments": 2,
                 "order": "score"
@@ -230,7 +239,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                     {
                         "retriever": create_standard_retriever({
                             "semantic": {
-                                "field": "body_content_semantic",
+                                "field": "body_content_elser",
                                 "query": query_text
                             }
                         }),
@@ -242,11 +251,11 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
             }
         }
         
-        # Debug: Print the actual weights being used in the query
-        print("DEBUG: Final retriever weights in query:")
-        print("  - E5 (ada002):", base_query["retriever"]["linear"]["retrievers"][0]["weight"])
-        print("  - Text (text):", base_query["retriever"]["linear"]["retrievers"][1]["weight"])
-        print("  - ELSER (elser):", base_query["retriever"]["linear"]["retrievers"][2]["weight"])
+        # Log the actual weights being used in the query
+        logger.info("Linear retriever weights configured:")
+        logger.info(f"  - E5 (ada002): {base_query['retriever']['linear']['retrievers'][0]['weight']}")
+        logger.info(f"  - Text (text): {base_query['retriever']['linear']['retrievers'][1]['weight']}")
+        logger.info(f"  - ELSER (elser): {base_query['retriever']['linear']['retrievers'][2]['weight']}")
     elif retriever_type == 'rrf':
         # Prepare standard retriever base with optional geo filter
         def create_standard_retriever(query_part):
@@ -270,7 +279,7 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
                     }),
                     create_standard_retriever({
                         "semantic": {
-                            "field": "body_content_semantic",
+                            "field": "body_content_elser",
                             "query": query_text
                         }
                     }),
@@ -290,7 +299,15 @@ def get_search_query(query_text, weights, index, enable_reranking=False, reranki
     if enable_reranking:
         reranker_field = reranking_params.get('reranker_field', 'meta_description')
         
-        print(f"DEBUG: Using reranker field: {reranker_field}")
+        logger.info(f"Reranking enabled with field: {reranker_field}")
+        
+        # Validate that the reranker field is in the selected fields
+        if reranker_field not in selected_fields:
+            logger.warning(f"Reranker field '{reranker_field}' not in selected fields: {selected_fields}")
+            # Add it to selected fields to ensure it's available
+            if reranker_field not in selected_fields:
+                selected_fields.append(reranker_field)
+                logger.info(f"Added '{reranker_field}' to selected fields")
         
         # When reranking is enabled, use a simpler retriever structure similar to wake-elser
         # Prepare standard retriever base with optional geo filter
@@ -348,11 +365,11 @@ def search():
             'elser': 1.5,
             'text': 1.0
         }
-        print("DEBUG: Using default weights:", weights)
+        logger.info(f"Using default weights: {weights}")
     else:
         # Use the weights exactly as provided, even if they are 0
         weights = weights_data
-        print("DEBUG: Received weights from frontend:", weights)
+        logger.info(f"Received weights from frontend: {weights}")
     
     enable_reranking = data.get('enableReranking', False)
     reranking_params = data.get('rerankingParams', {
@@ -395,29 +412,35 @@ def search():
             enable_explain
         )
         
-        # Debug logging for the final query weights
+        # Log the final query configuration
         if retriever_type == 'linear' and 'retriever' in search_query and 'linear' in search_query['retriever']:
             retrievers = search_query['retriever']['linear']['retrievers']
-            print("DEBUG: Final query weights:", {
-                'E5 (ada002)': retrievers[0]['weight'],
-                'Text (text)': retrievers[1]['weight'],
-                'ELSER (elser)': retrievers[2]['weight']
-            })
+            logger.info("Final linear retriever weights:")
+            logger.info(f"  - E5 (ada002): {retrievers[0]['weight']}")
+            logger.info(f"  - Text (text): {retrievers[1]['weight']}")
+            logger.info(f"  - ELSER (elser): {retrievers[2]['weight']}")
         
-        # Debug logging for reranker configuration
+        # Log reranker configuration
         if enable_reranking:
-            print("DEBUG: Reranker enabled with config:", {
-                'field': search_query['retriever']['text_similarity_reranker']['field'],
-                'inference_id': search_query['retriever']['text_similarity_reranker']['inference_id'],
-                'rank_window_size': search_query['retriever']['text_similarity_reranker']['rank_window_size']
-            })
+            reranker_config = search_query['retriever']['text_similarity_reranker']
+            logger.info("Reranker configuration:")
+            logger.info(f"  - Field: {reranker_config['field']}")
+            logger.info(f"  - Inference ID: {reranker_config['inference_id']}")
+            logger.info(f"  - Rank window size: {reranker_config['rank_window_size']}")
+            logger.debug(f"Full reranker structure: {json.dumps(reranker_config, indent=2)}")
         
-        print("DEBUG: Executing search query:", json.dumps(search_query, indent=2))
+        logger.info(f"Executing search on index: {ES_INDEX}")
+        logger.debug(f"Full search query: {json.dumps(search_query, indent=2)}")
         
+        start_time = datetime.now()
         response = es.search(
             index=ES_INDEX,  # Use ES_INDEX
             body=search_query
         )
+        end_time = datetime.now()
+        search_duration = (end_time - start_time).total_seconds()
+        logger.info(f"Search completed in {search_duration:.2f} seconds")
+        logger.info(f"Found {response['hits']['total']['value']} total results")
         
         results = []
         for hit in response['hits']['hits']:
@@ -453,24 +476,31 @@ def search():
             
             results.append(result)
         
+        logger.info(f"Returning {len(results)} results to frontend")
         return jsonify({
             'results': results,
             'query': search_query
         })
         
     except ValueError as e:
-        print(f"ERROR: ValueError in search: {str(e)}")
+        logger.error(f"ValueError in search: {str(e)}")
         return jsonify({'error': str(e)})
     except Exception as e:
-        print(f"ERROR: Exception in search: {str(e)}")
-        print(f"ERROR: Exception type: {type(e).__name__}")
+        logger.error(f"Exception in search: {str(e)}")
+        logger.error(f"Exception type: {type(e).__name__}")
         import traceback
-        print(f"ERROR: Full traceback: {traceback.format_exc()}")
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         
+        # Enhanced error logging for reranker issues
+        if "text_similarity_reranker" in str(e) or "rank_docs_retriever" in str(e):
+            logger.error(f"Reranker-specific error detected: {str(e)}")
+            logger.error(f"Reranker configuration: {json.dumps(reranking_params, indent=2)}")
+            logger.error(f"Search query with reranker: {json.dumps(search_query, indent=2)}")
+            
         # Provide more specific error messages for common issues
         error_msg = str(e)
-        if "text_similarity_reranker" in error_msg:
-            error_msg = f"Reranker error: {error_msg}. Please check if the reranker model is available in your Elasticsearch cluster."
+        if "text_similarity_reranker" in error_msg or "rank_docs_retriever" in error_msg:
+            error_msg = f"Reranker error: {error_msg}. Please check if the reranker model is available in your Elasticsearch cluster and that the field '{reranking_params.get('reranker_field', 'meta_description')}' exists in your index."
         elif "inference_id" in error_msg:
             error_msg = f"Inference model error: {error_msg}. Please check if the required models are deployed."
         elif "field" in error_msg and "combined_fields" in error_msg:
@@ -480,18 +510,23 @@ def search():
 
 @app.route('/wake-elser', methods=['POST'])
 def wake_elser():
+    logger.info("Waking up inference models...")
     try:
         # Wake up ELSER model
+        logger.info(f"Waking up ELSER model: {ELSER_INFERENCE_ID}")
         elser_response = es.inference.inference(
             inference_id=ELSER_INFERENCE_ID,
             input=['vector are so much fun']
         )
+        logger.info("ELSER model woken up successfully")
         
         # Wake up multilingual E5 model
+        logger.info(f"Waking up E5 model: {E5_INFERENCE_ID}")
         e5_response = es.inference.inference(
             inference_id=E5_INFERENCE_ID,
             input=['vector are so much fun']
         )
+        logger.info("E5 model woken up successfully")
         
         # Wake up reranker endpoint by running a query with text_similarity_reranker
         reranker_query = {
@@ -568,7 +603,7 @@ def wake_elser():
                                         ],
                                         "query": {
                                             "semantic": {
-                                                "field": "body_content_semantic",
+                                                "field": "body_content_elser",
                                                 "query": "beach"
                                             }
                                         }
@@ -614,42 +649,56 @@ def wake_elser():
         }
         
         # Execute the reranker query to wake up the reranking endpoint
+        logger.info("Waking up reranker model...")
         reranker_response = es.search(
             index=ES_INDEX,
             body=reranker_query
         )
+        logger.info("Reranker model woken up successfully")
         
+        logger.info("All inference models woken up successfully")
         return jsonify({'success': True})
     except Exception as e:
+        logger.error(f"Error waking up inference models: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/check-reranker', methods=['POST'])
 def check_reranker():
+    logger.info(f"Checking reranker availability: {RERANKER_INFERENCE_ID}")
     try:
         # Check if reranker model is available
         response = es.inference.inference(
             inference_id=RERANKER_INFERENCE_ID,
             input=['test query for reranker availability check']
         )
+        logger.info("Reranker model is available")
         return jsonify({'success': True, 'message': 'Reranker model is available'})
     except Exception as e:
-        print(f"ERROR: Reranker check failed: {str(e)}")
+        logger.error(f"Reranker check failed: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/execute-query', methods=['POST'])
 def execute_query():
+    logger.info("Executing custom query...")
     try:
         data = request.get_json()
         query = data.get('query')
         
         if not query:
+            logger.warning("No query provided in execute-query request")
             return jsonify({'error': 'No query provided'})
         
+        logger.debug(f"Custom query: {json.dumps(query, indent=2)}")
+        
         # Execute the query on properties index
+        start_time = datetime.now()
         response = es.search(
             index=ES_INDEX,  # Use ES_INDEX
             body=query
         )
+        end_time = datetime.now()
+        search_duration = (end_time - start_time).total_seconds()
+        logger.info(f"Custom query completed in {search_duration:.2f} seconds")
         
         results = []
         for hit in response['hits']['hits']:
@@ -681,23 +730,29 @@ def execute_query():
             
             results.append(result)
         
+        logger.info(f"Custom query returned {len(results)} results")
         return jsonify({
             'results': results
         })
         
     except Exception as e:
+        logger.error(f"Error executing custom query: {str(e)}")
         return jsonify({'error': str(e)})
 
 @app.route('/ai-summary-chat', methods=['POST'])
 def ai_summary_chat():
+    logger.info("Processing AI summary chat request...")
     try:
         data = request.get_json()
         explain = data.get('explain')
         messages = data.get('messages', [])  # List of {role, content}
         search_query = data.get('search_query', '')  # Add search query parameter
+        
         if not explain:
+            logger.warning("Missing explain data in AI summary request")
             return jsonify({'error': 'Missing explain data'}), 400
         if not OPENAI_ENDPOINT or not OPENAI_API_KEY or not OPENAI_MODEL or not OPENAI_API_VERSION:
+            logger.error("LLM credentials not configured")
             return jsonify({'error': 'LLM credentials not configured'}), 500
 
         # Prepare system prompt and user messages
@@ -741,14 +796,27 @@ def ai_summary_chat():
             "max_tokens": 512,
             "temperature": 0.3
         }
+        logger.info(f"Calling Azure OpenAI API with model: {OPENAI_MODEL}")
         resp = requests.post(url, headers=headers, json=payload, timeout=30)
         if resp.status_code != 200:
+            logger.error(f"LLM API error: {resp.status_code} {resp.text}")
             return jsonify({'error': f'LLM API error: {resp.status_code} {resp.text}'}), 500
         result = resp.json()
         ai_message = result['choices'][0]['message']['content'] if 'choices' in result and result['choices'] else ''
+        logger.info("AI summary generated successfully")
         return jsonify({'ai_message': ai_message})
     except Exception as e:
+        logger.error(f"Error in AI summary chat: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    logger.info("Starting Hotel Finder Search UI...")
+    logger.info(f"Elasticsearch URL: {ES_URL}")
+    logger.info(f"Elasticsearch Index: {ES_INDEX}")
+    logger.info(f"Using password auth: {USE_PASSWORD}")
+    if OPENAI_ENDPOINT:
+        logger.info(f"Azure OpenAI configured: {OPENAI_ENDPOINT}")
+    else:
+        logger.warning("Azure OpenAI not configured")
+    
     app.run(debug=True, host='0.0.0.0', port=5001) 
