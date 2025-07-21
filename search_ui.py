@@ -499,7 +499,9 @@ def search():
             
         # Provide more specific error messages for common issues
         error_msg = str(e)
-        if "text_similarity_reranker" in error_msg or "rank_docs_retriever" in error_msg:
+        if "model_deployment_timeout_exception" in error_msg:
+            error_msg = "The inference models are not ready yet. Please click the 'Wake Inference Endpoints' button to launch the models, then try your search again."
+        elif "text_similarity_reranker" in error_msg or "rank_docs_retriever" in error_msg:
             error_msg = f"Reranker error: {error_msg}. Please check if the reranker model is available in your Elasticsearch cluster and that the field '{reranking_params.get('reranker_field', 'meta_description')}' exists in your index."
         elif "inference_id" in error_msg:
             error_msg = f"Inference model error: {error_msg}. Please check if the required models are deployed."
@@ -552,7 +554,7 @@ def wake_elser():
             "retriever": {
                 "text_similarity_reranker": {
                     "field": "meta_description",
-                    "inference_id": ".rerank-v1-elasticsearch",
+                    "inference_id": RERANKER_INFERENCE_ID,
                     "inference_text": "beach",
                     "rank_window_size": 5,
                     "retriever": {
@@ -660,6 +662,25 @@ def wake_elser():
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error waking up inference models: {str(e)}")
+        
+        # Check if it's a 408 error (models still deploying)
+        if hasattr(e, 'status_code') and e.status_code == 408:
+            logger.info("Models are still deploying (408 error detected)")
+            return jsonify({
+                'success': False, 
+                'error': 'Models are deploying, not ready yet. Please try again in a few minutes.',
+                'deploying': True
+            })
+        
+        # Check for model deployment timeout exception
+        error_msg = str(e)
+        if "model_deployment_timeout_exception" in error_msg:
+            return jsonify({
+                'success': False, 
+                'error': 'Models are still deploying. Please try again in a few minutes.',
+                'deploying': True
+            })
+        
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/check-reranker', methods=['POST'])
@@ -675,6 +696,16 @@ def check_reranker():
         return jsonify({'success': True, 'message': 'Reranker model is available'})
     except Exception as e:
         logger.error(f"Reranker check failed: {str(e)}")
+        
+        # Check for model deployment timeout exception
+        error_msg = str(e)
+        if "model_deployment_timeout_exception" in error_msg:
+            return jsonify({
+                'success': False, 
+                'error': 'Models are still deploying. Please try again in a few minutes.',
+                'deploying': True
+            })
+        
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/execute-query', methods=['POST'])
@@ -737,7 +768,13 @@ def execute_query():
         
     except Exception as e:
         logger.error(f"Error executing custom query: {str(e)}")
-        return jsonify({'error': str(e)})
+        
+        # Provide more specific error messages for common issues
+        error_msg = str(e)
+        if "model_deployment_timeout_exception" in error_msg:
+            error_msg = "The inference models are not ready yet. Please click the 'Wake Inference Endpoints' button to launch the models, then try your search again."
+        
+        return jsonify({'error': error_msg})
 
 @app.route('/ai-summary-chat', methods=['POST'])
 def ai_summary_chat():
