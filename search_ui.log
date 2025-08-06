@@ -67503,3 +67503,91 @@ elasticsearch.ApiError: ApiError(408, 'status_exception', "[text_similarity_rera
 2025-08-06 22:15:47,904 - INFO - Found 42 total results
 2025-08-06 22:15:47,905 - INFO - Returning 20 results to frontend
 2025-08-06 22:15:47,906 - INFO - 127.0.0.1 - - [06/Aug/2025 22:15:47] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:19:28,641 - INFO - Building search query for: 'Timeless home with lake views, French doors, and upscale kitchen' with retriever_type: linear
+2025-08-06 22:19:28,642 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:19:28,642 - INFO -   - body_content_e5
+2025-08-06 22:19:28,642 - INFO - Final linear retriever field boosts:
+2025-08-06 22:19:28,643 - INFO -   - body_content_e5
+2025-08-06 22:19:28,643 - INFO - Executing search on index: properties
+2025-08-06 22:19:31,138 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:2.495s]
+2025-08-06 22:19:31,145 - INFO - Search completed in 2.50 seconds
+2025-08-06 22:19:31,145 - INFO - Found 42 total results
+2025-08-06 22:19:31,145 - INFO - Returning 20 results to frontend
+2025-08-06 22:19:31,146 - INFO - 127.0.0.1 - - [06/Aug/2025 22:19:31] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:20:25,121 - INFO - Building search query for: 'Timeless home with lake views, French doors, and upscale kitchen' with retriever_type: linear
+2025-08-06 22:20:25,123 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:20:25,123 - INFO -   - body_content_e5
+2025-08-06 22:20:25,124 - INFO - Reranking enabled with field: property-description
+2025-08-06 22:20:25,124 - WARNING - Reranker field 'property-description' not in selected fields: ['body_content_e5']
+2025-08-06 22:20:25,124 - INFO - Added 'property-description' to selected fields
+2025-08-06 22:20:25,124 - INFO - Reranker configuration:
+2025-08-06 22:20:25,124 - INFO -   - Field: property-description
+2025-08-06 22:20:25,124 - INFO -   - Inference ID: .rerank-v1-elasticsearch
+2025-08-06 22:20:25,124 - INFO -   - Rank window size: 5
+2025-08-06 22:20:25,124 - INFO - Executing search on index: properties
+2025-08-06 22:20:26,585 - INFO - Building search query for: 'Timeless home with lake views, French doors, and upscale kitchen' with retriever_type: linear
+2025-08-06 22:20:26,586 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:20:26,586 - INFO -   - body_content_e5
+2025-08-06 22:20:26,586 - INFO - Reranking enabled with field: property-description
+2025-08-06 22:20:26,586 - WARNING - Reranker field 'property-description' not in selected fields: ['body_content_e5']
+2025-08-06 22:20:26,586 - INFO - Added 'property-description' to selected fields
+2025-08-06 22:20:26,586 - INFO - Reranker configuration:
+2025-08-06 22:20:26,586 - INFO -   - Field: property-description
+2025-08-06 22:20:26,586 - INFO -   - Inference ID: .rerank-v1-elasticsearch
+2025-08-06 22:20:26,586 - INFO -   - Rank window size: 5
+2025-08-06 22:20:26,587 - INFO - Executing search on index: properties
+2025-08-06 22:20:27,087 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:1.962s]
+2025-08-06 22:20:27,089 - INFO - Search completed in 1.96 seconds
+2025-08-06 22:20:27,089 - INFO - Found 42 total results
+2025-08-06 22:20:27,089 - INFO - Returning 5 results to frontend
+2025-08-06 22:20:27,091 - INFO - 127.0.0.1 - - [06/Aug/2025 22:20:27] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:20:28,563 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:1.975s]
+2025-08-06 22:20:28,564 - INFO - Search completed in 1.98 seconds
+2025-08-06 22:20:28,565 - INFO - Found 42 total results
+2025-08-06 22:20:28,565 - INFO - Returning 5 results to frontend
+2025-08-06 22:20:28,567 - INFO - 127.0.0.1 - - [06/Aug/2025 22:20:28] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:37:42,437 - INFO - 127.0.0.1 - - [06/Aug/2025 22:37:42] "GET / HTTP/1.1" 200 -
+2025-08-06 22:38:25,661 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-06 22:38:25,661 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:38:25,661 - INFO -   - body_content_e5^3
+2025-08-06 22:38:25,661 - INFO - Final linear retriever field boosts:
+2025-08-06 22:38:25,661 - INFO -   - body_content_e5^3
+2025-08-06 22:38:25,661 - INFO - Executing search on index: properties
+2025-08-06 22:38:26,407 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-06 22:38:26,408 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:38:26,408 - INFO -   - body_content_e5^3
+2025-08-06 22:38:26,408 - INFO - Final linear retriever field boosts:
+2025-08-06 22:38:26,408 - INFO -   - body_content_e5^3
+2025-08-06 22:38:26,408 - INFO - Executing search on index: properties
+2025-08-06 22:38:32,023 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:5.614s]
+2025-08-06 22:38:32,028 - INFO - Search completed in 5.62 seconds
+2025-08-06 22:38:32,028 - INFO - Found 42 total results
+2025-08-06 22:38:32,028 - INFO - Returning 20 results to frontend
+2025-08-06 22:38:32,030 - INFO - 127.0.0.1 - - [06/Aug/2025 22:38:32] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:38:32,198 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:6.537s]
+2025-08-06 22:38:32,199 - INFO - Search completed in 6.54 seconds
+2025-08-06 22:38:32,200 - INFO - Found 42 total results
+2025-08-06 22:38:32,200 - INFO - Returning 20 results to frontend
+2025-08-06 22:38:32,200 - INFO - 127.0.0.1 - - [06/Aug/2025 22:38:32] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:38:45,800 - INFO - Building search query for: 'Maison avec accès direct à la plage et balades en pleine nature' with retriever_type: linear
+2025-08-06 22:38:45,802 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:38:45,802 - INFO -   - body_content_e5^3
+2025-08-06 22:38:45,802 - INFO - Final linear retriever field boosts:
+2025-08-06 22:38:45,802 - INFO -   - body_content_e5^3
+2025-08-06 22:38:45,802 - INFO - Executing search on index: properties
+2025-08-06 22:38:46,624 - INFO - Building search query for: 'Maison avec accès direct à la plage et balades en pleine nature' with retriever_type: linear
+2025-08-06 22:38:46,625 - INFO - Linear retriever field boosts configured:
+2025-08-06 22:38:46,625 - INFO -   - body_content_e5^3
+2025-08-06 22:38:46,625 - INFO - Final linear retriever field boosts:
+2025-08-06 22:38:46,626 - INFO -   - body_content_e5^3
+2025-08-06 22:38:46,626 - INFO - Executing search on index: properties
+2025-08-06 22:38:47,775 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:1.972s]
+2025-08-06 22:38:47,779 - INFO - Search completed in 1.98 seconds
+2025-08-06 22:38:47,779 - INFO - Found 42 total results
+2025-08-06 22:38:47,780 - INFO - Returning 20 results to frontend
+2025-08-06 22:38:47,781 - INFO - 127.0.0.1 - - [06/Aug/2025 22:38:47] "POST /search HTTP/1.1" 200 -
+2025-08-06 22:38:48,792 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:2.166s]
+2025-08-06 22:38:48,794 - INFO - Search completed in 2.17 seconds
+2025-08-06 22:38:48,795 - INFO - Found 42 total results
+2025-08-06 22:38:48,795 - INFO - Returning 20 results to frontend
+2025-08-06 22:38:48,797 - INFO - 127.0.0.1 - - [06/Aug/2025 22:38:48] "POST /search HTTP/1.1" 200 -
