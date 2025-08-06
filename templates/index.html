@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Search Query Tuning</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .result-card {
             margin-bottom: 1.5rem;
@@ -27,6 +28,33 @@
             background-color: #fff3cd;
             padding: 0.2rem;
             border-radius: 0.2rem;
+        }
+        .field-highlight-group {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-left: 3px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+        .field-highlight-group:last-child {
+            margin-bottom: 0;
+        }
+        .field-highlight-group .field-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+        .highlights-container {
+            margin-left: 0.5rem;
+        }
+        .highlight-item {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+        }
+        .highlight-item:last-child {
+            margin-bottom: 0;
         }
         .score {
             font-weight: bold;
@@ -127,7 +155,7 @@
         }
         .boost-value-display {
             font-weight: bold;
-            color: #0d6efd;
+            color: #fd7e14;
             background-color: #f8f9fa;
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
@@ -339,6 +367,46 @@
         .visual-explanation-content .alert {
             margin-bottom: 1rem;
         }
+        
+        .semantic-highlight {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
+        .semantic-highlight .field-label {
+            color: #1976d2;
+            font-weight: 600;
+        }
+        
+        .boost-slider-container {
+            transition: all 0.3s ease;
+            margin-top: 0.25rem;
+        }
+        
+        .boost-slider-container.hidden {
+            display: none;
+        }
+        
+        /* Custom styling for boost sliders to distinguish from checkboxes */
+        .boost-slider-container input[type="range"] {
+            accent-color: #fd7e14; /* Bootstrap warning orange */
+        }
+        
+        /* Additional styling to ensure slider thumb is orange */
+        .boost-slider-container input[type="range"]::-webkit-slider-thumb {
+            background-color: #fd7e14;
+        }
+        
+        .boost-slider-container input[type="range"]::-moz-range-thumb {
+            background-color: #fd7e14;
+        }
+        
+        .boost-slider-container input[type="range"]::-ms-thumb {
+            background-color: #fd7e14;
+        }
     </style>
 </head>
 <body>
@@ -422,6 +490,7 @@
                         <div class="form-text mb-2">
                             <small class="text-muted">Select fields to include in RRF search (boosting not supported)</small>
                         </div>
+
                         
                         <!-- Semantic Fields -->
                         <div class="mb-3">
@@ -466,25 +535,36 @@
                     <div class="mb-3 d-none" id="fieldBoostsSection">
                         <h6 class="text-primary">Field Boosts</h6>
                         <div class="form-text mb-2">
-                            <small class="text-muted">Adjust boost values from 0 (no boost) to 5 (maximum boost)</small>
+                            <small class="text-muted">Select fields and adjust boost values from 0 (no boost) to 5 (maximum boost)</small>
                         </div>
+
                         
                         <!-- Semantic Fields -->
                         <div class="mb-3">
                             <h6 class="text-secondary">Semantic Fields</h6>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostBodyContentE5" class="form-label mb-1">Body Content E5 (Semantic)</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectBodyContentE5" checked>
+                                        <label class="form-check-label" for="linearSelectBodyContentE5">Body Content E5 (Semantic)</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostBodyContentE5Value">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostBodyContentE5" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostBodyContentE5Container">
+                                    <input type="range" class="form-range" id="boostBodyContentE5" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostBodyContentElser" class="form-label mb-1">Body Content ELSER (Semantic)</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectBodyContentElser" checked>
+                                        <label class="form-check-label" for="linearSelectBodyContentElser">Body Content ELSER (Semantic)</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostBodyContentElserValue">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostBodyContentElser" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostBodyContentElserContainer">
+                                    <input type="range" class="form-range" id="boostBodyContentElser" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                         </div>
 
@@ -493,38 +573,63 @@
                             <h6 class="text-secondary">Text Fields</h6>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostTitle" class="form-label mb-1">Title</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectTitle" checked>
+                                        <label class="form-check-label" for="linearSelectTitle">Title</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostTitleValue">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostTitle" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostTitleContainer">
+                                    <input type="range" class="form-range" id="boostTitle" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostPropertyDescription" class="form-label mb-1">Property Description</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectPropertyDescription" checked>
+                                        <label class="form-check-label" for="linearSelectPropertyDescription">Property Description</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostPropertyDescriptionValue">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostPropertyDescription" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostPropertyDescriptionContainer">
+                                    <input type="range" class="form-range" id="boostPropertyDescription" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostPropertyFeatures" class="form-label mb-1">Property Features</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectPropertyFeatures" checked>
+                                        <label class="form-check-label" for="linearSelectPropertyFeatures">Property Features</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostPropertyFeaturesValue">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostPropertyFeatures" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostPropertyFeaturesContainer">
+                                    <input type="range" class="form-range" id="boostPropertyFeatures" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostMetaDescription" class="form-label mb-1">Meta Description</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectMetaDescription" checked>
+                                        <label class="form-check-label" for="linearSelectMetaDescription">Meta Description</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostMetaDescriptionValue">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostMetaDescription" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostMetaDescriptionContainer">
+                                    <input type="range" class="form-range" id="boostMetaDescription" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="boostHeadings" class="form-label mb-1">Headings</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="linearSelectHeadings" checked>
+                                        <label class="form-check-label" for="linearSelectHeadings">Headings</label>
+                                    </div>
                                     <span class="boost-value-display" id="boostHeadingsValue">0</span>
                                 </div>
-                                <input type="range" class="form-range" id="boostHeadings" min="0" max="5" value="0" step="0.1">
+                                <div class="boost-slider-container" id="boostHeadingsContainer">
+                                    <input type="range" class="form-range" id="boostHeadings" min="0" max="5" value="0" step="0.1">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -609,122 +714,17 @@
 
                 <div class="mt-4">
                     <h6 class="mb-3 text-primary fw-bold">Highlight Fields</h6>
-                    <p class="text-muted small mb-3">Configure which fields to highlight in search results and their display options</p>
+                    <p class="text-muted small mb-3">Configure semantic field highlighting for search results</p>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightTitle">
-                        <label class="form-check-label" for="highlightTitle">
-                            Title
-                        </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightTitleOptions">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Order</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value="score">Score</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightPropertyDescription">
-                        <label class="form-check-label" for="highlightPropertyDescription">
-                            Property Description
-                        </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightPropertyDescriptionOptions">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="2" min="1">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Order</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value="score">Score</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightPropertyFeatures">
-                        <label class="form-check-label" for="highlightPropertyFeatures">
-                            Property Features
-                        </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightPropertyFeaturesOptions">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Order</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value="score">Score</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightMetaDescription">
-                        <label class="form-check-label" for="highlightMetaDescription">
-                            Meta Description
-                        </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightMetaDescriptionOptions">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Order</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value="score">Score</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightHeadings">
-                        <label class="form-check-label" for="highlightHeadings">
-                            Headings
-                        </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightHeadingsOptions">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="1" min="1">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label">Order</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value="score">Score</option>
-                                        <option value="none">None</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightBodyContentE5">
+                        <input class="form-check-input" type="checkbox" id="highlightBodyContentE5" checked>
                         <label class="form-check-label" for="highlightBodyContentE5">
-                            Body Content E5
+                            Body Content E5 (Semantic)
                         </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightBodyContentE5Options">
+                        <div class="highlight-options ms-3 mt-1" id="highlightBodyContentE5Options">
                             <div class="row">
                                 <div class="col-6">
                                     <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="2" min="1">
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="5">
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label">Order</label>
@@ -737,15 +737,15 @@
                         </div>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="highlightBodyContentSemantic">
-                        <label class="form-check-label" for="highlightBodyContentSemantic">
-                            Body Content Semantic (ELSER)
+                        <input class="form-check-input" type="checkbox" id="highlightBodyContentElser" checked>
+                        <label class="form-check-label" for="highlightBodyContentElser">
+                            Body Content ELSER (Semantic)
                         </label>
-                        <div class="highlight-options ms-3 mt-1 d-none" id="highlightBodyContentSemanticOptions">
+                        <div class="highlight-options ms-3 mt-1" id="highlightBodyContentElserOptions">
                             <div class="row">
                                 <div class="col-6">
                                     <label class="form-label">Fragments</label>
-                                    <input type="number" class="form-control form-control-sm" value="2" min="1">
+                                    <input type="number" class="form-control form-control-sm" value="2" min="1" max="5">
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label">Order</label>
@@ -816,6 +816,10 @@
                     </button>
                     <div class="collapse mt-2" id="queryDetails">
                         <div class="card card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <label for="generatedQuery" class="form-label mb-0 me-2">Generated Query:</label>
+                                <span class="copy-icon" onclick="copyGeneratedQuery(event)" title="Copy Generated Query">📋</span>
+                            </div>
                             <textarea id="generatedQuery" class="form-control mb-2" rows="10" style="font-family: monospace;"></textarea>
                             <button id="executeQueryButton" class="btn btn-primary">Execute Query</button>
                         </div>
@@ -853,6 +857,8 @@
                 fieldSelectionSection.classList.add('d-none');
                 resetBoostsButton.classList.remove('d-none');
                 resetSelectionButton.classList.add('d-none');
+                // Initialize boost slider visibility based on checkbox states
+                updateBoostSliderVisibility();
             } else if (retrieverType === 'rrf') {
                 fieldBoostsSection.classList.add('d-none');
                 fieldSelectionSection.classList.remove('d-none');
@@ -944,6 +950,36 @@
         document.getElementById('selectMetaDescription').addEventListener('change', updateQuery);
         document.getElementById('selectHeadings').addEventListener('change', updateQuery);
 
+        // Add event listeners for Linear field selection checkboxes
+        document.getElementById('linearSelectBodyContentE5').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+        document.getElementById('linearSelectBodyContentElser').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+        document.getElementById('linearSelectTitle').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+        document.getElementById('linearSelectPropertyDescription').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+        document.getElementById('linearSelectPropertyFeatures').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+        document.getElementById('linearSelectMetaDescription').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+        document.getElementById('linearSelectHeadings').addEventListener('change', function() {
+            updateBoostSliderVisibility();
+            updateQuery();
+        });
+
 
 
         // Add event listener for explain checkbox
@@ -964,6 +1000,18 @@
         // Add event listeners for location filter controls
         document.getElementById('enableLocationFilter').addEventListener('change', function() {
             const locationParams = document.getElementById('locationParams');
+            const latitudeInput = document.getElementById('latitude');
+            const longitudeInput = document.getElementById('longitude');
+            
+            if (this.checked) {
+                // Set default Chicago coordinates when location filter is enabled
+                latitudeInput.value = '41.9172';
+                longitudeInput.value = '-87.6270';
+                
+                // Show notification
+                showTemporaryMessage('Location filter enabled - defaulted to Chicago coordinates (41.9172, -87.6270)', 'info', 4000);
+            }
+            
             locationParams.classList.toggle('d-none', !this.checked);
             updateQuery();
         });
@@ -1293,15 +1341,66 @@
 
                 const resultsHtml = data.results.map(result => {
                     let highlightsHtml = '';
-                    if (result.highlights && result.highlights.length > 0) {
-                        highlightsHtml = `
-                            <div class="highlights-section">
-                                <div class="field-label">Highlights:</div>
-                                <div class="highlights-container">
-                                    ${result.highlights.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                    let semanticHighlightsHtml = '';
+                    
+                    if (result.highlights && typeof result.highlights === 'object') {
+                        // Process highlights organized by field
+                        const semanticFields = ['body_content_e5', 'body_content_elser'];
+                        const semanticHighlights = {};
+                        const otherHighlights = {};
+                        
+                        Object.keys(result.highlights).forEach(field => {
+                            const fragments = result.highlights[field];
+                            if (semanticFields.includes(field)) {
+                                semanticHighlights[field] = fragments;
+                            } else {
+                                otherHighlights[field] = fragments;
+                            }
+                        });
+                        
+                        // Create semantic highlights section
+                        if (Object.keys(semanticHighlights).length > 0) {
+                            const semanticHtml = Object.keys(semanticHighlights).map(field => {
+                                const fragments = semanticHighlights[field];
+                                return `
+                                    <div class="field-highlight-group">
+                                        <div class="field-label text-primary fw-bold">${field}:</div>
+                                        <div class="highlights-container">
+                                            ${fragments.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                            
+                            semanticHighlightsHtml = `
+                                <div class="highlights-section semantic-highlight">
+                                    <div class="field-label text-primary fw-bold">Semantic Highlights:</div>
+                                    ${semanticHtml}
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
+                        
+                        // Create other highlights section
+                        if (Object.keys(otherHighlights).length > 0) {
+                            const otherHtml = Object.keys(otherHighlights).map(field => {
+                                const fragments = otherHighlights[field];
+                                return `
+                                    <div class="field-highlight-group">
+                                        <div class="field-label">${field}:</div>
+                                        <div class="highlights-container">
+                                            ${fragments.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                            
+                            highlightsHtml = `
+                                <div class="highlights-section">
+                                    <div class="field-label">Other Highlights:</div>
+                                    ${otherHtml}
+                                </div>
+                            `;
+                        }
                     }
 
                     // AI Summary button if explanation exists
@@ -1404,6 +1503,7 @@
                                 </div>
                             </div>
 
+                            ${semanticHighlightsHtml ? `<div class="content-divider"></div>${semanticHighlightsHtml}` : ''}
                             ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                         </div>
                     `;
@@ -1431,8 +1531,17 @@
                         <div id="aiSummaryResizeHandle" style="position:absolute;left:-6px;top:0;width:12px;height:100%;cursor:ew-resize;z-index:2100;"></div>
                         <div id="aiSummaryChatOverlay" style="height:100vh;display:flex;flex-direction:column;">
                             <div style="padding:1rem;border-bottom:1px solid #dee2e6;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="font-weight:bold;font-size:1.1em;">AI Summary & Chat</span>
-                                <button class="btn btn-sm btn-outline-danger" onclick="closeAISummaryChat()">Close</button>
+                                                                    <span style="font-weight:bold;font-size:1.1em;">Advisor</span>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-success me-2" onclick="attachCurrentExplainPlan()" title="Attach the latest explain plan to this conversation so the AI can reference how the search was performed">
+                                        <i class="fas fa-link"></i> Attach
+                                        <i class="fas fa-info-circle ms-1" style="font-size: 0.8em; opacity: 0.7;" title="Attach the latest explain plan to this conversation so the AI can reference how the search was performed"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="startNewConversationFromChat()">
+                                        <i class="fas fa-plus"></i> New
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="closeAISummaryChat()">Close</button>
+                                </div>
                             </div>
                             <div id="aiSummaryChatHistory" style="flex:1;overflow-y:auto;padding:1rem 1rem 0 1rem;background:#f8f9fa;"></div>
                             <form id="aiSummaryChatForm" style="padding:1rem;border-top:1px solid #dee2e6;display:flex;gap:0.5rem;">
@@ -1475,6 +1584,20 @@
 
                 // After search results are loaded and rendered (in the .then(data => { ... }) of performSearch):
                 window.lastSearchResults = data.results;
+                
+                // Check if there's an active chat session and notify about potential explain plan attachment
+                const currentSession = aiChatSessionsManager.getCurrentSession();
+                if (currentSession && data.results && data.results.length > 0) {
+                    // Check if any results have explanations and match the current document
+                    const matchingResult = data.results.find(r => r._id === currentSession.docId && r.explanation);
+                    if (matchingResult) {
+                        showTemporaryMessage(
+                            `New explain plan available for "${matchingResult.title || 'current property'}". Click the "Attach" button to add it.`, 
+                            'info', 
+                            5000
+                        );
+                    }
+                }
             })
             .catch(error => {
                 loadingDiv.classList.add('d-none');
@@ -1550,15 +1673,66 @@
                     // Use the same result rendering logic as the search function
                     const resultsHtml = data.results.map(result => {
                         let highlightsHtml = '';
-                        if (result.highlights && result.highlights.length > 0) {
-                            highlightsHtml = `
-                                <div class="highlights-section">
-                                    <div class="field-label">Highlights:</div>
-                                    <div class="highlights-container">
-                                        ${result.highlights.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                        let semanticHighlightsHtml = '';
+                        
+                        if (result.highlights && typeof result.highlights === 'object') {
+                            // Process highlights organized by field
+                            const semanticFields = ['body_content_e5', 'body_content_elser'];
+                            const semanticHighlights = {};
+                            const otherHighlights = {};
+                            
+                            Object.keys(result.highlights).forEach(field => {
+                                const fragments = result.highlights[field];
+                                if (semanticFields.includes(field)) {
+                                    semanticHighlights[field] = fragments;
+                                } else {
+                                    otherHighlights[field] = fragments;
+                                }
+                            });
+                            
+                            // Create semantic highlights section
+                            if (Object.keys(semanticHighlights).length > 0) {
+                                const semanticHtml = Object.keys(semanticHighlights).map(field => {
+                                    const fragments = semanticHighlights[field];
+                                    return `
+                                        <div class="field-highlight-group">
+                                            <div class="field-label text-primary fw-bold">${field}:</div>
+                                            <div class="highlights-container">
+                                                ${fragments.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('');
+                                
+                                semanticHighlightsHtml = `
+                                    <div class="highlights-section semantic-highlight">
+                                        <div class="field-label text-primary fw-bold">Semantic Highlights:</div>
+                                        ${semanticHtml}
                                     </div>
-                                </div>
-                            `;
+                                `;
+                            }
+                            
+                            // Create other highlights section
+                            if (Object.keys(otherHighlights).length > 0) {
+                                const otherHtml = Object.keys(otherHighlights).map(field => {
+                                    const fragments = otherHighlights[field];
+                                    return `
+                                        <div class="field-highlight-group">
+                                            <div class="field-label">${field}:</div>
+                                            <div class="highlights-container">
+                                                ${fragments.map(fragment => `<div class="highlight-item">${fragment}</div>`).join('')}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('');
+                                
+                                highlightsHtml = `
+                                    <div class="highlights-section">
+                                        <div class="field-label">Other Highlights:</div>
+                                        ${otherHtml}
+                                    </div>
+                                `;
+                            }
                         }
 
                         // AI Summary button if explanation exists
@@ -1665,12 +1839,27 @@
                                     </div>
                                 </div>
 
+                                ${semanticHighlightsHtml ? `<div class="content-divider"></div>${semanticHighlightsHtml}` : ''}
                                 ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                             </div>
                         `;
                     }).join('');
 
                     resultsDiv.innerHTML = resultsHtml;
+
+                    // Check if there's an active chat session and notify about potential explain plan attachment
+                    const currentSession = aiChatSessionsManager.getCurrentSession();
+                    if (currentSession && data.results && data.results.length > 0) {
+                        // Check if any results have explanations and match the current document
+                        const matchingResult = data.results.find(r => r._id === currentSession.docId && r.explanation);
+                        if (matchingResult) {
+                            showTemporaryMessage(
+                                `New explain plan available for "${matchingResult.title || 'current property'}". Click the "Attach" button to add it.`, 
+                                'info', 
+                                5000
+                            );
+                        }
+                    }
 
                     // Insert AI Summary Chat Pane if not present
                     if (!document.getElementById('aiSummaryChatPane')) {
@@ -1692,8 +1881,17 @@
                             <div id="aiSummaryResizeHandle" style="position:absolute;left:-6px;top:0;width:12px;height:100%;cursor:ew-resize;z-index:2100;"></div>
                             <div id="aiSummaryChatOverlay" style="height:100vh;display:flex;flex-direction:column;">
                                 <div style="padding:1rem;border-bottom:1px solid #dee2e6;display:flex;justify-content:space-between;align-items:center;">
-                                    <span style="font-weight:bold;font-size:1.1em;">AI Summary & Chat</span>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="closeAISummaryChat()">Close</button>
+                                    <span style="font-weight:bold;font-size:1.1em;">Advisor</span>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-success me-2" onclick="attachCurrentExplainPlan()" title="Attach the latest explain plan to this conversation so the AI can reference how the search was performed">
+                                            <i class="fas fa-link"></i> Attach
+                                            <i class="fas fa-info-circle ms-1" style="font-size: 0.8em; opacity: 0.7;" title="Attach the latest explain plan to this conversation so the AI can reference how the search was performed"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary me-2" onclick="startNewConversationFromChat()">
+                                            <i class="fas fa-plus"></i> New
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="closeAISummaryChat()">Close</button>
+                                    </div>
                                 </div>
                                 <div id="aiSummaryChatHistory" style="flex:1;overflow-y:auto;padding:1rem 1rem 0 1rem;background:#f8f9fa;"></div>
                                 <form id="aiSummaryChatForm" style="padding:1rem;border-top:1px solid #dee2e6;display:flex;gap:0.5rem;">
@@ -1819,6 +2017,52 @@
             }
         }
 
+        // Function to copy generated query to clipboard
+        function copyGeneratedQuery(event) {
+            event.stopPropagation(); // Prevent any parent event handlers
+            
+            const copyIcon = event.target;
+            const originalText = copyIcon.textContent;
+            const generatedQuery = document.getElementById('generatedQuery').value;
+            
+            if (!generatedQuery.trim()) {
+                showNotification('No query to copy!', 'warning');
+                return;
+            }
+            
+            // Function to show visual feedback
+            const showFeedback = (success) => {
+                if (success) {
+                    copyIcon.textContent = '✅';
+                    copyIcon.classList.add('copied');
+                    showNotification('Generated query copied to clipboard!', 'success');
+                } else {
+                    copyIcon.textContent = '❌';
+                    showNotification('Failed to copy generated query', 'error');
+                }
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    copyIcon.textContent = originalText;
+                    copyIcon.classList.remove('copied');
+                }, 2000);
+            };
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(generatedQuery)
+                    .then(() => showFeedback(true))
+                    .catch(err => {
+                        console.error('Clipboard API failed: ', err);
+                        // Fallback to older method
+                        fallbackCopyTextToClipboard(generatedQuery, showFeedback);
+                    });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(generatedQuery, showFeedback);
+            }
+        }
+
         // Function to show validation messages
         function showValidationMessage(message) {
             // Create a temporary alert or use a toast notification
@@ -1880,7 +2124,7 @@
             const selectedFields = [];
             
             if (retrieverType === 'linear') {
-                // For linear retriever, use boost sliders
+                // For linear retriever, use both field selection checkboxes and boost sliders
                 const fieldMappings = {
                     'boostBodyContentE5': 'body_content_e5',
                     'boostBodyContentElser': 'body_content_elser',
@@ -1893,13 +2137,20 @@
                 
                 Object.keys(fieldMappings).forEach(sliderId => {
                     const slider = document.getElementById(sliderId);
-                    if (slider) {
+                    const checkboxId = sliderId.replace('boost', 'linearSelect');
+                    const checkbox = document.getElementById(checkboxId);
+                    
+                    if (slider && checkbox) {
                         const boostValue = parseFloat(slider.value);
                         const fieldName = fieldMappings[sliderId];
                         
-                        // Only include fields with boost > 0
-                        if (boostValue > 0) {
-                            selectedFields.push(`${fieldName}^${boostValue}`);
+                        // Include fields that are selected, regardless of boost value
+                        if (checkbox.checked) {
+                            if (boostValue > 0) {
+                                selectedFields.push(`${fieldName}^${boostValue}`);
+                            } else {
+                                selectedFields.push(fieldName);
+                            }
                         }
                     }
                 });
@@ -1929,13 +2180,8 @@
 
         function getHighlightConfig() {
             const highlightMappings = {
-                'highlightTitle': 'title',
-                'highlightPropertyDescription': 'property-description',
-                'highlightPropertyFeatures': 'property-features',
-                'highlightMetaDescription': 'meta_description',
-                'highlightHeadings': 'headings',
-                'highlightBodyContentSemantic': 'body_content_elser',
-                'highlightBodyContentE5': 'body_content_e5'
+                'highlightBodyContentE5': 'body_content_e5',
+                'highlightBodyContentElser': 'body_content_elser'
             };
             const highlightConfig = {};
             Object.keys(highlightMappings).forEach(checkboxId => {
@@ -1985,11 +2231,42 @@
             updateQuery();
         }
 
+        function updateBoostSliderVisibility() {
+            const checkboxSliderMappings = {
+                'linearSelectBodyContentE5': 'boostBodyContentE5Container',
+                'linearSelectBodyContentElser': 'boostBodyContentElserContainer',
+                'linearSelectTitle': 'boostTitleContainer',
+                'linearSelectPropertyDescription': 'boostPropertyDescriptionContainer',
+                'linearSelectPropertyFeatures': 'boostPropertyFeaturesContainer',
+                'linearSelectMetaDescription': 'boostMetaDescriptionContainer',
+                'linearSelectHeadings': 'boostHeadingsContainer'
+            };
+            
+            Object.keys(checkboxSliderMappings).forEach(checkboxId => {
+                const checkbox = document.getElementById(checkboxId);
+                const sliderContainer = document.getElementById(checkboxSliderMappings[checkboxId]);
+                
+                if (checkbox && sliderContainer) {
+                    if (checkbox.checked) {
+                        sliderContainer.classList.remove('hidden');
+                    } else {
+                        sliderContainer.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
         function resetFieldSelection() {
             // Reset all field selection checkboxes to checked (default state)
             document.querySelectorAll('input[type="checkbox"][id^="select"]').forEach(checkbox => {
                 checkbox.checked = true;
             });
+            // Also reset linear field selection checkboxes
+            document.querySelectorAll('input[type="checkbox"][id^="linearSelect"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            // Update boost slider visibility
+            updateBoostSliderVisibility();
             updateQuery();
         }
         
@@ -2039,6 +2316,8 @@
                 fieldSelectionSection.classList.add('d-none');
                 resetBoostsButton.classList.remove('d-none');
                 resetSelectionButton.classList.add('d-none');
+                // Initialize boost slider visibility
+                updateBoostSliderVisibility();
             } else if (retrieverType === 'rrf') {
                 fieldBoostsSection.classList.add('d-none');
                 fieldSelectionSection.classList.remove('d-none');
@@ -2116,7 +2395,7 @@
             
             // Get selected fields based on retriever type
             if (settings.retrieverType === 'linear') {
-                // For linear retriever, get fields with non-zero boosts
+                // For linear retriever, get fields that are both selected and have non-zero boosts
                 const fieldBoosts = {
                     'body_content_e5': parseFloat(document.getElementById('boostBodyContentE5').value),
                     'body_content_elser': parseFloat(document.getElementById('boostBodyContentElser').value),
@@ -2127,9 +2406,19 @@
                     'headings': parseFloat(document.getElementById('boostHeadings').value)
                 };
                 
-                // Add fields that have non-zero boosts
+                const fieldSelection = {
+                    'body_content_e5': document.getElementById('linearSelectBodyContentE5').checked,
+                    'body_content_elser': document.getElementById('linearSelectBodyContentElser').checked,
+                    'title': document.getElementById('linearSelectTitle').checked,
+                    'property-description': document.getElementById('linearSelectPropertyDescription').checked,
+                    'property-features': document.getElementById('linearSelectPropertyFeatures').checked,
+                    'meta_description': document.getElementById('linearSelectMetaDescription').checked,
+                    'headings': document.getElementById('linearSelectHeadings').checked
+                };
+                
+                // Add fields that are both selected AND have non-zero boosts
                 Object.entries(fieldBoosts).forEach(([field, boost]) => {
-                    if (boost > 0) {
+                    if (fieldSelection[field] && boost > 0) {
                         settings.selectedFields.push(field);
                     }
                 });
@@ -2484,11 +2773,160 @@
             }
         }
 
-        let aiSummaryChatSession = {
-            explain: null,
-            messages: [],
-            docId: null,
-            documentFields: null
+
+
+        // AI Chat Sessions Manager
+        let aiChatSessionsManager = {
+            sessions: new Map(), // Map of sessionId -> session data
+            currentSessionId: null,
+            nextSessionId: 1,
+            
+            // Create a new session
+            createSession: function(explain, docId, documentFields) {
+                const sessionId = `session_${this.nextSessionId++}`;
+                
+                // Extract property name from document fields
+                const propertyName = documentFields && documentFields.title ? documentFields.title : 'Unknown Property';
+                
+                const session = {
+                    id: sessionId,
+                    propertyName: propertyName,
+                    explainPlans: [{
+                        explain: explain,
+                        documentFields: documentFields,
+                        timestamp: new Date(),
+                        searchQuery: document.getElementById('searchQuery').value || '',
+                        uiSettings: getCurrentUISettings()
+                    }],
+                    currentExplainIndex: 0,
+                    messages: [],
+                    docId: docId,
+                    createdAt: new Date(),
+                    lastActivity: new Date()
+                };
+                this.sessions.set(sessionId, session);
+                this.currentSessionId = sessionId;
+                return sessionId;
+            },
+            
+            // Get current session
+            getCurrentSession: function() {
+                if (!this.currentSessionId) return null;
+                return this.sessions.get(this.currentSessionId);
+            },
+            
+            // Switch to a different session
+            switchSession: function(sessionId) {
+                if (this.sessions.has(sessionId)) {
+                    this.currentSessionId = sessionId;
+                    const session = this.sessions.get(sessionId);
+                    session.lastActivity = new Date();
+                    return session;
+                }
+                return null;
+            },
+            
+                    // Add message to current session
+        addMessage: function(role, content) {
+            const session = this.getCurrentSession();
+            if (session) {
+                session.messages.push({ role, content });
+                session.lastActivity = new Date();
+            }
+        },
+        
+        // Check if recommendations have been provided in this session
+        hasProvidedRecommendations: function() {
+            const session = this.getCurrentSession();
+            if (!session) return false;
+            
+            // Look for assistant messages that contain recommendations
+            return session.messages.some(msg => 
+                msg.role === 'assistant' && 
+                (msg.content.includes('Boost') || 
+                 msg.content.includes('recommend') || 
+                 msg.content.includes('suggest') ||
+                 msg.content.includes('try') ||
+                 msg.content.includes('adjust') ||
+                 msg.content.includes('1.') && msg.content.includes('2.') && msg.content.includes('3.'))
+            );
+        },
+            
+            // Get all sessions for a document
+            getSessionsForDocument: function(docId) {
+                const sessions = [];
+                for (const [sessionId, session] of this.sessions) {
+                    if (session.docId === docId) {
+                        sessions.push(session);
+                    }
+                }
+                return sessions.sort((a, b) => b.lastActivity - a.lastActivity);
+            },
+            
+            // Delete a session
+            deleteSession: function(sessionId) {
+                this.sessions.delete(sessionId);
+                if (this.currentSessionId === sessionId) {
+                    this.currentSessionId = null;
+                }
+            },
+            
+            // Clear all sessions
+            clearAllSessions: function() {
+                this.sessions.clear();
+                this.currentSessionId = null;
+            },
+            
+            // Add a new explain plan to current session
+            addExplainPlan: function(explain, documentFields) {
+                const session = this.getCurrentSession();
+                if (session) {
+                    const newExplainPlan = {
+                        explain: explain,
+                        documentFields: documentFields,
+                        timestamp: new Date(),
+                        searchQuery: document.getElementById('searchQuery').value || '',
+                        uiSettings: getCurrentUISettings()
+                    };
+                    session.explainPlans.push(newExplainPlan);
+                    session.currentExplainIndex = session.explainPlans.length - 1;
+                    session.lastActivity = new Date();
+                    
+                    // Update property name if available in new document fields
+                    if (documentFields && documentFields.title && documentFields.title !== session.propertyName) {
+                        session.propertyName = documentFields.title;
+                    }
+                    
+                    return session.explainPlans.length - 1;
+                }
+                return -1;
+            },
+            
+            // Get current explain plan
+            getCurrentExplainPlan: function() {
+                const session = this.getCurrentSession();
+                if (session && session.explainPlans.length > 0) {
+                    return session.explainPlans[session.currentExplainIndex];
+                }
+                return null;
+            },
+            
+            // Switch to a different explain plan in current session
+            switchExplainPlan: function(index) {
+                const session = this.getCurrentSession();
+                if (session && index >= 0 && index < session.explainPlans.length) {
+                    session.currentExplainIndex = index;
+                    session.lastActivity = new Date();
+                    return session.explainPlans[index];
+                }
+                return null;
+            },
+            
+            // Get all explain plans for current session
+            getExplainPlans: function() {
+                const session = this.getCurrentSession();
+                return session ? session.explainPlans : [];
+            }
         };
 
         // Function to get current UI settings for AI context
@@ -2515,6 +2953,16 @@
                     propertyFeatures: parseFloat(document.getElementById('boostPropertyFeatures').value),
                     metaDescription: parseFloat(document.getElementById('boostMetaDescription').value),
                     headings: parseFloat(document.getElementById('boostHeadings').value)
+                };
+                // Add field selection for linear retriever
+                settings.selectedFields = {
+                    bodyContentE5: document.getElementById('linearSelectBodyContentE5').checked,
+                    bodyContentElser: document.getElementById('linearSelectBodyContentElser').checked,
+                    title: document.getElementById('linearSelectTitle').checked,
+                    propertyDescription: document.getElementById('linearSelectPropertyDescription').checked,
+                    propertyFeatures: document.getElementById('linearSelectPropertyFeatures').checked,
+                    metaDescription: document.getElementById('linearSelectMetaDescription').checked,
+                    headings: document.getElementById('linearSelectHeadings').checked
                 };
             } else if (settings.retrieverType === 'rrf') {
                 settings.rrfParams = {
@@ -2560,29 +3008,126 @@
         }
 
         function openAISummaryChat(explain, docId) {
-            aiSummaryChatSession.explain = explain;
-            aiSummaryChatSession.messages = [];
-            aiSummaryChatSession.docId = docId;
-
             // Find the result object for this docId
             let documentFields = null;
             if (window.lastSearchResults) {
                 const match = window.lastSearchResults.find(r => r._id === docId);
-                if (match && match.fields) {
-                    documentFields = match.fields;
+                if (match) {
+                    // Extract document fields from the result
+                    documentFields = {
+                        title: match.title,
+                        'property-description': match['property-description'],
+                        'property-features': match['property-features'],
+                        'meta_description': match.meta_description,
+                        headings: match.headings,
+                        'listing-agent-info': match['listing-agent-info'],
+                        'property-status': match['property-status'],
+                        'number-of-bedrooms': match['number-of-bedrooms'],
+                        'number-of-bathrooms': match['number-of-bathrooms'],
+                        'square-footage': match['square-footage'],
+                        'home-price': match['home-price'],
+                        'annual-tax': match['annual-tax'],
+                        'maintenance-fee': match['maintenance-fee']
+                    };
                 }
             }
-            aiSummaryChatSession.documentFields = documentFields;
 
+            // Check if there are existing sessions for this document
+            const existingSessions = aiChatSessionsManager.getSessionsForDocument(docId);
+            
+            if (existingSessions.length > 0) {
+                // Show session selection dialog
+                showSessionSelectionDialog(docId, existingSessions, explain, documentFields);
+            } else {
+                // Create new session and open chat
+                createNewChatSession(explain, docId, documentFields);
+            }
+        }
+
+        function showSessionSelectionDialog(docId, existingSessions, explain, documentFields) {
+            // Create modal for session selection
+            const modalHtml = `
+                <div class="modal fade" id="sessionSelectionModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Choose Conversation</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <button class="btn btn-primary w-100" onclick="createNewChatSession(${JSON.stringify(explain)}, '${docId}', ${JSON.stringify(documentFields)})">
+                                        <i class="fas fa-plus"></i> Start New Conversation
+                                    </button>
+                                </div>
+                                <hr>
+                                <h6>Previous Conversations:</h6>
+                                <div class="list-group">
+                                    ${existingSessions.map(session => `
+                                        <button class="list-group-item list-group-item-action" onclick="resumeChatSession('${session.id}')">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>${session.propertyName || 'Unknown Property'}</strong>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        ${session.messages.length} messages • 
+                                                        ${session.explainPlans ? session.explainPlans.length : 1} explain plan${session.explainPlans && session.explainPlans.length !== 1 ? 's' : ''} • 
+                                                        ${new Date(session.lastActivity).toLocaleString()}
+                                                    </small>
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteChatSession('${session.id}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('sessionSelectionModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('sessionSelectionModal'));
+            modal.show();
+            
+            // Clean up modal after it's hidden
+            document.getElementById('sessionSelectionModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        }
+
+        function createNewChatSession(explain, docId, documentFields) {
+            // Close session selection modal if open
+            const modal = bootstrap.Modal.getInstance(document.getElementById('sessionSelectionModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Create new session
+            const sessionId = aiChatSessionsManager.createSession(explain, docId, documentFields);
+            
+            // Open chat pane
             const chatPane = document.getElementById('aiSummaryChatPane');
             const chatHistory = document.getElementById('aiSummaryChatHistory');
             chatPane.style.display = 'block';
             chatHistory.innerHTML = '<div class="text-muted">Loading summary...</div>';
             document.getElementById('aiSummaryChatInput').value = '';
-            // Get current search query
+            
+            // Get current search query and settings
             const searchQuery = document.getElementById('searchQuery').value || '';
-            // Get current UI settings
             const currentSettings = getCurrentUISettings();
+            
             // Initial summary
             fetch('/ai-summary-chat', {
                 method: 'POST',
@@ -2599,17 +3144,147 @@
                 if (data.error) {
                     chatHistory.innerHTML = `<div class='alert alert-danger'>${data.error}</div>`;
                 } else {
-                    aiSummaryChatSession.messages = [
-                        { role: 'assistant', content: data.ai_message }
-                    ];
+                    aiChatSessionsManager.addMessage('assistant', data.ai_message);
                     renderAISummaryChatHistory();
                 }
             })
             .catch(e => {
                 chatHistory.innerHTML = `<div class='alert alert-danger'>${e}</div>`;
             });
+            
             setTimeout(() => document.getElementById('aiSummaryChatInput').focus(), 200);
             document.querySelector('.right-pane').style.marginRight = chatPane.style.width;
+        }
+
+        function resumeChatSession(sessionId) {
+            // Close session selection modal if open
+            const modal = bootstrap.Modal.getInstance(document.getElementById('sessionSelectionModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Switch to the selected session
+            const session = aiChatSessionsManager.switchSession(sessionId);
+            if (!session) {
+                showTemporaryMessage('Session not found', 'error');
+                return;
+            }
+            
+            // Open chat pane
+            const chatPane = document.getElementById('aiSummaryChatPane');
+            const chatHistory = document.getElementById('aiSummaryChatHistory');
+            chatPane.style.display = 'block';
+            document.getElementById('aiSummaryChatInput').value = '';
+            
+            // Render existing messages
+            renderAISummaryChatHistory();
+            
+            setTimeout(() => document.getElementById('aiSummaryChatInput').focus(), 200);
+            document.querySelector('.right-pane').style.marginRight = chatPane.style.width;
+        }
+
+        function deleteChatSession(sessionId) {
+            if (confirm('Are you sure you want to delete this conversation?')) {
+                aiChatSessionsManager.deleteSession(sessionId);
+                // Refresh the session selection dialog
+                const currentSession = aiChatSessionsManager.getCurrentSession();
+                if (currentSession) {
+                    const existingSessions = aiChatSessionsManager.getSessionsForDocument(currentSession.docId);
+                    showSessionSelectionDialog(currentSession.docId, existingSessions, currentSession.explain, currentSession.documentFields);
+                }
+            }
+        }
+
+        function startNewConversationFromChat() {
+            const currentSession = aiChatSessionsManager.getCurrentSession();
+            if (!currentSession) {
+                showTemporaryMessage('No active session', 'error');
+                return;
+            }
+            
+            // Create a new session with the same document
+            createNewChatSession(currentSession.explain, currentSession.docId, currentSession.documentFields);
+        }
+
+        function switchToSessionSelection() {
+            const currentSession = aiChatSessionsManager.getCurrentSession();
+            if (!currentSession) {
+                showTemporaryMessage('No active session', 'error');
+                return;
+            }
+            
+            const currentExplainPlan = aiChatSessionsManager.getCurrentExplainPlan();
+            const existingSessions = aiChatSessionsManager.getSessionsForDocument(currentSession.docId);
+            showSessionSelectionDialog(currentSession.docId, existingSessions, currentExplainPlan.explain, currentExplainPlan.documentFields);
+        }
+
+        function switchExplainPlan(index) {
+            const explainPlan = aiChatSessionsManager.switchExplainPlan(index);
+            if (explainPlan) {
+                renderAISummaryChatHistory();
+                showTemporaryMessage(`Switched to Explain Plan ${index + 1}`, 'info');
+            }
+        }
+
+        function attachCurrentExplainPlan() {
+            const currentSession = aiChatSessionsManager.getCurrentSession();
+            if (!currentSession) {
+                showTemporaryMessage('No active session', 'error');
+                return;
+            }
+            
+            // Check if there are current search results with explain plans
+            if (!window.lastSearchResults || window.lastSearchResults.length === 0) {
+                showTemporaryMessage('No current search results to attach. Please run a search first.', 'warning');
+                return;
+            }
+            
+            // Find the result for the current document
+            const currentDocId = currentSession.docId;
+            const matchingResult = window.lastSearchResults.find(r => r._id === currentDocId);
+            
+            if (!matchingResult) {
+                showTemporaryMessage('Current document not found in search results. Please search for this document first.', 'warning');
+                return;
+            }
+            
+            if (!matchingResult.explanation) {
+                showTemporaryMessage('No explain plan available for current search. Enable "Explain" option and search again.', 'warning');
+                return;
+            }
+            
+            // Extract document fields
+            const documentFields = {
+                title: matchingResult.title,
+                'property-description': matchingResult['property-description'],
+                'property-features': matchingResult['property-features'],
+                'meta_description': matchingResult.meta_description,
+                headings: matchingResult.headings,
+                'listing-agent-info': matchingResult['listing-agent-info'],
+                'property-status': matchingResult['property-status'],
+                'number-of-bedrooms': matchingResult['number-of-bedrooms'],
+                'number-of-bathrooms': matchingResult['number-of-bathrooms'],
+                'square-footage': matchingResult['square-footage'],
+                'home-price': matchingResult['home-price'],
+                'annual-tax': matchingResult['annual-tax'],
+                'maintenance-fee': matchingResult['maintenance-fee']
+            };
+            
+            // Add the new explain plan
+            const newIndex = aiChatSessionsManager.addExplainPlan(matchingResult.explanation, documentFields);
+            
+            // Update property name if it has changed
+            const session = aiChatSessionsManager.getCurrentSession();
+            if (session && matchingResult.title && matchingResult.title !== session.propertyName) {
+                session.propertyName = matchingResult.title;
+            }
+            
+            if (newIndex >= 0) {
+                renderAISummaryChatHistory();
+                showTemporaryMessage(`Attached new explain plan (Plan ${newIndex + 1})`, 'success');
+            } else {
+                showTemporaryMessage('Failed to attach explain plan', 'error');
+            }
         }
 
         function cleanLLMHtml(html) {
@@ -2720,24 +3395,71 @@
         function closeAISummaryChat() {
             const chatPane = document.getElementById('aiSummaryChatPane');
             chatPane.style.display = 'none';
-            aiSummaryChatSession = { explain: null, messages: [], docId: null, documentFields: null };
-            // In closeAISummaryChat, after chatPane.style.display = 'none';
+            // Don't clear the current session - just hide the pane
             document.querySelector('.right-pane').style.marginRight = '0px';
         }
 
         function renderAISummaryChatHistory() {
             const chatHistory = document.getElementById('aiSummaryChatHistory');
-            if (!aiSummaryChatSession.messages.length) {
+            const currentSession = aiChatSessionsManager.getCurrentSession();
+            
+            if (!currentSession || !currentSession.messages.length) {
                 chatHistory.innerHTML = '<div class="text-muted">No messages yet.</div>';
                 return;
             }
-            chatHistory.innerHTML = aiSummaryChatSession.messages.map(msg => {
+            
+            const currentExplainPlan = aiChatSessionsManager.getCurrentExplainPlan();
+            const explainPlans = aiChatSessionsManager.getExplainPlans();
+            
+            // Add session header with explain plan selector
+            const sessionHeader = `
+                <div class="mb-3 p-2 bg-light border rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted">
+                            <strong>${currentSession.propertyName || 'Unknown Property'}</strong> • 
+                            ${currentSession.messages.length} messages • 
+                            Last active: ${new Date(currentSession.lastActivity).toLocaleString()}
+                        </small>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="switchToSessionSelection()">
+                                <i class="fas fa-exchange-alt"></i> Switch
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteChatSession('${currentSession.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    ${explainPlans.length > 1 ? `
+                        <div class="mb-2">
+                            <small class="text-muted">Explain Plans:</small>
+                            <div class="btn-group btn-group-sm ms-2">
+                                ${explainPlans.map((plan, index) => `
+                                    <button class="btn btn-sm ${index === currentSession.currentExplainIndex ? 'btn-primary' : 'btn-outline-primary'}" 
+                                            onclick="switchExplainPlan(${index})">
+                                        Plan ${index + 1}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    ${currentExplainPlan ? `
+                        <div class="small text-muted">
+                            <strong>Current Plan:</strong> ${currentExplainPlan.searchQuery || 'No query'} • 
+                            ${new Date(currentExplainPlan.timestamp).toLocaleString()}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            const messagesHtml = currentSession.messages.map(msg => {
                 if (msg.role === 'user') {
                     return `<div style='margin-bottom:0.5em;text-align:right;'><span class='badge bg-primary'>You</span> <span style='background:#e7f1ff;padding:0.5em 0.8em;border-radius:1em;display:inline-block;'>${msg.content}</span></div>`;
                 } else {
                     return `<div style='margin-bottom:0.5em;text-align:left;'><span class='badge bg-success'>AI</span> <span style='background:#f1f8e7;padding:0.5em 0.8em;border-radius:1em;display:inline-block;'>${msg.content}</span></div>`;
                 }
             }).join('');
+            
+            chatHistory.innerHTML = sessionHeader + messagesHtml;
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
 
@@ -2749,32 +3471,43 @@
                     const input = document.getElementById('aiSummaryChatInput');
                     const question = input.value.trim();
                     if (!question) return;
-                    aiSummaryChatSession.messages.push({ role: 'user', content: question });
+                    
+                    const currentSession = aiChatSessionsManager.getCurrentSession();
+                    if (!currentSession) {
+                        showTemporaryMessage('No active session', 'error');
+                        return;
+                    }
+                    
+                    aiChatSessionsManager.addMessage('user', question);
                     renderAISummaryChatHistory();
                     input.value = '';
+                    
                     // Call backend with full message history (excluding system prompt)
+                    const currentExplainPlan = aiChatSessionsManager.getCurrentExplainPlan();
+                    const hasRecommendations = aiChatSessionsManager.hasProvidedRecommendations();
                     fetch('/ai-summary-chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            explain: aiSummaryChatSession.explain,
-                            messages: aiSummaryChatSession.messages,
-                            search_query: document.getElementById('searchQuery').value || '',
-                            current_settings: getCurrentUISettings(),
-                            document_fields: aiSummaryChatSession.documentFields
+                            explain: currentExplainPlan.explain,
+                            messages: currentSession.messages,
+                            search_query: currentExplainPlan.searchQuery || document.getElementById('searchQuery').value || '',
+                            current_settings: currentExplainPlan.uiSettings || getCurrentUISettings(),
+                            document_fields: currentExplainPlan.documentFields,
+                            has_recommendations: hasRecommendations
                         })
                     })
                     .then(r => r.json())
                     .then(data => {
                         if (data.error) {
-                            aiSummaryChatSession.messages.push({ role: 'assistant', content: '[Error: ' + data.error + ']' });
+                            aiChatSessionsManager.addMessage('assistant', '[Error: ' + data.error + ']');
                         } else {
-                            aiSummaryChatSession.messages.push({ role: 'assistant', content: data.ai_message });
+                            aiChatSessionsManager.addMessage('assistant', data.ai_message);
                         }
                         renderAISummaryChatHistory();
                     })
                     .catch(e => {
-                        aiSummaryChatSession.messages.push({ role: 'assistant', content: '[Error: ' + e + ']' });
+                        aiChatSessionsManager.addMessage('assistant', '[Error: ' + e + ']');
                         renderAISummaryChatHistory();
                     });
                 }
