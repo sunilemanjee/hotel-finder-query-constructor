@@ -35,8 +35,19 @@
             padding: 0.5rem 1rem;
             border-radius: 0.25rem;
             border-left: 4px solid #0d6efd;
-            margin-bottom: 1rem;
             display: inline-block;
+        }
+        
+        .explanation-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .explanation-buttons .btn {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            white-space: nowrap;
         }
         .weight-controls {
             background-color: #f8f9fa;
@@ -114,15 +125,16 @@
         .field-value {
             margin-bottom: 0.75rem;
         }
-        .field-boost {
-            min-width: 150px;
-        }
-        .field-boost .form-check {
-            margin-bottom: 0;
-        }
-        .field-boost .form-check-label {
-            font-size: 0.8rem;
-            margin-bottom: 0;
+        .boost-value-display {
+            font-weight: bold;
+            color: #0d6efd;
+            background-color: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #dee2e6;
+            min-width: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
         }
         .property-name {
             font-size: 1.1rem;
@@ -293,6 +305,40 @@
             max-height: 300px;
             overflow: auto;
         }
+        
+        .visual-explanation-content {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 0.5em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .visual-explanation-content .progress {
+            height: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .visual-explanation-content .card {
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+        }
+        
+        .visual-explanation-content .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+        }
+        
+        .visual-explanation-content .badge {
+            font-size: 0.8em;
+        }
+        
+        .visual-explanation-content .alert {
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -308,54 +354,39 @@
                     </select>
                     <div class="form-text mt-1">
                         <small class="text-muted">
-                            <strong>Linear:</strong> Combines scores with weights<br>
+                            <strong>Linear:</strong> Combines scores with field boosts<br>
                             <strong>RRF:</strong> Fuses rankings without weights
                         </small>
                     </div>
                 </div>
 
-                <h5 class="mb-3">Search Component Weights</h5>
-                <div id="weightControls">
-                    <div class="form-text mb-2">
-                        <small class="text-muted">Adjust weights for linear retriever only</small>
-                    </div>
-                    <div class="weight-label">
-                        <label for="ada002Weight">E5 Semantic Search</label>
-                        <span class="weight-value" id="ada002WeightValue">0.0</span>
-                    </div>
-                    <input type="range" class="form-range" id="ada002Weight" min="0" max="5" step="0.1" value="0.0">
-                    
-                    <div class="weight-label mt-3">
-                        <label for="elserWeight">ELSER Semantic Search</label>
-                        <span class="weight-value" id="elserWeightValue">0.0</span>
-                    </div>
-                    <input type="range" class="form-range" id="elserWeight" min="0" max="5" step="0.1" value="0.0">
-                    
-                    <div class="weight-label mt-3">
-                        <label for="textWeight">Text Match</label>
-                        <span class="weight-value" id="textWeightValue">0.0</span>
-                    </div>
-                    <input type="range" class="form-range" id="textWeight" min="0" max="5" step="0.1" value="0.0">
-                    
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetWeights()">
-                            Reset All Weights to 0
-                        </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="forceClearAndRefreshQuery()">
-                            Clear & Refresh
-                        </button>
+                <!-- Linear Parameters (shown only when Linear is selected) -->
+                <div class="mt-4 d-none" id="linearParams">
+                    <h6 class="mb-3">Linear Parameters</h6>
+                    <div class="mb-3">
+                        <label for="linearRankWindowSize" class="form-label">Rank Window Size</label>
+                        <input type="number" class="form-control form-control-sm" id="linearRankWindowSize" value="20" min="1" max="1000">
+                        <div class="form-text">
+                            <small class="text-muted">Must be greater than or equal to the number of results</small>
+                        </div>
                     </div>
                 </div>
 
-                <div id="rrfControls" class="d-none">
-                    <div class="form-text mb-2">
-                        <small class="text-muted">RRF combines rankings without weights</small>
-                    </div>
+                <!-- RRF Parameters (shown only when RRF is selected) -->
+                <div class="mt-4 d-none" id="rrfParams">
+                    <h6 class="mb-3">RRF Parameters</h6>
                     <div class="mb-3">
                         <label for="rrfRankWindowSize" class="form-label">Rank Window Size</label>
-                        <input type="number" class="form-control form-control-sm" id="rrfRankWindowSize" value="20" min="10" max="200">
+                        <input type="number" class="form-control form-control-sm" id="rrfRankWindowSize" value="20" min="1" max="1000">
                         <div class="form-text">
-                            <small class="text-muted">Must be ≥ result size (default: 20)</small>
+                            <small class="text-muted">Must be greater than or equal to the number of results</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rrfRankConstant" class="form-label">Rank Constant</label>
+                        <input type="number" class="form-control form-control-sm" id="rrfRankConstant" value="20" min="1" max="1000">
+                        <div class="form-text">
+                            <small class="text-muted">Constant used in RRF formula (default: 20)</small>
                         </div>
                     </div>
                 </div>
@@ -376,6 +407,138 @@
                         <div class="form-text">
                             <small class="text-muted">Adds "explain": true to the query for detailed scoring information</small>
                         </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Match Fields</h6>
+                    <div class="form-text mb-2">
+                        <small class="text-muted">Select fields to search (Linear retriever supports boosts, RRF retriever supports field selection)</small>
+                    </div>
+                    
+                    <!-- Field Selection (RRF Retriever) -->
+                    <div class="mb-3 d-none" id="fieldSelectionSection">
+                        <h6 class="text-primary">Field Selection</h6>
+                        <div class="form-text mb-2">
+                            <small class="text-muted">Select fields to include in RRF search (boosting not supported)</small>
+                        </div>
+                        
+                        <!-- Semantic Fields -->
+                        <div class="mb-3">
+                            <h6 class="text-secondary">Semantic Fields</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectBodyContentE5" checked>
+                                <label class="form-check-label" for="selectBodyContentE5">Body Content E5 (Semantic)</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectBodyContentElser" checked>
+                                <label class="form-check-label" for="selectBodyContentElser">Body Content ELSER (Semantic)</label>
+                            </div>
+                        </div>
+
+                        <!-- Text Fields -->
+                        <div class="mb-3">
+                            <h6 class="text-secondary">Text Fields</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectTitle" checked>
+                                <label class="form-check-label" for="selectTitle">Title</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectPropertyDescription" checked>
+                                <label class="form-check-label" for="selectPropertyDescription">Property Description</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectPropertyFeatures" checked>
+                                <label class="form-check-label" for="selectPropertyFeatures">Property Features</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectMetaDescription" checked>
+                                <label class="form-check-label" for="selectMetaDescription">Meta Description</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="selectHeadings" checked>
+                                <label class="form-check-label" for="selectHeadings">Headings</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Field Boosts (Linear Retriever Only) -->
+                    <div class="mb-3 d-none" id="fieldBoostsSection">
+                        <h6 class="text-primary">Field Boosts</h6>
+                        <div class="form-text mb-2">
+                            <small class="text-muted">Adjust boost values from 0 (no boost) to 5 (maximum boost)</small>
+                        </div>
+                        
+                        <!-- Semantic Fields -->
+                        <div class="mb-3">
+                            <h6 class="text-secondary">Semantic Fields</h6>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostBodyContentE5" class="form-label mb-1">Body Content E5 (Semantic)</label>
+                                    <span class="boost-value-display" id="boostBodyContentE5Value">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostBodyContentE5" min="0" max="5" value="0" step="0.1">
+                            </div>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostBodyContentElser" class="form-label mb-1">Body Content ELSER (Semantic)</label>
+                                    <span class="boost-value-display" id="boostBodyContentElserValue">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostBodyContentElser" min="0" max="5" value="0" step="0.1">
+                            </div>
+                        </div>
+
+                        <!-- Text Fields -->
+                        <div class="mb-3">
+                            <h6 class="text-secondary">Text Fields</h6>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostTitle" class="form-label mb-1">Title</label>
+                                    <span class="boost-value-display" id="boostTitleValue">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostTitle" min="0" max="5" value="0" step="0.1">
+                            </div>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostPropertyDescription" class="form-label mb-1">Property Description</label>
+                                    <span class="boost-value-display" id="boostPropertyDescriptionValue">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostPropertyDescription" min="0" max="5" value="0" step="0.1">
+                            </div>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostPropertyFeatures" class="form-label mb-1">Property Features</label>
+                                    <span class="boost-value-display" id="boostPropertyFeaturesValue">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostPropertyFeatures" min="0" max="5" value="0" step="0.1">
+                            </div>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostMetaDescription" class="form-label mb-1">Meta Description</label>
+                                    <span class="boost-value-display" id="boostMetaDescriptionValue">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostMetaDescription" min="0" max="5" value="0" step="0.1">
+                            </div>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="boostHeadings" class="form-label mb-1">Headings</label>
+                                    <span class="boost-value-display" id="boostHeadingsValue">0</span>
+                                </div>
+                                <input type="range" class="form-range" id="boostHeadings" min="0" max="5" value="0" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2 d-none" id="resetBoostsButton">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetFieldBoosts()">
+                            Reset All Boosts to 0
+                        </button>
+                    </div>
+                    
+                    <div class="mt-2 d-none" id="resetSelectionButton">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetFieldSelection()">
+                            Select All Fields
+                        </button>
                     </div>
                 </div>
 
@@ -439,139 +602,6 @@
                             <small class="text-muted">$0</small>
                             <small class="text-muted">$10M</small>
                         </div>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <h6 class="mb-3">Text Match Fields</h6>
-                    <div class="mb-3">
-                        <label for="multiMatchType" class="form-label">Multi-Match Type</label>
-                        <select class="form-select" id="multiMatchType">
-                            <option value="best_fields">Best Fields (default)</option>
-                            <option value="most_fields">Most Fields</option>
-                        </select>
-                        <div class="form-text" id="multiMatchDescription">
-                            <strong>Best Fields:</strong> Uses the score from the best matching field
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldTitle">
-                            <label class="form-check-label me-2" for="fieldTitle">
-                                Title
-                            </label>
-                            <div class="field-boost ms-auto d-none" id="fieldTitleBoost">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input" type="checkbox" id="fieldTitleBoostCheck">
-                                        <label class="form-check-label" for="fieldTitleBoostCheck">Boost</label>
-                                    </div>
-                                    <div class="boost-value d-none" id="fieldTitleBoostValue">
-                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldPropertyDescription" checked>
-                            <label class="form-check-label me-2" for="fieldPropertyDescription">
-                                Property Description
-                            </label>
-                            <div class="field-boost ms-auto d-none" id="fieldPropertyDescriptionBoost">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input" type="checkbox" id="fieldPropertyDescriptionBoostCheck">
-                                        <label class="form-check-label" for="fieldPropertyDescriptionBoostCheck">Boost</label>
-                                    </div>
-                                    <div class="boost-value d-none" id="fieldPropertyDescriptionBoostValue">
-                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldPropertyFeatures">
-                            <label class="form-check-label me-2" for="fieldPropertyFeatures">
-                                Property Features
-                            </label>
-                            <div class="field-boost ms-auto d-none" id="fieldPropertyFeaturesBoost">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input" type="checkbox" id="fieldPropertyFeaturesBoostCheck">
-                                        <label class="form-check-label" for="fieldPropertyFeaturesBoostCheck">Boost</label>
-                                    </div>
-                                    <div class="boost-value d-none" id="fieldPropertyFeaturesBoostValue">
-                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldMetaDescription">
-                            <label class="form-check-label me-2" for="fieldMetaDescription">
-                                Meta Description
-                            </label>
-                            <div class="field-boost ms-auto d-none" id="fieldMetaDescriptionBoost">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input" type="checkbox" id="fieldMetaDescriptionBoostCheck">
-                                        <label class="form-check-label" for="fieldMetaDescriptionBoostCheck">Boost</label>
-                                    </div>
-                                    <div class="boost-value d-none" id="fieldMetaDescriptionBoostValue">
-                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldHeadings">
-                            <label class="form-check-label me-2" for="fieldHeadings">
-                                Headings
-                            </label>
-                            <div class="field-boost ms-auto d-none" id="fieldHeadingsBoost">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input" type="checkbox" id="fieldHeadingsBoostCheck">
-                                        <label class="form-check-label" for="fieldHeadingsBoostCheck">Boost</label>
-                                    </div>
-                                    <div class="boost-value d-none" id="fieldHeadingsBoostValue">
-                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-check mb-2">
-                        <div class="d-flex align-items-center">
-                            <input class="form-check-input" type="checkbox" id="fieldBodyContent" checked>
-                            <label class="form-check-label me-2" for="fieldBodyContent">
-                                Body Content
-                            </label>
-                            <div class="field-boost ms-auto d-none" id="fieldBodyContentBoost">
-                                <div class="d-flex align-items-center">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input" type="checkbox" id="fieldBodyContentBoostCheck">
-                                        <label class="form-check-label" for="fieldBodyContentBoostCheck">Boost</label>
-                                    </div>
-                                    <div class="boost-value d-none" id="fieldBodyContentBoostValue">
-                                        <input type="number" class="form-control form-control-sm" style="width: 80px;" placeholder="2.0" step="0.1" min="0.1" value="2.0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetFieldBoosts()">
-                            Reset All Boosts
-                        </button>
                     </div>
                 </div>
 
@@ -806,57 +836,49 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Update weight value displays and query
-        let updateQueryTimeout;
-        document.querySelectorAll('input[type="range"]').forEach(slider => {
-            const valueDisplay = document.getElementById(slider.id + 'Value');
-            slider.addEventListener('input', () => {
-                const exactValue = parseFloat(slider.value);
-                const displayValue = exactValue.toFixed(1);
-                valueDisplay.textContent = displayValue;
-                
-                // Debug: Show the exact value vs displayed value
-                console.log(`Slider ${slider.id}: exact value = ${exactValue}, displayed = ${displayValue}`);
-                
-                // Debounce the query update to prevent too many rapid requests
-                clearTimeout(updateQueryTimeout);
-                updateQueryTimeout = setTimeout(() => {
-                    console.log(`Debounced update for slider ${slider.id}`);
-                    updateQuery();
-                }, 300); // Wait 300ms after slider stops moving
-            });
-            
-            // Force update when user stops dragging
-            slider.addEventListener('change', () => {
-                console.log(`Slider ${slider.id} change event - forcing immediate update`);
-                clearTimeout(updateQueryTimeout);
-                updateQuery();
-            });
-        });
-
         // Add event listener for retriever type selection
         document.getElementById('retrieverType').addEventListener('change', function() {
-            const weightControls = document.getElementById('weightControls');
-            const rrfControls = document.getElementById('rrfControls');
             const retrieverType = this.value;
             
-            // Show/hide controls based on retriever type
+            // Show/hide boost controls based on retriever type
+            const fieldBoostsSection = document.getElementById('fieldBoostsSection');
+            const fieldSelectionSection = document.getElementById('fieldSelectionSection');
+            const resetBoostsButton = document.getElementById('resetBoostsButton');
+            const resetSelectionButton = document.getElementById('resetSelectionButton');
+            
             if (retrieverType === 'linear') {
-                weightControls.classList.remove('hidden');
-                rrfControls.classList.add('d-none');
+                fieldBoostsSection.classList.remove('d-none');
+                fieldSelectionSection.classList.add('d-none');
+                resetBoostsButton.classList.remove('d-none');
+                resetSelectionButton.classList.add('d-none');
             } else if (retrieverType === 'rrf') {
-                weightControls.classList.add('hidden');
-                rrfControls.classList.remove('d-none');
-                
-                // Validate RRF rank window size when switching to RRF
-                const resultSize = parseInt(document.getElementById('resultSize').value);
-                const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
-                rrfRankWindowSize.min = resultSize;
-                if (parseInt(rrfRankWindowSize.value) < resultSize) {
-                    rrfRankWindowSize.value = resultSize;
-                    showValidationMessage(`Rank window size adjusted to ${resultSize} (must be ≥ result size)`);
-                }
+                fieldBoostsSection.classList.add('d-none');
+                fieldSelectionSection.classList.remove('d-none');
+                resetBoostsButton.classList.add('d-none');
+                resetSelectionButton.classList.remove('d-none');
+            } else {
+                fieldBoostsSection.classList.add('d-none');
+                fieldSelectionSection.classList.add('d-none');
+                resetBoostsButton.classList.add('d-none');
+                resetSelectionButton.classList.add('d-none');
+            }
+            
+            // Show/hide Linear parameters based on retriever type
+            const linearParams = document.getElementById('linearParams');
+            if (retrieverType === 'linear') {
+                linearParams.classList.remove('d-none');
+            } else {
+                linearParams.classList.add('d-none');
+            }
+            
+            // Show/hide RRF parameters based on retriever type
+            const rrfParams = document.getElementById('rrfParams');
+            if (retrieverType === 'rrf') {
+                rrfParams.classList.remove('d-none');
+            } else {
+                rrfParams.classList.add('d-none');
             }
             
             updateQuery();
@@ -883,45 +905,60 @@
         document.getElementById('rerankerField').addEventListener('change', updateQuery);
         document.getElementById('rankWindowSize').addEventListener('change', updateQuery);
 
-        // Add event listener for multi-match type
-        document.getElementById('multiMatchType').addEventListener('change', function() {
-            updateMultiMatchDescription();
-            updateQuery();
-        });
+
 
         // Add event listener for result size
         document.getElementById('resultSize').addEventListener('change', function() {
             const resultSize = parseInt(this.value);
+            
+            // Update RRF rank window size
             const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
             rrfRankWindowSize.min = resultSize;
             if (parseInt(rrfRankWindowSize.value) < resultSize) {
                 rrfRankWindowSize.value = resultSize;
             }
+            
+            // Update Linear rank window size
+            const linearRankWindowSize = document.getElementById('linearRankWindowSize');
+            linearRankWindowSize.min = resultSize;
+            if (parseInt(linearRankWindowSize.value) < resultSize) {
+                linearRankWindowSize.value = resultSize;
+            }
+            
             updateQuery();
         });
+
+        // Add event listeners for Linear parameters
+        document.getElementById('linearRankWindowSize').addEventListener('input', updateQuery);
+        
+        // Add event listeners for RRF parameters
+        document.getElementById('rrfRankWindowSize').addEventListener('input', updateQuery);
+        document.getElementById('rrfRankConstant').addEventListener('input', updateQuery);
+
+        // Add event listeners for RRF field selection checkboxes
+        document.getElementById('selectBodyContentE5').addEventListener('change', updateQuery);
+        document.getElementById('selectBodyContentElser').addEventListener('change', updateQuery);
+        document.getElementById('selectTitle').addEventListener('change', updateQuery);
+        document.getElementById('selectPropertyDescription').addEventListener('change', updateQuery);
+        document.getElementById('selectPropertyFeatures').addEventListener('change', updateQuery);
+        document.getElementById('selectMetaDescription').addEventListener('change', updateQuery);
+        document.getElementById('selectHeadings').addEventListener('change', updateQuery);
+
+
 
         // Add event listener for explain checkbox
         document.getElementById('enableExplain').addEventListener('change', updateQuery);
 
-        // Add listeners for field selection checkboxes
-        document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                toggleFieldBoost(this);
+        // Add event listeners for boost sliders
+        document.querySelectorAll('input[type="range"][id^="boost"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                // Update the display value
+                const valueDisplay = document.getElementById(this.id + 'Value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = this.value;
+                }
                 updateQuery();
             });
-        });
-
-        // Add event listeners for boost checkboxes
-        document.querySelectorAll('input[type="checkbox"][id$="BoostCheck"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                toggleBoostValue(this);
-                updateQuery();
-            });
-        });
-
-        // Add event listeners for boost value inputs
-        document.querySelectorAll('.boost-value input[type="number"]').forEach(input => {
-            input.addEventListener('input', updateQuery);
         });
 
         // Add event listeners for location filter controls
@@ -983,16 +1020,7 @@
             element.addEventListener('change', updateQuery);
         });
 
-        // Add event listener for RRF rank window size
-        document.getElementById('rrfRankWindowSize').addEventListener('change', function() {
-            const resultSize = parseInt(document.getElementById('resultSize').value);
-            const rrfRankWindowSize = parseInt(this.value);
-            if (rrfRankWindowSize < resultSize) {
-                this.value = resultSize;
-                showValidationMessage(`Rank window size adjusted to ${resultSize} (must be ≥ result size)`);
-            }
-            updateQuery();
-        });
+
 
         function updateQuery() {
             const queryDisplay = document.getElementById('generatedQuery');
@@ -1008,21 +1036,20 @@
             }
             
             if (searchQuery) {
-                const weights = getRoundedWeights();
-                
-                // Debug logging
-                console.log('Current weights being sent:', weights);
-                console.log('ELSER weight specifically:', weights.elser);
-                
                 const enableReranking = document.getElementById('enableReranking').checked;
                 const rerankerField = document.getElementById('rerankerField').value;
                 const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
                 const selectedFields = getSelectedFields();
-                const multiMatchType = document.getElementById('multiMatchType').value;
                 const highlightConfig = getHighlightConfig();
                 const resultSize = parseInt(document.getElementById('resultSize').value);
                 const retrieverType = document.getElementById('retrieverType').value;
+                
+                // Get Linear parameters
+                const linearRankWindowSize = parseInt(document.getElementById('linearRankWindowSize').value);
+                
+                // Get RRF parameters
                 const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
+                const rrfRankConstant = parseInt(document.getElementById('rrfRankConstant').value);
                 
                 // Get explain parameter
                 const enableExplain = document.getElementById('enableExplain').checked;
@@ -1040,18 +1067,22 @@
                 // Only include price parameters if price is selected
                 const requestBody = {
                     query: searchQuery,
-                    weights: weights,
                     enableReranking: enableReranking,
                     rerankingParams: {
                         rerankerField: rerankerField,
                         rankWindowSize: rankWindowSize
                     },
                     selectedFields: selectedFields,
-                    multiMatchType: multiMatchType,
                     highlightConfig: highlightConfig,
                     resultSize: resultSize,
                     retrieverType: retrieverType,
-                    rrfRankWindowSize: rrfRankWindowSize,
+                    linearParams: {
+                        rank_window_size: linearRankWindowSize
+                    },
+                    rrfParams: {
+                        rank_window_size: rrfRankWindowSize,
+                        rank_constant: rrfRankConstant
+                    },
                     enableExplain: enableExplain,
                     enableLocationFilter: enableLocationFilter,
                     locationParams: {
@@ -1148,17 +1179,17 @@
             const resultsDiv = document.getElementById('results');
             const loadingDiv = document.getElementById('loading');
 
-            // Get weight values using rounded weights
-            const weights = getRoundedWeights();
             const enableReranking = document.getElementById('enableReranking').checked;
             const rerankerField = document.getElementById('rerankerField').value;
             const rankWindowSize = parseInt(document.getElementById('rankWindowSize').value);
             const selectedFields = getSelectedFields();
-            const multiMatchType = document.getElementById('multiMatchType').value;
             const highlightConfig = getHighlightConfig();
             const resultSize = parseInt(document.getElementById('resultSize').value);
             const retrieverType = document.getElementById('retrieverType').value;
+
+            // Get RRF parameters
             const rrfRankWindowSize = parseInt(document.getElementById('rrfRankWindowSize').value);
+            const rrfRankConstant = parseInt(document.getElementById('rrfRankConstant').value);
 
             // Get explain parameter
             const enableExplain = document.getElementById('enableExplain').checked;
@@ -1185,18 +1216,19 @@
             // Always include price parameters
             const requestBody = {
                 query: query,
-                weights: weights,
                 enableReranking: enableReranking,
                 rerankingParams: {
                     rerankerField: rerankerField,
                     rankWindowSize: rankWindowSize
                 },
                 selectedFields: selectedFields,
-                multiMatchType: multiMatchType,
                 highlightConfig: highlightConfig,
                 resultSize: resultSize,
                 retrieverType: retrieverType,
-                rrfRankWindowSize: rrfRankWindowSize,
+                rrfParams: {
+                    rank_window_size: rrfRankWindowSize,
+                    rank_constant: rrfRankConstant
+                },
                 enableExplain: enableExplain,
                 enableLocationFilter: enableLocationFilter,
                 locationParams: {
@@ -1280,7 +1312,28 @@
 
                     return `
                         <div class="result-card">
-                            <div class="score">Score: ${result.score}</div>
+                            <div class="mb-3">
+                                <div class="score">Score: ${result.score}</div>
+                                ${result.explanation ? `
+                                <div class="explanation-buttons mt-2">
+                                    <button class="btn btn-outline-success btn-sm" type="button" onclick='openAISummaryChat(${JSON.stringify(result.explanation)}, "${result._id || ''}")'>🤖 Advisor</button>
+                                    <button class="btn btn-outline-primary btn-sm" type="button" onclick='generateVisualExplanation(${JSON.stringify(result.explanation)}, "${result._id || ''}")'>📊 Visual Score Breakdown</button>
+                                    <button class="btn btn-outline-info btn-sm" type="button" onclick="toggleExplanationSummary('explanation-summary-${result._id}', 'explanation-json-${result._id}')">Show Raw Explain Output</button>
+                                </div>
+                                <div id="explanation-summary-${result._id}" class="explanation-summary mt-2">
+                                    ${renderExplanationSummary(result.explanation, result._id)}
+                                </div>
+                                <div id="visual-explanation-${result._id}" class="visual-explanation-content d-none mt-2">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Generating visual explanation...</span>
+                                        </div>
+                                        <p class="mt-2">Generating visual explanation...</p>
+                                    </div>
+                                </div>
+                                <pre id="explanation-json-${result._id}" class="explanation-json d-none mt-2" style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:4px; padding:1em; max-height:300px; overflow:auto;">${JSON.stringify(result.explanation, null, 2)}</pre>
+                                ` : ''}
+                            </div>
                             <div class="document-id" onclick="toggleDocumentId(this)">
                                 <div class="document-id-header">
                                     <div class="document-id-left">
@@ -1350,18 +1403,7 @@
                                     </div>
                                 </div>
                             </div>
-                            ${result.explanation ? `
-                            <div class="mt-3">
-                                <div class="d-flex gap-2 mb-2">
-                                    <button class="btn btn-outline-success btn-sm" type="button" onclick='openAISummaryChat(${JSON.stringify(result.explanation)}, "${result._id || ''}")'>🤖 Query Advisor</button>
-                                    <button class="btn btn-outline-info btn-sm" type="button" onclick="toggleExplanationSummary('explanation-summary-${result._id}', 'explanation-json-${result._id}')">Show Raw Explain Output</button>
-                                </div>
-                                <div id="explanation-summary-${result._id}" class="explanation-summary">
-                                    ${renderExplanationSummary(result.explanation, result._id)}
-                                </div>
-                                <pre id="explanation-json-${result._id}" class="explanation-json d-none" style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:4px; padding:1em; margin-top:0.5em; max-height:300px; overflow:auto;">${JSON.stringify(result.explanation, null, 2)}</pre>
-                            </div>
-                            ` : ''}
+
                             ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                         </div>
                     `;
@@ -1430,6 +1472,9 @@
                         }
                     });
                 }
+
+                // After search results are loaded and rendered (in the .then(data => { ... }) of performSearch):
+                window.lastSearchResults = data.results;
             })
             .catch(error => {
                 loadingDiv.classList.add('d-none');
@@ -1524,7 +1569,32 @@
 
                         return `
                             <div class="result-card">
-                                <div class="score">Score: ${result.score}</div>
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="score">Score: ${result.score}</div>
+                                        ${result.explanation ? `
+                                        <div class="explanation-buttons ms-3">
+                                            <button class="btn btn-outline-success btn-sm" type="button" onclick='openAISummaryChat(${JSON.stringify(result.explanation)}, "${result._id || ''}")'>🤖 Advisor</button>
+                                            <button class="btn btn-outline-primary btn-sm" type="button" onclick='generateVisualExplanation(${JSON.stringify(result.explanation)}, "${result._id || ''}")'>📊 Visual Score Breakdown</button>
+                                            <button class="btn btn-outline-info btn-sm" type="button" onclick="toggleExplanationSummary('explanation-summary-${result._id}', 'explanation-json-${result._id}')">Show Raw Explain Output</button>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                    ${result.explanation ? `
+                                    <div id="explanation-summary-${result._id}" class="explanation-summary mt-2">
+                                        ${renderExplanationSummary(result.explanation, result._id)}
+                                    </div>
+                                    <div id="visual-explanation-${result._id}" class="visual-explanation-content d-none mt-2">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Generating visual explanation...</span>
+                                            </div>
+                                            <p class="mt-2">Generating visual explanation...</p>
+                                        </div>
+                                    </div>
+                                    <pre id="explanation-json-${result._id}" class="explanation-json d-none mt-2" style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:4px; padding:1em; max-height:300px; overflow:auto;">${JSON.stringify(result.explanation, null, 2)}</pre>
+                                    ` : ''}
+                                </div>
                                 <div class="document-id" onclick="toggleDocumentId(this)">
                                     <div class="document-id-header">
                                         <div class="document-id-left">
@@ -1594,18 +1664,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                ${result.explanation ? `
-                                <div class="mt-3">
-                                    <div class="d-flex gap-2 mb-2">
-                                        <button class="btn btn-outline-success btn-sm" type="button" onclick='openAISummaryChat(${JSON.stringify(result.explanation)}, "${result._id || ''}")'>🤖 Query Advisor</button>
-                                        <button class="btn btn-outline-info btn-sm" type="button" onclick="toggleExplanationSummary('explanation-summary-${result._id}', 'explanation-json-${result._id}')">Show Raw Explain Output</button>
-                                    </div>
-                                    <div id="explanation-summary-${result._id}" class="explanation-summary">
-                                        ${renderExplanationSummary(result.explanation, result._id)}
-                                    </div>
-                                    <pre id="explanation-json-${result._id}" class="explanation-json d-none" style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:4px; padding:1em; margin-top:0.5em; max-height:300px; overflow:auto;">${JSON.stringify(result.explanation, null, 2)}</pre>
-                                </div>
-                                ` : ''}
+
                                 ${highlightsHtml ? `<div class="content-divider"></div>${highlightsHtml}` : ''}
                             </div>
                         `;
@@ -1814,45 +1873,57 @@
             showTemporaryMessage(message, type);
         }
 
-        // Initialize RRF rank window size minimum value
-        document.addEventListener('DOMContentLoaded', function() {
-            const resultSize = parseInt(document.getElementById('resultSize').value);
-            const rrfRankWindowSize = document.getElementById('rrfRankWindowSize');
-            rrfRankWindowSize.min = resultSize;
-            
-            // Ensure RRF rank window size is at least equal to result size
-            if (parseInt(rrfRankWindowSize.value) < resultSize) {
-                rrfRankWindowSize.value = resultSize;
-            }
-        });
+
 
         function getSelectedFields() {
-            const fieldMappings = {
-                'fieldTitle': 'title',
-                'fieldPropertyDescription': 'property-description',
-                'fieldPropertyFeatures': 'property-features',
-                'fieldMetaDescription': 'meta_description',
-                'fieldHeadings': 'headings',
-                'fieldBodyContent': 'body_content'
-            };
+            const retrieverType = document.getElementById('retrieverType').value;
             const selectedFields = [];
-            Object.keys(fieldMappings).forEach(checkboxId => {
-                if (document.getElementById(checkboxId).checked) {
-                    const fieldName = fieldMappings[checkboxId];
-                    const boostCheckId = checkboxId + 'BoostCheck';
-                    const boostCheck = document.getElementById(boostCheckId);
-                    
-                    // Only add boost if the boost checkbox is checked
-                    if (boostCheck && boostCheck.checked) {
-                        const boostValueId = checkboxId + 'BoostValue';
-                        const boostInput = document.querySelector(`#${boostValueId} input[type="number"]`);
-                        const boostValue = boostInput ? parseFloat(boostInput.value) : 2.0;
-                        selectedFields.push(`${fieldName}^${boostValue}`);
-                    } else {
+            
+            if (retrieverType === 'linear') {
+                // For linear retriever, use boost sliders
+                const fieldMappings = {
+                    'boostBodyContentE5': 'body_content_e5',
+                    'boostBodyContentElser': 'body_content_elser',
+                    'boostTitle': 'title',
+                    'boostPropertyDescription': 'property-description',
+                    'boostPropertyFeatures': 'property-features',
+                    'boostMetaDescription': 'meta_description',
+                    'boostHeadings': 'headings'
+                };
+                
+                Object.keys(fieldMappings).forEach(sliderId => {
+                    const slider = document.getElementById(sliderId);
+                    if (slider) {
+                        const boostValue = parseFloat(slider.value);
+                        const fieldName = fieldMappings[sliderId];
+                        
+                        // Only include fields with boost > 0
+                        if (boostValue > 0) {
+                            selectedFields.push(`${fieldName}^${boostValue}`);
+                        }
+                    }
+                });
+            } else if (retrieverType === 'rrf') {
+                // For RRF retriever, use checkboxes
+                const fieldMappings = {
+                    'selectBodyContentE5': 'body_content_e5',
+                    'selectBodyContentElser': 'body_content_elser',
+                    'selectTitle': 'title',
+                    'selectPropertyDescription': 'property-description',
+                    'selectPropertyFeatures': 'property-features',
+                    'selectMetaDescription': 'meta_description',
+                    'selectHeadings': 'headings'
+                };
+                
+                Object.keys(fieldMappings).forEach(checkboxId => {
+                    const checkbox = document.getElementById(checkboxId);
+                    if (checkbox && checkbox.checked) {
+                        const fieldName = fieldMappings[checkboxId];
                         selectedFields.push(fieldName);
                     }
-                }
-            });
+                });
+            }
+            
             return selectedFields;
         }
 
@@ -1897,61 +1968,32 @@
             return parseInt(document.getElementById('maxPriceSlider').value) || 10000000;
         }
 
-        function resetWeights() {
-            document.querySelectorAll('input[type="range"]').forEach(slider => {
+
+
+
+
+        function resetFieldBoosts() {
+            // Reset all boost sliders to 0
+            document.querySelectorAll('input[type="range"][id^="boost"]').forEach(slider => {
                 slider.value = 0;
+                // Update the display value
                 const valueDisplay = document.getElementById(slider.id + 'Value');
-                valueDisplay.textContent = '0.0';
+                if (valueDisplay) {
+                    valueDisplay.textContent = '0';
+                }
             });
             updateQuery();
         }
 
-        function toggleFieldBoost(checkbox) {
-            const boostId = checkbox.id + 'Boost';
-            const boostDiv = document.getElementById(boostId);
-            if (boostDiv) {
-                boostDiv.classList.toggle('d-none', !checkbox.checked);
-            }
-        }
-
-        function toggleBoostValue(checkbox) {
-            const boostValueId = checkbox.id.replace('Check', 'Value');
-            const boostValueDiv = document.getElementById(boostValueId);
-            if (boostValueDiv) {
-                boostValueDiv.classList.toggle('d-none', !checkbox.checked);
-            }
-        }
-
-        function resetFieldBoosts() {
-            // Uncheck all boost checkboxes
-            document.querySelectorAll('input[type="checkbox"][id$="BoostCheck"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            // Reset all boost values to 2.0
-            document.querySelectorAll('.boost-value input[type="number"]').forEach(input => {
-                input.value = '2.0';
-            });
-            // Hide all boost controls
-            document.querySelectorAll('.field-boost').forEach(div => {
-                div.classList.add('d-none');
-            });
-            // Hide all boost value inputs
-            document.querySelectorAll('.boost-value').forEach(div => {
-                div.classList.add('d-none');
+        function resetFieldSelection() {
+            // Reset all field selection checkboxes to checked (default state)
+            document.querySelectorAll('input[type="checkbox"][id^="select"]').forEach(checkbox => {
+                checkbox.checked = true;
             });
             updateQuery();
         }
         
-        // Function to get properly rounded weight values
-        function getRoundedWeights() {
-            const weights = {
-                ada002: Math.round(parseFloat(document.getElementById('ada002Weight').value) * 10) / 10,
-                elser: Math.round(parseFloat(document.getElementById('elserWeight').value) * 10) / 10,
-                text: Math.round(parseFloat(document.getElementById('textWeight').value) * 10) / 10
-            };
-            console.log('getRoundedWeights() called, returning:', weights);
-            return weights;
-        }
+
         
         // Function to force clear and refresh the query display
         function forceClearAndRefreshQuery() {
@@ -1963,17 +2005,7 @@
             }, 100);
         }
 
-        // Function to update multi-match description based on selection
-        function updateMultiMatchDescription() {
-            const multiMatchType = document.getElementById('multiMatchType').value;
-            const descriptionDiv = document.getElementById('multiMatchDescription');
-            
-            if (multiMatchType === 'best_fields') {
-                descriptionDiv.innerHTML = '<strong>Best Fields:</strong> Uses the score from the best matching field';
-            } else if (multiMatchType === 'most_fields') {
-                descriptionDiv.innerHTML = '<strong>Most Fields:</strong> Combines scores from all matching fields';
-            }
-        }
+
 
         // Function to toggle explanation visibility
         function toggleExplanation(explanationId) {
@@ -1985,19 +2017,56 @@
 
         // Initialize page and update query with current values
         function initializePage() {
-            console.log('Page initialized. Current weights:', getRoundedWeights());
+            console.log('Page initialized.');
             // Initialize price filter displays
             updatePriceFilter();
-            // Initialize multi-match description
-            updateMultiMatchDescription();
-            // Initialize field boost controls visibility
-            document.querySelectorAll('input[type="checkbox"][id^="field"]').forEach(checkbox => {
-                toggleFieldBoost(checkbox);
-            });
-            // Initialize boost value visibility
-            document.querySelectorAll('input[type="checkbox"][id$="BoostCheck"]').forEach(checkbox => {
-                toggleBoostValue(checkbox);
-            });
+            
+            // Initialize linear rank window size to match result size
+            const resultSize = parseInt(document.getElementById('resultSize').value);
+            const linearRankWindowSize = document.getElementById('linearRankWindowSize');
+            linearRankWindowSize.value = resultSize;
+            linearRankWindowSize.min = resultSize;
+            
+            // Initialize field sections based on retriever type
+            const retrieverType = document.getElementById('retrieverType').value;
+            const fieldBoostsSection = document.getElementById('fieldBoostsSection');
+            const fieldSelectionSection = document.getElementById('fieldSelectionSection');
+            const resetBoostsButton = document.getElementById('resetBoostsButton');
+            const resetSelectionButton = document.getElementById('resetSelectionButton');
+            
+            if (retrieverType === 'linear') {
+                fieldBoostsSection.classList.remove('d-none');
+                fieldSelectionSection.classList.add('d-none');
+                resetBoostsButton.classList.remove('d-none');
+                resetSelectionButton.classList.add('d-none');
+            } else if (retrieverType === 'rrf') {
+                fieldBoostsSection.classList.add('d-none');
+                fieldSelectionSection.classList.remove('d-none');
+                resetBoostsButton.classList.add('d-none');
+                resetSelectionButton.classList.remove('d-none');
+            } else {
+                fieldBoostsSection.classList.add('d-none');
+                fieldSelectionSection.classList.add('d-none');
+                resetBoostsButton.classList.add('d-none');
+                resetSelectionButton.classList.add('d-none');
+            }
+            
+            // Initialize Linear parameters
+            const linearParams = document.getElementById('linearParams');
+            if (retrieverType === 'linear') {
+                linearParams.classList.remove('d-none');
+            } else {
+                linearParams.classList.add('d-none');
+            }
+            
+            // Initialize RRF parameters
+            const rrfParams = document.getElementById('rrfParams');
+            if (retrieverType === 'rrf') {
+                rrfParams.classList.remove('d-none');
+            } else {
+                rrfParams.classList.add('d-none');
+            }
+            
             // Update query if there's already a search query
             if (document.getElementById('searchQuery').value) {
                 updateQuery();
@@ -2011,7 +2080,21 @@
         function toggleExplanationSummary(summaryId, jsonId) {
             const summaryDiv = document.getElementById(summaryId);
             const jsonDiv = document.getElementById(jsonId);
+            const docId = summaryId.replace('explanation-summary-', '');
+            const visualDiv = document.getElementById(`visual-explanation-${docId}`);
+            
             if (summaryDiv && jsonDiv) {
+                // Hide visual explanation if it's showing
+                if (visualDiv) {
+                    visualDiv.classList.add('d-none');
+                }
+                
+                // Reset visual explanation button text
+                const visualBtn = document.querySelector(`button[onclick*="generateVisualExplanation"][onclick*="${docId}"]`);
+                if (visualBtn) {
+                    visualBtn.innerText = '📊 Visual Score Breakdown';
+                }
+                
                 summaryDiv.classList.toggle('d-none');
                 jsonDiv.classList.toggle('d-none');
                 // Change button text
@@ -2024,88 +2107,284 @@
             }
         }
 
-        // Render summary table and bar chart for explanation
-        function renderExplanationSummary(explanation, id) {
-            // Try to extract weighted linear combination details
-            let rows = '';
-            let bars = '';
-            let total = null;
-            let weights = [];
-            let scores = [];
-            let contributions = [];
-            let found = false;
-            let componentDetails = [];
+        // Get current search settings
+        function getCurrentSearchSettings() {
+            const settings = {
+                retrieverType: document.getElementById('retrieverType').value,
+                selectedFields: []
+            };
             
-            // Find the weighted linear combination node
-            if (explanation.details && Array.isArray(explanation.details)) {
-                for (const detail of explanation.details) {
-                    if (detail.description && detail.description.startsWith('weighted linear combination score')) {
-                        // Extract weights and scores from description
-                        const scoreMatch = detail.description.match(/score: \[([\d.,\s]+)\].*normalized scores \[([\d.,\s]+)\] and weights \[([\d.,\s]+)\]/);
-                        if (scoreMatch) {
-                            total = parseFloat(scoreMatch[1].split(',')[0]);
-                            scores = scoreMatch[2].split(',').map(s => parseFloat(s.trim()));
-                            weights = scoreMatch[3].split(',').map(s => parseFloat(s.trim()));
-                            contributions = weights.map((w, i) => w * (scores[i] || 0));
-                            found = true;
+            // Get selected fields based on retriever type
+            if (settings.retrieverType === 'linear') {
+                // For linear retriever, get fields with non-zero boosts
+                const fieldBoosts = {
+                    'body_content_e5': parseFloat(document.getElementById('boostBodyContentE5').value),
+                    'body_content_elser': parseFloat(document.getElementById('boostBodyContentElser').value),
+                    'title': parseFloat(document.getElementById('boostTitle').value),
+                    'property-description': parseFloat(document.getElementById('boostPropertyDescription').value),
+                    'property-features': parseFloat(document.getElementById('boostPropertyFeatures').value),
+                    'meta_description': parseFloat(document.getElementById('boostMetaDescription').value),
+                    'headings': parseFloat(document.getElementById('boostHeadings').value)
+                };
+                
+                // Add fields that have non-zero boosts
+                Object.entries(fieldBoosts).forEach(([field, boost]) => {
+                    if (boost > 0) {
+                        settings.selectedFields.push(field);
+                    }
+                });
+            } else if (settings.retrieverType === 'rrf') {
+                // For RRF retriever, get checked fields
+                const checkboxes = [
+                    'selectBodyContentE5',
+                    'selectBodyContentElser', 
+                    'selectTitle',
+                    'selectPropertyDescription',
+                    'selectPropertyFeatures',
+                    'selectMetaDescription',
+                    'selectHeadings'
+                ];
+                
+                const fieldMap = {
+                    'selectBodyContentE5': 'body_content_e5',
+                    'selectBodyContentElser': 'body_content_elser',
+                    'selectTitle': 'title',
+                    'selectPropertyDescription': 'property-description',
+                    'selectPropertyFeatures': 'property-features',
+                    'selectMetaDescription': 'meta_description',
+                    'selectHeadings': 'headings'
+                };
+                
+                checkboxes.forEach(checkboxId => {
+                    const checkbox = document.getElementById(checkboxId);
+                    if (checkbox && checkbox.checked) {
+                        settings.selectedFields.push(fieldMap[checkboxId]);
+                    }
+                });
+            }
+            
+            return settings;
+        }
+
+        // Determine component names based on the explain JSON and current settings
+        function determineComponentNames(explanation, numComponents, currentSettings = null) {
+            const componentNames = [];
+            const usedModels = new Set();
+            const fieldMatches = []; // Array to store field names in order
+            const componentTypes = []; // Array to store the type of each component
+            
+            // Find the weighted linear combination node and analyze its components
+            function analyzeWeightedComponents(node) {
+                if (!node) return;
+                
+                // Look for weighted linear combination
+                if (node.description && node.description.startsWith('weighted linear combination score')) {
+                    if (node.details && Array.isArray(node.details)) {
+                        // Analyze each component in the weighted combination
+                        node.details.forEach((component, index) => {
+                            let fieldName = null;
+                            let isSemantic = false;
+                            let semanticType = null;
                             
-                            // Extract detailed breakdown for each component
-                            if (detail.details && Array.isArray(detail.details)) {
-                                componentDetails = detail.details.map((compDetail, index) => {
-                                    return extractComponentDetails(compDetail, index);
-                                });
+                            // Recursively search this component for field information
+                            function searchComponent(compNode) {
+                                if (!compNode) return;
+                                
+                                if (compNode.description) {
+                                    // Look for field matches (e.g., "weight(title:bay in 209)")
+                                    const fieldMatch = compNode.description.match(/weight\(([^:]+):[^)]+\)/);
+                                    if (fieldMatch && !fieldName) {
+                                        fieldName = fieldMatch[1];
+                                    }
+                                    
+                                    // Check for semantic models
+                                    if (compNode.description.includes('body_content_e5.inference.chunks.embeddings') || 
+                                        compNode.description.includes('FeatureQuery(field=body_content_e5') ||
+                                        compNode.description.includes('found vector with calculated similarity')) {
+                                        usedModels.add('E5');
+                                        isSemantic = true;
+                                        semanticType = 'E5';
+                                    }
+                                    
+                                    if (compNode.description.includes('body_content_elser.inference.chunks.embeddings') || 
+                                        compNode.description.includes('FeatureQuery(field=body_content_elser') ||
+                                        compNode.description.includes('Linear function on the body_content_elser.inference.chunks.embeddings field')) {
+                                        usedModels.add('ELSER');
+                                        isSemantic = true;
+                                        semanticType = 'ELSER';
+                                    }
+                                }
+                                
+                                // Recursively search child details
+                                if (compNode.details && Array.isArray(compNode.details)) {
+                                    compNode.details.forEach(child => searchComponent(child));
+                                }
+                            }
+                            
+                            searchComponent(component);
+                            
+                            // Store the component type for this index
+                            // Prioritize field matches over semantic models for more specific labeling
+                            if (fieldName) {
+                                fieldMatches[index] = fieldName;
+                                componentTypes[index] = 'field';
+                            } else if (isSemantic) {
+                                componentTypes[index] = semanticType;
+                            } else {
+                                // If no field match or semantic model found in this component,
+                                // check if this component has nested weighted linear combinations
+                                // that might contain semantic models
+                                let hasNestedSemantic = false;
+                                let nestedSemanticType = null;
+                                
+                                function checkNestedSemantic(node) {
+                                    if (!node) return;
+                                    if (node.description && (
+                                        node.description.includes('body_content_e5.inference.chunks.embeddings') ||
+                                        node.description.includes('body_content_elser.inference.chunks.embeddings') ||
+                                        node.description.includes('Linear function on the body_content_elser.inference.chunks.embeddings field') ||
+                                        node.description.includes('found vector with calculated similarity')
+                                    )) {
+                                        hasNestedSemantic = true;
+                                        if (node.description.includes('body_content_e5') || node.description.includes('found vector')) {
+                                            nestedSemanticType = 'E5';
+                                        }
+                                        if (node.description.includes('body_content_elser') || node.description.includes('Linear function on the body_content_elser')) {
+                                            nestedSemanticType = 'ELSER';
+                                        }
+                                    }
+                                    if (node.details && Array.isArray(node.details)) {
+                                        node.details.forEach(child => checkNestedSemantic(child));
+                                    }
+                                }
+                                checkNestedSemantic(component);
+                                
+                                if (hasNestedSemantic) {
+                                    componentTypes[index] = nestedSemanticType || 'ELSER';
+                                } else {
+                                    componentTypes[index] = 'unknown';
+                                }
+                            }
+                        });
+                    }
+                }
+                
+                // Recursively search child details
+                if (node.details && Array.isArray(node.details)) {
+                    node.details.forEach(child => analyzeWeightedComponents(child));
+                }
+            }
+            
+            // Analyze the explain JSON
+            analyzeWeightedComponents(explanation);
+            
+            // Build component names based on the component types we found and current settings
+            for (let i = 0; i < numComponents; i++) {
+                const componentType = componentTypes[i];
+                
+                if (componentType === 'E5') {
+                    componentNames.push('E5 Semantic Search');
+                } else if (componentType === 'ELSER') {
+                    componentNames.push('ELSER Semantic Search');
+                } else if (componentType === 'field') {
+                    componentNames.push('Field Match');
+                } else {
+                    // For unknown components, try to infer from current settings
+                    if (currentSettings && currentSettings.selectedFields && currentSettings.selectedFields.length > 0) {
+                        // Map field names to component names
+                        const fieldToComponentMap = {
+                            'body_content_e5': 'E5 Semantic Search',
+                            'body_content_elser': 'ELSER Semantic Search',
+                            'title': 'Title Match',
+                            'property-description': 'Property Description Match',
+                            'property-features': 'Property Features Match',
+                            'meta_description': 'Meta Description Match',
+                            'headings': 'Headings Match'
+                        };
+                        
+                        // Find the next field that should be in this position
+                        const expectedField = currentSettings.selectedFields[i];
+                        if (expectedField && fieldToComponentMap[expectedField]) {
+                            componentNames.push(fieldToComponentMap[expectedField]);
+                        } else {
+                            // Fallback to semantic models if found in overall structure
+                            if (usedModels.has('E5') && !componentNames.includes('E5 Semantic Search')) {
+                                componentNames.push('E5 Semantic Search');
+                            } else if (usedModels.has('ELSER') && !componentNames.includes('ELSER Semantic Search')) {
+                                componentNames.push('ELSER Semantic Search');
+                            } else {
+                                componentNames.push('Text Match');
                             }
                         }
-                        break;
+                    } else {
+                        // When no fields are boosted, analyze the explain JSON more carefully
+                        // Check if this component has field matches in its details
+                        let hasFieldMatches = false;
+                        let hasSemanticModels = false;
+                        
+                        function analyzeComponent(node) {
+                            if (!node) return;
+                            
+                            if (node.description) {
+                                // Check for field matches
+                                if (node.description.match(/weight\(([^:]+):[^)]+\)/)) {
+                                    hasFieldMatches = true;
+                                }
+                                
+                                // Check for semantic models
+                                if (node.description.includes('body_content_e5.inference.chunks.embeddings') ||
+                                    node.description.includes('found vector with calculated similarity')) {
+                                    hasSemanticModels = true;
+                                }
+                                if (node.description.includes('body_content_elser.inference.chunks.embeddings') ||
+                                    node.description.includes('Linear function on the body_content_elser.inference.chunks.embeddings field')) {
+                                    hasSemanticModels = true;
+                                }
+                            }
+                            
+                            if (node.details && Array.isArray(node.details)) {
+                                node.details.forEach(child => analyzeComponent(child));
+                            }
+                        }
+                        
+                        // Analyze the current component
+                        if (explanation.details && Array.isArray(explanation.details) && explanation.details[i]) {
+                            analyzeComponent(explanation.details[i]);
+                        }
+                        
+                        if (hasFieldMatches) {
+                            // If this component has field matches, label it as Field Match
+                            componentNames.push('Field Match');
+                        } else if (hasSemanticModels) {
+                            // If this component has semantic models, determine which one
+                            if (usedModels.has('E5') && usedModels.has('ELSER')) {
+                                componentNames.push('ELSER Semantic Search'); // Default to ELSER if both found
+                            } else if (usedModels.has('E5')) {
+                                componentNames.push('E5 Semantic Search');
+                            } else if (usedModels.has('ELSER')) {
+                                componentNames.push('ELSER Semantic Search');
+                            } else {
+                                componentNames.push('Semantic Search');
+                            }
+                        } else {
+                            componentNames.push('Text Match');
+                        }
                     }
                 }
             }
             
-            if (found && weights.length > 0) {
-                // Define meaningful component names
-                const componentNames = ['E5 Semantic Search', 'Text Match', 'ELSER Semantic Search'];
-                
-                // Table rows with expandable details
-                rows = weights.map((w, i) => {
-                    const details = componentDetails[i] || {};
-                    const detailsHtml = renderComponentDetails(details, i);
-                    return `
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span>${componentNames[i] || `Component ${i+1}`}</span>
-                                    ${detailsHtml ? `<button class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleComponentDetails('details-${id}-${i}')" style="font-size:0.8em;">Details</button>` : ''}
-                                </div>
-                                ${detailsHtml ? `<div id="details-${id}-${i}" class="component-details d-none mt-2">${detailsHtml}</div>` : ''}
-                            </td>
-                            <td>${w}</td>
-                            <td>${(scores[i] || 0).toFixed(3)}</td>
-                            <td>${contributions[i].toFixed(3)}</td>
-                        </tr>
-                    `;
-                }).join('');
-                
-                // Bar chart
-                const maxContribution = Math.max(...contributions.map(Math.abs), 1);
-                bars = contributions.map((c, i) => `
-                    <div style="display:flex;align-items:center;margin-bottom:2px;">
-                        <span style="min-width:120px;font-size:0.9em;">${componentNames[i] || `Component ${i+1}`}</span>
-                        <div style="background:#0d6efd;height:18px;width:${Math.abs(c)/maxContribution*120}px;margin-left:8px;border-radius:3px;"></div>
-                        <span style="margin-left:8px;font-size:0.9em;">${c.toFixed(2)}</span>
-                    </div>
-                `).join('');
+            return componentNames;
+        }
+
+        // Render AI-generated summary for explanation
+        function renderExplanationSummary(explanation, id) {
+            // Store the explanation for this result
+            if (!window.resultExplanations) {
+                window.resultExplanations = {};
             }
+            window.resultExplanations[id] = explanation;
             
-            return found ? `
-                <div style="margin-bottom:0.5em;"><strong>Score breakdown (weighted sum):</strong></div>
-                <table class="table table-sm table-bordered" style="width:auto;max-width:100%;font-size:0.95em;">
-                    <thead><tr><th>Component</th><th>Weight</th><th>Norm. Score</th><th>Contribution</th></tr></thead>
-                    <tbody>${rows}</tbody>
-                    <tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>${total !== null ? total.toFixed(3) : ''}</strong></td></tr></tfoot>
-                </table>
-                <div style="margin-bottom:0.5em;"><strong>Contribution Bar Chart:</strong></div>
-                <div>${bars}</div>
-            ` : '<div class="text-muted">No summary available for this explanation.</div>';
+            return '';
         }
 
         // Extract detailed information for each component
@@ -2208,13 +2487,93 @@
         let aiSummaryChatSession = {
             explain: null,
             messages: [],
-            docId: null
+            docId: null,
+            documentFields: null
         };
+
+        // Function to get current UI settings for AI context
+        function getCurrentUISettings() {
+            const settings = {
+                retrieverType: document.getElementById('retrieverType').value,
+                resultSize: parseInt(document.getElementById('resultSize').value),
+                enableExplain: document.getElementById('enableExplain').checked,
+                enableReranking: document.getElementById('enableReranking').checked,
+                enableLocationFilter: document.getElementById('enableLocationFilter').checked
+            };
+
+            // Add retriever-specific settings
+            if (settings.retrieverType === 'linear') {
+                settings.linearParams = {
+                    rankWindowSize: parseInt(document.getElementById('linearRankWindowSize').value)
+                };
+                // Add field boosts for linear retriever
+                settings.fieldBoosts = {
+                    bodyContentE5: parseFloat(document.getElementById('boostBodyContentE5').value),
+                    bodyContentElser: parseFloat(document.getElementById('boostBodyContentElser').value),
+                    title: parseFloat(document.getElementById('boostTitle').value),
+                    propertyDescription: parseFloat(document.getElementById('boostPropertyDescription').value),
+                    propertyFeatures: parseFloat(document.getElementById('boostPropertyFeatures').value),
+                    metaDescription: parseFloat(document.getElementById('boostMetaDescription').value),
+                    headings: parseFloat(document.getElementById('boostHeadings').value)
+                };
+            } else if (settings.retrieverType === 'rrf') {
+                settings.rrfParams = {
+                    rankWindowSize: parseInt(document.getElementById('rrfRankWindowSize').value),
+                    rankConstant: parseInt(document.getElementById('rrfRankConstant').value)
+                };
+                // Add field selection for RRF retriever
+                settings.selectedFields = {
+                    bodyContentE5: document.getElementById('selectBodyContentE5').checked,
+                    bodyContentElser: document.getElementById('selectBodyContentElser').checked,
+                    title: document.getElementById('selectTitle').checked,
+                    propertyDescription: document.getElementById('selectPropertyDescription').checked,
+                    propertyFeatures: document.getElementById('selectPropertyFeatures').checked,
+                    metaDescription: document.getElementById('selectMetaDescription').checked,
+                    headings: document.getElementById('selectHeadings').checked
+                };
+            }
+
+            // Add reranking settings
+            if (settings.enableReranking) {
+                settings.rerankingParams = {
+                    rerankerField: document.getElementById('rerankerField').value,
+                    rankWindowSize: parseInt(document.getElementById('rankWindowSize').value)
+                };
+            }
+
+            // Add location filter settings
+            if (settings.enableLocationFilter) {
+                settings.locationParams = {
+                    latitude: parseFloat(document.getElementById('latitude').value) || null,
+                    longitude: parseFloat(document.getElementById('longitude').value) || null,
+                    distance: parseFloat(document.getElementById('distance').value)
+                };
+            }
+
+            // Add price filter settings
+            settings.priceParams = {
+                minPrice: parseInt(document.getElementById('minPriceSlider').value),
+                maxPrice: parseInt(document.getElementById('maxPriceSlider').value)
+            };
+
+            return settings;
+        }
 
         function openAISummaryChat(explain, docId) {
             aiSummaryChatSession.explain = explain;
             aiSummaryChatSession.messages = [];
             aiSummaryChatSession.docId = docId;
+
+            // Find the result object for this docId
+            let documentFields = null;
+            if (window.lastSearchResults) {
+                const match = window.lastSearchResults.find(r => r._id === docId);
+                if (match && match.fields) {
+                    documentFields = match.fields;
+                }
+            }
+            aiSummaryChatSession.documentFields = documentFields;
+
             const chatPane = document.getElementById('aiSummaryChatPane');
             const chatHistory = document.getElementById('aiSummaryChatHistory');
             chatPane.style.display = 'block';
@@ -2222,13 +2581,17 @@
             document.getElementById('aiSummaryChatInput').value = '';
             // Get current search query
             const searchQuery = document.getElementById('searchQuery').value || '';
+            // Get current UI settings
+            const currentSettings = getCurrentUISettings();
             // Initial summary
             fetch('/ai-summary-chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     explain: explain,
-                    search_query: searchQuery
+                    search_query: searchQuery,
+                    current_settings: currentSettings,
+                    document_fields: documentFields
                 })
             })
             .then(r => r.json())
@@ -2245,16 +2608,119 @@
             .catch(e => {
                 chatHistory.innerHTML = `<div class='alert alert-danger'>${e}</div>`;
             });
-            // Focus input
             setTimeout(() => document.getElementById('aiSummaryChatInput').focus(), 200);
-            // In openAISummaryChat, after chatPane.style.display = 'block';
             document.querySelector('.right-pane').style.marginRight = chatPane.style.width;
+        }
+
+        function cleanLLMHtml(html) {
+            // Remove code block markers (with or without 'html')
+            return html
+                .replace(/```html\s*([\s\S]*?)```/gi, '$1')
+                .replace(/```([\s\S]*?)```/gi, '$1');
+        }
+
+        function generateVisualExplanation(explain, docId) {
+            // Find the result object for this docId
+            let documentFields = null;
+            if (window.lastSearchResults) {
+                const match = window.lastSearchResults.find(r => r._id === docId);
+                if (match) {
+                    // Extract document fields from the result
+                    documentFields = {
+                        title: match.title,
+                        'property-description': match['property-description'],
+                        'property-features': match['property-features'],
+                        'meta_description': match.meta_description,
+                        headings: match.headings,
+                        'listing-agent-info': match['listing-agent-info'],
+                        'property-status': match['property-status'],
+                        'number-of-bedrooms': match['number-of-bedrooms'],
+                        'number-of-bathrooms': match['number-of-bathrooms'],
+                        'square-footage': match['square-footage'],
+                        'home-price': match['home-price'],
+                        'annual-tax': match['annual-tax'],
+                        'maintenance-fee': match['maintenance-fee']
+                    };
+                }
+            }
+
+            // Show the visual explanation container and loading spinner
+            const visualExplanationDiv = document.getElementById(`visual-explanation-${docId}`);
+            const explanationSummaryDiv = document.getElementById(`explanation-summary-${docId}`);
+            const explanationJsonDiv = document.getElementById(`explanation-json-${docId}`);
+            
+            // Check if visual explanation is already loaded and not empty
+            if (visualExplanationDiv && !visualExplanationDiv.classList.contains('d-none') && 
+                !visualExplanationDiv.innerHTML.includes('spinner-border') && 
+                !visualExplanationDiv.innerHTML.includes('Error')) {
+                // Visual explanation is already loaded, toggle it
+                visualExplanationDiv.classList.add('d-none');
+                explanationSummaryDiv.classList.remove('d-none');
+                // Change button text back
+                const btn = event.target;
+                btn.innerText = '📊 Visual Score Breakdown';
+                return;
+            }
+            
+            // Hide other explanation views
+            explanationSummaryDiv.classList.add('d-none');
+            explanationJsonDiv.classList.add('d-none');
+            
+            // Show visual explanation container with loading spinner
+            visualExplanationDiv.classList.remove('d-none');
+            visualExplanationDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Generating visual explanation...</span>
+                    </div>
+                    <p class="mt-2">Generating visual explanation...</p>
+                </div>
+            `;
+            
+            // Change button text to indicate it's active
+            const btn = event.target;
+            btn.innerText = '📊 Hide Visual Breakdown';
+
+            // Get current search query and settings
+            const searchQuery = document.getElementById('searchQuery').value || '';
+            const currentSettings = getCurrentUISettings();
+
+            // Call the visual explanation endpoint
+            fetch('/ai-visual-explanation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    explain: explain,
+                    search_query: searchQuery,
+                    current_settings: currentSettings,
+                    document_fields: documentFields
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    visualExplanationDiv.innerHTML = `<div class='alert alert-danger'>Error generating visual explanation: ${data.error}</div>`;
+                    // Reset button text on error
+                    const btn = event.target;
+                    btn.innerText = '📊 Visual Score Breakdown';
+                } else {
+                    // Strip any accidental code block markers before rendering
+                    visualExplanationDiv.innerHTML = cleanLLMHtml(data.html_content);
+                    // Keep button text as "Hide Visual Breakdown" since it's now loaded
+                }
+            })
+            .catch(e => {
+                visualExplanationDiv.innerHTML = `<div class='alert alert-danger'>Error generating visual explanation: ${e.message}</div>`;
+                // Reset button text on error
+                const btn = event.target;
+                btn.innerText = '📊 Visual Score Breakdown';
+            });
         }
 
         function closeAISummaryChat() {
             const chatPane = document.getElementById('aiSummaryChatPane');
             chatPane.style.display = 'none';
-            aiSummaryChatSession = { explain: null, messages: [], docId: null };
+            aiSummaryChatSession = { explain: null, messages: [], docId: null, documentFields: null };
             // In closeAISummaryChat, after chatPane.style.display = 'none';
             document.querySelector('.right-pane').style.marginRight = '0px';
         }
@@ -2293,7 +2759,9 @@
                         body: JSON.stringify({
                             explain: aiSummaryChatSession.explain,
                             messages: aiSummaryChatSession.messages,
-                            search_query: document.getElementById('searchQuery').value || ''
+                            search_query: document.getElementById('searchQuery').value || '',
+                            current_settings: getCurrentUISettings(),
+                            document_fields: aiSummaryChatSession.documentFields
                         })
                     })
                     .then(r => r.json())
@@ -2312,6 +2780,9 @@
                 }
             });
         });
+
+
+
     </script>
 </body>
 </html> 
