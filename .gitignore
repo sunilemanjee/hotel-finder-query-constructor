@@ -39,3 +39,7 @@ env/
 .DS_Store
 Thumbs.db
 venv
+
+# Log files
+*.log
+search_ui.log
