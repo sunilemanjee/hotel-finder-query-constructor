@@ -67591,3 +67591,1021 @@ elasticsearch.ApiError: ApiError(408, 'status_exception', "[text_similarity_rera
 2025-08-06 22:38:48,795 - INFO - Found 42 total results
 2025-08-06 22:38:48,795 - INFO - Returning 20 results to frontend
 2025-08-06 22:38:48,797 - INFO - 127.0.0.1 - - [06/Aug/2025 22:38:48] "POST /search HTTP/1.1" 200 -
+2025-08-11 17:46:28,336 - INFO - Starting Hotel Finder Search UI...
+2025-08-11 17:46:28,336 - INFO - Elasticsearch URL: https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443
+2025-08-11 17:46:28,336 - INFO - Elasticsearch Index: properties
+2025-08-11 17:46:28,336 - INFO - Using password auth: False
+2025-08-11 17:46:28,336 - INFO - Azure OpenAI configured: https://sa-openai.openai.azure.com/
+2025-08-11 17:46:28,359 - WARNING -  * Debugger is active!
+2025-08-11 17:46:28,373 - INFO -  * Debugger PIN: 213-792-015
+2025-08-11 17:46:56,660 - INFO - Starting Hotel Finder Search UI...
+2025-08-11 17:46:56,661 - INFO - Elasticsearch URL: https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443
+2025-08-11 17:46:56,661 - INFO - Elasticsearch Index: properties
+2025-08-11 17:46:56,661 - INFO - Using password auth: False
+2025-08-11 17:46:56,661 - INFO - Azure OpenAI configured: https://sa-openai.openai.azure.com/
+2025-08-11 17:46:56,717 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.140:5001
+2025-08-11 17:46:56,717 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-11 17:46:56,717 - INFO -  * Restarting with stat
+2025-08-11 17:46:56,949 - INFO - Starting Hotel Finder Search UI...
+2025-08-11 17:46:56,950 - INFO - Elasticsearch URL: https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443
+2025-08-11 17:46:56,950 - INFO - Elasticsearch Index: properties
+2025-08-11 17:46:56,950 - INFO - Using password auth: False
+2025-08-11 17:46:56,950 - INFO - Azure OpenAI configured: https://sa-openai.openai.azure.com/
+2025-08-11 17:46:56,971 - WARNING -  * Debugger is active!
+2025-08-11 17:46:56,983 - INFO -  * Debugger PIN: 213-792-015
+2025-08-11 17:46:59,923 - INFO - 127.0.0.1 - - [11/Aug/2025 17:46:59] "GET / HTTP/1.1" 200 -
+2025-08-11 18:12:55,123 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:12:55,124 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:12:55,124 - INFO -   - body_content_e5
+2025-08-11 18:12:55,125 - INFO -   - body_content_elser
+2025-08-11 18:12:55,125 - INFO -   - property-description
+2025-08-11 18:12:55,125 - INFO - Final linear retriever field boosts:
+2025-08-11 18:12:55,125 - INFO -   - body_content_e5
+2025-08-11 18:12:55,125 - INFO -   - body_content_elser
+2025-08-11 18:12:55,125 - INFO -   - property-description
+2025-08-11 18:12:55,125 - INFO - Executing search on index: properties
+2025-08-11 18:12:56,029 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:12:56,029 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:12:56,029 - INFO -   - body_content_e5
+2025-08-11 18:12:56,029 - INFO -   - body_content_elser
+2025-08-11 18:12:56,030 - INFO -   - property-description
+2025-08-11 18:12:56,030 - INFO - Final linear retriever field boosts:
+2025-08-11 18:12:56,030 - INFO -   - body_content_e5
+2025-08-11 18:12:56,030 - INFO -   - body_content_elser
+2025-08-11 18:12:56,030 - INFO -   - property-description
+2025-08-11 18:12:56,030 - INFO - Executing search on index: properties
+2025-08-11 18:13:06,775 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:408 duration:10.745s]
+2025-08-11 18:13:06,776 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:408 duration:11.650s]
+2025-08-11 18:13:06,776 - WARNING - Node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> has failed for 1 times in a row, putting on 1 second timeout
+2025-08-11 18:13:06,777 - WARNING - Node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> has failed for 2 times in a row, putting on 2 second timeout
+2025-08-11 18:13:06,777 - ERROR - Exception in search: ApiError(408, 'model_deployment_timeout_exception', 'Timed out after [10s] waiting for trained model deployment [.multilingual-e5-small-elasticsearch] to start. Use the trained model stats API to track the state of the deployment and try again once it has started.')
+2025-08-11 18:13:06,777 - ERROR - Exception in search: ApiError(408, 'model_deployment_timeout_exception', 'Timed out after [10s] waiting for trained model deployment [.multilingual-e5-small-elasticsearch] to start. Use the trained model stats API to track the state of the deployment and try again once it has started.')
+2025-08-11 18:13:06,778 - ERROR - Exception type: ApiError
+2025-08-11 18:13:06,778 - ERROR - Exception type: ApiError
+2025-08-11 18:13:06,790 - ERROR - Full traceback: Traceback (most recent call last):
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py", line 444, in search
+    response = es.search(
+               ^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/utils.py", line 452, in wrapped
+    return api(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/__init__.py", line 5131, in search
+    return self.perform_request(  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/_base.py", line 271, in perform_request
+    response = self._perform_request(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/_base.py", line 351, in _perform_request
+    raise HTTP_EXCEPTIONS.get(meta.status, ApiError)(
+elasticsearch.ApiError: ApiError(408, 'model_deployment_timeout_exception', 'Timed out after [10s] waiting for trained model deployment [.multilingual-e5-small-elasticsearch] to start. Use the trained model stats API to track the state of the deployment and try again once it has started.')
+
+2025-08-11 18:13:06,791 - ERROR - Full traceback: Traceback (most recent call last):
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py", line 444, in search
+    response = es.search(
+               ^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/utils.py", line 452, in wrapped
+    return api(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/__init__.py", line 5131, in search
+    return self.perform_request(  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/_base.py", line 271, in perform_request
+    response = self._perform_request(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/_base.py", line 351, in _perform_request
+    raise HTTP_EXCEPTIONS.get(meta.status, ApiError)(
+elasticsearch.ApiError: ApiError(408, 'model_deployment_timeout_exception', 'Timed out after [10s] waiting for trained model deployment [.multilingual-e5-small-elasticsearch] to start. Use the trained model stats API to track the state of the deployment and try again once it has started.')
+
+2025-08-11 18:13:06,792 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:06] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:06,792 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:06] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:12,810 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:12,810 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:12,810 - INFO -   - body_content_e5
+2025-08-11 18:13:12,810 - INFO -   - body_content_elser
+2025-08-11 18:13:12,810 - INFO -   - property-description
+2025-08-11 18:13:12,810 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:12,810 - INFO -   - body_content_e5
+2025-08-11 18:13:12,810 - INFO -   - body_content_elser
+2025-08-11 18:13:12,811 - INFO -   - property-description
+2025-08-11 18:13:12,811 - INFO - Executing search on index: properties
+2025-08-11 18:13:12,811 - INFO - Resurrected node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> (force=False)
+2025-08-11 18:13:22,862 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:408 duration:10.050s]
+2025-08-11 18:13:22,863 - WARNING - Node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> has failed for 3 times in a row, putting on 4 second timeout
+2025-08-11 18:13:22,863 - ERROR - Exception in search: ApiError(408, 'model_deployment_timeout_exception', 'Timed out after [10s] waiting for trained model deployment [.multilingual-e5-small-elasticsearch] to start. Use the trained model stats API to track the state of the deployment and try again once it has started.')
+2025-08-11 18:13:22,863 - ERROR - Exception type: ApiError
+2025-08-11 18:13:22,864 - ERROR - Full traceback: Traceback (most recent call last):
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py", line 444, in search
+    response = es.search(
+               ^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/utils.py", line 452, in wrapped
+    return api(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/__init__.py", line 5131, in search
+    return self.perform_request(  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/_base.py", line 271, in perform_request
+    response = self._perform_request(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/venv/lib/python3.11/site-packages/elasticsearch/_sync/client/_base.py", line 351, in _perform_request
+    raise HTTP_EXCEPTIONS.get(meta.status, ApiError)(
+elasticsearch.ApiError: ApiError(408, 'model_deployment_timeout_exception', 'Timed out after [10s] waiting for trained model deployment [.multilingual-e5-small-elasticsearch] to start. Use the trained model stats API to track the state of the deployment and try again once it has started.')
+
+2025-08-11 18:13:22,865 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:22] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:47,623 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:47,625 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:47,625 - INFO -   - body_content_e5
+2025-08-11 18:13:47,625 - INFO -   - body_content_elser
+2025-08-11 18:13:47,625 - INFO -   - property-description
+2025-08-11 18:13:47,625 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:47,625 - INFO -   - body_content_e5
+2025-08-11 18:13:47,625 - INFO -   - body_content_elser
+2025-08-11 18:13:47,625 - INFO -   - property-description
+2025-08-11 18:13:47,625 - INFO - Executing search on index: properties
+2025-08-11 18:13:47,625 - INFO - Resurrected node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> (force=False)
+2025-08-11 18:13:50,379 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:2.754s]
+2025-08-11 18:13:50,385 - WARNING - Node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> has been marked alive after a successful request
+2025-08-11 18:13:50,385 - INFO - Search completed in 2.76 seconds
+2025-08-11 18:13:50,385 - INFO - Found 500 total results
+2025-08-11 18:13:50,385 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:50,387 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:50] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:53,745 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:53,745 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:53,745 - INFO -   - body_content_e5^0.1
+2025-08-11 18:13:53,745 - INFO -   - body_content_elser
+2025-08-11 18:13:53,746 - INFO -   - property-description
+2025-08-11 18:13:53,746 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:53,746 - INFO -   - body_content_e5^0.1
+2025-08-11 18:13:53,746 - INFO -   - body_content_elser
+2025-08-11 18:13:53,746 - INFO -   - property-description
+2025-08-11 18:13:53,746 - INFO - Executing search on index: properties
+2025-08-11 18:13:53,746 - INFO - Resurrected node <Urllib3HttpNode(https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443)> (force=False)
+2025-08-11 18:13:53,772 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:53,772 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:53,772 - INFO -   - body_content_e5^0.2
+2025-08-11 18:13:53,772 - INFO -   - body_content_elser
+2025-08-11 18:13:53,772 - INFO -   - property-description
+2025-08-11 18:13:53,772 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:53,772 - INFO -   - body_content_e5^0.2
+2025-08-11 18:13:53,772 - INFO -   - body_content_elser
+2025-08-11 18:13:53,772 - INFO -   - property-description
+2025-08-11 18:13:53,772 - INFO - Executing search on index: properties
+2025-08-11 18:13:53,785 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:53,785 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:53,785 - INFO -   - body_content_e5^0.5
+2025-08-11 18:13:53,785 - INFO -   - body_content_elser
+2025-08-11 18:13:53,785 - INFO -   - property-description
+2025-08-11 18:13:53,785 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:53,785 - INFO -   - body_content_e5^0.5
+2025-08-11 18:13:53,785 - INFO -   - body_content_elser
+2025-08-11 18:13:53,785 - INFO -   - property-description
+2025-08-11 18:13:53,785 - INFO - Executing search on index: properties
+2025-08-11 18:13:53,798 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:53,798 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:53,798 - INFO -   - body_content_e5^0.8
+2025-08-11 18:13:53,798 - INFO -   - body_content_elser
+2025-08-11 18:13:53,798 - INFO -   - property-description
+2025-08-11 18:13:53,798 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:53,798 - INFO -   - body_content_e5^0.8
+2025-08-11 18:13:53,798 - INFO -   - body_content_elser
+2025-08-11 18:13:53,798 - INFO -   - property-description
+2025-08-11 18:13:53,798 - INFO - Executing search on index: properties
+2025-08-11 18:13:53,818 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:53,818 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:53,818 - INFO -   - body_content_e5^1.2
+2025-08-11 18:13:53,818 - INFO -   - body_content_elser
+2025-08-11 18:13:53,818 - INFO -   - property-description
+2025-08-11 18:13:53,818 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:53,818 - INFO -   - body_content_e5^1.2
+2025-08-11 18:13:53,818 - INFO -   - body_content_elser
+2025-08-11 18:13:53,818 - INFO -   - property-description
+2025-08-11 18:13:53,818 - INFO - Executing search on index: properties
+2025-08-11 18:13:53,825 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:53,825 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:53,825 - INFO -   - body_content_e5^1.8
+2025-08-11 18:13:53,825 - INFO -   - body_content_elser
+2025-08-11 18:13:53,825 - INFO -   - property-description
+2025-08-11 18:13:53,825 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:53,825 - INFO -   - body_content_e5^1.8
+2025-08-11 18:13:53,825 - INFO -   - body_content_elser
+2025-08-11 18:13:53,825 - INFO -   - property-description
+2025-08-11 18:13:53,825 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,175 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.429s]
+2025-08-11 18:13:54,179 - INFO - Search completed in 0.43 seconds
+2025-08-11 18:13:54,179 - INFO - Found 500 total results
+2025-08-11 18:13:54,179 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,181 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,184 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,184 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,184 - INFO -   - body_content_e5^2.1
+2025-08-11 18:13:54,184 - INFO -   - body_content_elser
+2025-08-11 18:13:54,184 - INFO -   - property-description
+2025-08-11 18:13:54,184 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,184 - INFO -   - body_content_e5^2.1
+2025-08-11 18:13:54,185 - INFO -   - body_content_elser
+2025-08-11 18:13:54,185 - INFO -   - property-description
+2025-08-11 18:13:54,185 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,266 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.494s]
+2025-08-11 18:13:54,269 - INFO - Search completed in 0.50 seconds
+2025-08-11 18:13:54,269 - INFO - Found 500 total results
+2025-08-11 18:13:54,269 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,272 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,275 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,276 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,276 - INFO -   - body_content_e5^2.5
+2025-08-11 18:13:54,276 - INFO -   - body_content_elser
+2025-08-11 18:13:54,276 - INFO -   - property-description
+2025-08-11 18:13:54,276 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,276 - INFO -   - body_content_e5^2.5
+2025-08-11 18:13:54,276 - INFO -   - body_content_elser
+2025-08-11 18:13:54,276 - INFO -   - property-description
+2025-08-11 18:13:54,276 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,446 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.660s]
+2025-08-11 18:13:54,448 - INFO - Search completed in 0.66 seconds
+2025-08-11 18:13:54,448 - INFO - Found 500 total results
+2025-08-11 18:13:54,448 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,449 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,452 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,452 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,452 - INFO -   - body_content_e5^2.6
+2025-08-11 18:13:54,452 - INFO -   - body_content_elser
+2025-08-11 18:13:54,452 - INFO -   - property-description
+2025-08-11 18:13:54,452 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,452 - INFO -   - body_content_e5^2.6
+2025-08-11 18:13:54,452 - INFO -   - body_content_elser
+2025-08-11 18:13:54,452 - INFO -   - property-description
+2025-08-11 18:13:54,452 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,464 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.645s]
+2025-08-11 18:13:54,466 - INFO - Search completed in 0.65 seconds
+2025-08-11 18:13:54,466 - INFO - Found 500 total results
+2025-08-11 18:13:54,466 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,468 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,470 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,470 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,470 - INFO -   - body_content_e5^2.8
+2025-08-11 18:13:54,470 - INFO -   - body_content_elser
+2025-08-11 18:13:54,470 - INFO -   - property-description
+2025-08-11 18:13:54,470 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,470 - INFO -   - body_content_e5^2.8
+2025-08-11 18:13:54,470 - INFO -   - body_content_elser
+2025-08-11 18:13:54,470 - INFO -   - property-description
+2025-08-11 18:13:54,470 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,555 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.370s]
+2025-08-11 18:13:54,559 - INFO - Search completed in 0.37 seconds
+2025-08-11 18:13:54,559 - INFO - Found 500 total results
+2025-08-11 18:13:54,560 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,562 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,565 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.766s]
+2025-08-11 18:13:54,567 - INFO - Search completed in 0.77 seconds
+2025-08-11 18:13:54,567 - INFO - Found 500 total results
+2025-08-11 18:13:54,567 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,568 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,571 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,571 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,571 - INFO -   - body_content_e5^2.9
+2025-08-11 18:13:54,571 - INFO -   - body_content_elser
+2025-08-11 18:13:54,572 - INFO -   - property-description
+2025-08-11 18:13:54,572 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,572 - INFO -   - body_content_e5^2.9
+2025-08-11 18:13:54,572 - INFO -   - body_content_elser
+2025-08-11 18:13:54,572 - INFO -   - property-description
+2025-08-11 18:13:54,572 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,574 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,574 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,574 - INFO -   - body_content_e5^3
+2025-08-11 18:13:54,574 - INFO -   - body_content_elser
+2025-08-11 18:13:54,574 - INFO -   - property-description
+2025-08-11 18:13:54,574 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,574 - INFO -   - body_content_e5^3
+2025-08-11 18:13:54,575 - INFO -   - body_content_elser
+2025-08-11 18:13:54,575 - INFO -   - property-description
+2025-08-11 18:13:54,575 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,607 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.782s]
+2025-08-11 18:13:54,610 - INFO - Search completed in 0.78 seconds
+2025-08-11 18:13:54,610 - INFO - Found 500 total results
+2025-08-11 18:13:54,610 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,611 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,614 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,615 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,615 - INFO -   - body_content_e5^3.1
+2025-08-11 18:13:54,615 - INFO -   - body_content_elser
+2025-08-11 18:13:54,615 - INFO -   - property-description
+2025-08-11 18:13:54,615 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,615 - INFO -   - body_content_e5^3.1
+2025-08-11 18:13:54,615 - INFO -   - body_content_elser
+2025-08-11 18:13:54,615 - INFO -   - property-description
+2025-08-11 18:13:54,615 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,642 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.366s]
+2025-08-11 18:13:54,644 - INFO - Search completed in 0.37 seconds
+2025-08-11 18:13:54,644 - INFO - Found 500 total results
+2025-08-11 18:13:54,644 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,645 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,649 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,649 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,649 - INFO -   - body_content_e5^3.2
+2025-08-11 18:13:54,649 - INFO -   - body_content_elser
+2025-08-11 18:13:54,649 - INFO -   - property-description
+2025-08-11 18:13:54,649 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,649 - INFO -   - body_content_e5^3.2
+2025-08-11 18:13:54,649 - INFO -   - body_content_elser
+2025-08-11 18:13:54,649 - INFO -   - property-description
+2025-08-11 18:13:54,649 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,736 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.284s]
+2025-08-11 18:13:54,738 - INFO - Search completed in 0.29 seconds
+2025-08-11 18:13:54,738 - INFO - Found 500 total results
+2025-08-11 18:13:54,738 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,739 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,742 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,742 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,742 - INFO -   - body_content_e5^3.3
+2025-08-11 18:13:54,742 - INFO -   - body_content_elser
+2025-08-11 18:13:54,742 - INFO -   - property-description
+2025-08-11 18:13:54,742 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,742 - INFO -   - body_content_e5^3.3
+2025-08-11 18:13:54,742 - INFO -   - body_content_elser
+2025-08-11 18:13:54,742 - INFO -   - property-description
+2025-08-11 18:13:54,742 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,771 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.300s]
+2025-08-11 18:13:54,772 - INFO - Search completed in 0.30 seconds
+2025-08-11 18:13:54,772 - INFO - Found 500 total results
+2025-08-11 18:13:54,772 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,774 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,780 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,780 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,780 - INFO -   - body_content_e5^3.4
+2025-08-11 18:13:54,780 - INFO -   - body_content_elser
+2025-08-11 18:13:54,780 - INFO -   - property-description
+2025-08-11 18:13:54,780 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,780 - INFO -   - body_content_e5^3.4
+2025-08-11 18:13:54,780 - INFO -   - body_content_elser
+2025-08-11 18:13:54,780 - INFO -   - property-description
+2025-08-11 18:13:54,780 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,812 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.239s]
+2025-08-11 18:13:54,813 - INFO - Search completed in 0.24 seconds
+2025-08-11 18:13:54,813 - INFO - Found 500 total results
+2025-08-11 18:13:54,813 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,814 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,815 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,816 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,816 - INFO -   - body_content_e5^3.5
+2025-08-11 18:13:54,816 - INFO -   - body_content_elser
+2025-08-11 18:13:54,816 - INFO -   - property-description
+2025-08-11 18:13:54,816 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,816 - INFO -   - body_content_e5^3.5
+2025-08-11 18:13:54,816 - INFO -   - body_content_elser
+2025-08-11 18:13:54,816 - INFO -   - property-description
+2025-08-11 18:13:54,816 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,924 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.349s]
+2025-08-11 18:13:54,926 - INFO - Search completed in 0.35 seconds
+2025-08-11 18:13:54,926 - INFO - Found 500 total results
+2025-08-11 18:13:54,926 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,928 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,933 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,934 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,934 - INFO -   - body_content_e5^3.6
+2025-08-11 18:13:54,934 - INFO -   - body_content_elser
+2025-08-11 18:13:54,934 - INFO -   - property-description
+2025-08-11 18:13:54,934 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,934 - INFO -   - body_content_e5^3.6
+2025-08-11 18:13:54,934 - INFO -   - body_content_elser
+2025-08-11 18:13:54,934 - INFO -   - property-description
+2025-08-11 18:13:54,934 - INFO - Executing search on index: properties
+2025-08-11 18:13:54,953 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.338s]
+2025-08-11 18:13:54,955 - INFO - Search completed in 0.34 seconds
+2025-08-11 18:13:54,956 - INFO - Found 500 total results
+2025-08-11 18:13:54,956 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:54,957 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:54] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:54,961 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:54,962 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:54,962 - INFO -   - body_content_e5^3.5
+2025-08-11 18:13:54,962 - INFO -   - body_content_elser
+2025-08-11 18:13:54,962 - INFO -   - property-description
+2025-08-11 18:13:54,962 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:54,962 - INFO -   - body_content_e5^3.5
+2025-08-11 18:13:54,962 - INFO -   - body_content_elser
+2025-08-11 18:13:54,962 - INFO -   - property-description
+2025-08-11 18:13:54,962 - INFO - Executing search on index: properties
+2025-08-11 18:13:55,026 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.376s]
+2025-08-11 18:13:55,028 - INFO - Search completed in 0.38 seconds
+2025-08-11 18:13:55,028 - INFO - Found 500 total results
+2025-08-11 18:13:55,028 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,029 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,034 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:55,034 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:55,034 - INFO -   - body_content_e5^3.4
+2025-08-11 18:13:55,034 - INFO -   - body_content_elser
+2025-08-11 18:13:55,034 - INFO -   - property-description
+2025-08-11 18:13:55,034 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:55,034 - INFO -   - body_content_e5^3.4
+2025-08-11 18:13:55,034 - INFO -   - body_content_elser
+2025-08-11 18:13:55,034 - INFO -   - property-description
+2025-08-11 18:13:55,034 - INFO - Executing search on index: properties
+2025-08-11 18:13:55,054 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.312s]
+2025-08-11 18:13:55,056 - INFO - Search completed in 0.31 seconds
+2025-08-11 18:13:55,056 - INFO - Found 500 total results
+2025-08-11 18:13:55,057 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,058 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,065 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:55,065 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:55,065 - INFO -   - body_content_e5^3.3
+2025-08-11 18:13:55,065 - INFO -   - body_content_elser
+2025-08-11 18:13:55,065 - INFO -   - property-description
+2025-08-11 18:13:55,065 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:55,065 - INFO -   - body_content_e5^3.3
+2025-08-11 18:13:55,065 - INFO -   - body_content_elser
+2025-08-11 18:13:55,065 - INFO -   - property-description
+2025-08-11 18:13:55,065 - INFO - Executing search on index: properties
+2025-08-11 18:13:55,146 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.330s]
+2025-08-11 18:13:55,148 - INFO - Search completed in 0.33 seconds
+2025-08-11 18:13:55,148 - INFO - Found 500 total results
+2025-08-11 18:13:55,148 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,150 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,150 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.370s]
+2025-08-11 18:13:55,152 - INFO - Search completed in 0.37 seconds
+2025-08-11 18:13:55,152 - INFO - Found 500 total results
+2025-08-11 18:13:55,152 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,154 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,155 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:55,156 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:55,156 - INFO -   - body_content_e5^3.2
+2025-08-11 18:13:55,156 - INFO -   - body_content_elser
+2025-08-11 18:13:55,156 - INFO -   - property-description
+2025-08-11 18:13:55,156 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:55,157 - INFO -   - body_content_e5^3.2
+2025-08-11 18:13:55,157 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:55,158 - INFO -   - body_content_elser
+2025-08-11 18:13:55,158 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:55,158 - INFO -   - property-description
+2025-08-11 18:13:55,158 - INFO -   - body_content_e5^3.1
+2025-08-11 18:13:55,158 - INFO - Executing search on index: properties
+2025-08-11 18:13:55,158 - INFO -   - body_content_elser
+2025-08-11 18:13:55,159 - INFO -   - property-description
+2025-08-11 18:13:55,159 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:55,159 - INFO -   - body_content_e5^3.1
+2025-08-11 18:13:55,159 - INFO -   - body_content_elser
+2025-08-11 18:13:55,159 - INFO -   - property-description
+2025-08-11 18:13:55,159 - INFO - Executing search on index: properties
+2025-08-11 18:13:55,252 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.318s]
+2025-08-11 18:13:55,255 - INFO - Search completed in 0.32 seconds
+2025-08-11 18:13:55,255 - INFO - Found 500 total results
+2025-08-11 18:13:55,255 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,257 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,261 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:55,261 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:55,261 - INFO -   - body_content_e5^3
+2025-08-11 18:13:55,261 - INFO -   - body_content_elser
+2025-08-11 18:13:55,261 - INFO -   - property-description
+2025-08-11 18:13:55,261 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:55,262 - INFO -   - body_content_e5^3
+2025-08-11 18:13:55,262 - INFO -   - body_content_elser
+2025-08-11 18:13:55,262 - INFO -   - property-description
+2025-08-11 18:13:55,262 - INFO - Executing search on index: properties
+2025-08-11 18:13:55,332 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.369s]
+2025-08-11 18:13:55,334 - INFO - Search completed in 0.37 seconds
+2025-08-11 18:13:55,334 - INFO - Found 500 total results
+2025-08-11 18:13:55,335 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,337 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,356 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.321s]
+2025-08-11 18:13:55,358 - INFO - Search completed in 0.32 seconds
+2025-08-11 18:13:55,359 - INFO - Found 500 total results
+2025-08-11 18:13:55,359 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,361 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,426 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.361s]
+2025-08-11 18:13:55,428 - INFO - Search completed in 0.36 seconds
+2025-08-11 18:13:55,428 - INFO - Found 500 total results
+2025-08-11 18:13:55,428 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,430 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,481 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.323s]
+2025-08-11 18:13:55,484 - INFO - Search completed in 0.33 seconds
+2025-08-11 18:13:55,484 - INFO - Found 500 total results
+2025-08-11 18:13:55,485 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,486 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,501 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.341s]
+2025-08-11 18:13:55,504 - INFO - Search completed in 0.35 seconds
+2025-08-11 18:13:55,505 - INFO - Found 500 total results
+2025-08-11 18:13:55,505 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,507 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:55,604 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.342s]
+2025-08-11 18:13:55,607 - INFO - Search completed in 0.35 seconds
+2025-08-11 18:13:55,607 - INFO - Found 500 total results
+2025-08-11 18:13:55,607 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:55,612 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:55] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:13:56,381 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:13:56,381 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:13:56,382 - INFO -   - body_content_e5^3
+2025-08-11 18:13:56,382 - INFO -   - body_content_elser
+2025-08-11 18:13:56,382 - INFO -   - property-description
+2025-08-11 18:13:56,382 - INFO - Final linear retriever field boosts:
+2025-08-11 18:13:56,382 - INFO -   - body_content_e5^3
+2025-08-11 18:13:56,383 - INFO -   - body_content_elser
+2025-08-11 18:13:56,383 - INFO -   - property-description
+2025-08-11 18:13:56,383 - INFO - Executing search on index: properties
+2025-08-11 18:13:56,620 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.236s]
+2025-08-11 18:13:56,623 - INFO - Search completed in 0.24 seconds
+2025-08-11 18:13:56,624 - INFO - Found 500 total results
+2025-08-11 18:13:56,624 - INFO - Returning 20 results to frontend
+2025-08-11 18:13:56,627 - INFO - 127.0.0.1 - - [11/Aug/2025 18:13:56] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:05,842 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:14:05,842 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:05,842 - INFO -   - body_content_e5^3
+2025-08-11 18:14:05,842 - INFO -   - body_content_elser
+2025-08-11 18:14:05,842 - INFO -   - property-description
+2025-08-11 18:14:05,843 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:05,843 - INFO -   - body_content_e5^3
+2025-08-11 18:14:05,843 - INFO -   - body_content_elser
+2025-08-11 18:14:05,843 - INFO -   - property-description
+2025-08-11 18:14:05,843 - INFO - Executing search on index: properties
+2025-08-11 18:14:06,166 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.323s]
+2025-08-11 18:14:06,171 - INFO - Search completed in 0.33 seconds
+2025-08-11 18:14:06,171 - INFO - Found 500 total results
+2025-08-11 18:14:06,171 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:06,172 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:06] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:06,525 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:14:06,525 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:06,525 - INFO -   - body_content_e5^3
+2025-08-11 18:14:06,525 - INFO -   - body_content_elser
+2025-08-11 18:14:06,525 - INFO -   - property-description
+2025-08-11 18:14:06,526 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:06,526 - INFO -   - body_content_e5^3
+2025-08-11 18:14:06,526 - INFO -   - body_content_elser
+2025-08-11 18:14:06,526 - INFO -   - property-description
+2025-08-11 18:14:06,526 - INFO - Executing search on index: properties
+2025-08-11 18:14:06,788 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.262s]
+2025-08-11 18:14:06,792 - INFO - Search completed in 0.27 seconds
+2025-08-11 18:14:06,792 - INFO - Found 500 total results
+2025-08-11 18:14:06,792 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:06,794 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:06] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:07,684 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:14:07,685 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:07,685 - INFO -   - body_content_e5^3
+2025-08-11 18:14:07,685 - INFO -   - body_content_elser
+2025-08-11 18:14:07,685 - INFO -   - property-description
+2025-08-11 18:14:07,686 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:07,686 - INFO -   - body_content_e5^3
+2025-08-11 18:14:07,686 - INFO -   - body_content_elser
+2025-08-11 18:14:07,686 - INFO -   - property-description
+2025-08-11 18:14:07,686 - INFO - Executing search on index: properties
+2025-08-11 18:14:07,936 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.249s]
+2025-08-11 18:14:07,939 - INFO - Search completed in 0.25 seconds
+2025-08-11 18:14:07,939 - INFO - Found 500 total results
+2025-08-11 18:14:07,939 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:07,941 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:07] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:35,969 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:14:35,969 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:35,969 - INFO -   - body_content_e5^3
+2025-08-11 18:14:35,969 - INFO -   - body_content_elser
+2025-08-11 18:14:35,969 - INFO -   - property-description
+2025-08-11 18:14:35,970 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:35,970 - INFO -   - body_content_e5^3
+2025-08-11 18:14:35,970 - INFO -   - body_content_elser
+2025-08-11 18:14:35,970 - INFO -   - property-description
+2025-08-11 18:14:35,970 - INFO - Executing search on index: properties
+2025-08-11 18:14:36,408 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.438s]
+2025-08-11 18:14:36,410 - INFO - Search completed in 0.44 seconds
+2025-08-11 18:14:36,411 - INFO - Found 42 total results
+2025-08-11 18:14:36,411 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:36,412 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:36] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:37,183 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:14:37,183 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:37,183 - INFO -   - body_content_e5^3
+2025-08-11 18:14:37,183 - INFO -   - body_content_elser
+2025-08-11 18:14:37,183 - INFO -   - property-description
+2025-08-11 18:14:37,183 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:37,183 - INFO -   - body_content_e5^3
+2025-08-11 18:14:37,183 - INFO -   - body_content_elser
+2025-08-11 18:14:37,183 - INFO -   - property-description
+2025-08-11 18:14:37,184 - INFO - Executing search on index: properties
+2025-08-11 18:14:37,490 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.307s]
+2025-08-11 18:14:37,495 - INFO - Search completed in 0.31 seconds
+2025-08-11 18:14:37,495 - INFO - Found 42 total results
+2025-08-11 18:14:37,495 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:37,496 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:37] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:55,895 - INFO - Building search query for: 'Maison avec accès direct à la plage et balades en pleine nature' with retriever_type: linear
+2025-08-11 18:14:55,895 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:55,895 - INFO -   - body_content_e5^3
+2025-08-11 18:14:55,895 - INFO -   - body_content_elser
+2025-08-11 18:14:55,895 - INFO -   - property-description
+2025-08-11 18:14:55,895 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:55,895 - INFO -   - body_content_e5^3
+2025-08-11 18:14:55,895 - INFO -   - body_content_elser
+2025-08-11 18:14:55,895 - INFO -   - property-description
+2025-08-11 18:14:55,895 - INFO - Executing search on index: properties
+2025-08-11 18:14:56,242 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.346s]
+2025-08-11 18:14:56,245 - INFO - Search completed in 0.35 seconds
+2025-08-11 18:14:56,245 - INFO - Found 42 total results
+2025-08-11 18:14:56,246 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:56,247 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:56] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:14:57,458 - INFO - Building search query for: 'Maison avec accès direct à la plage et balades en pleine nature' with retriever_type: linear
+2025-08-11 18:14:57,459 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:14:57,459 - INFO -   - body_content_e5^3
+2025-08-11 18:14:57,459 - INFO -   - body_content_elser
+2025-08-11 18:14:57,459 - INFO -   - property-description
+2025-08-11 18:14:57,460 - INFO - Final linear retriever field boosts:
+2025-08-11 18:14:57,460 - INFO -   - body_content_e5^3
+2025-08-11 18:14:57,460 - INFO -   - body_content_elser
+2025-08-11 18:14:57,460 - INFO -   - property-description
+2025-08-11 18:14:57,460 - INFO - Executing search on index: properties
+2025-08-11 18:14:57,821 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.360s]
+2025-08-11 18:14:57,822 - INFO - Search completed in 0.36 seconds
+2025-08-11 18:14:57,822 - INFO - Found 42 total results
+2025-08-11 18:14:57,822 - INFO - Returning 20 results to frontend
+2025-08-11 18:14:57,823 - INFO - 127.0.0.1 - - [11/Aug/2025 18:14:57] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:15:06,461 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:15:06,462 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:15:06,462 - INFO -   - body_content_e5^3
+2025-08-11 18:15:06,462 - INFO -   - body_content_elser
+2025-08-11 18:15:06,462 - INFO -   - property-description
+2025-08-11 18:15:06,462 - INFO - Final linear retriever field boosts:
+2025-08-11 18:15:06,462 - INFO -   - body_content_e5^3
+2025-08-11 18:15:06,462 - INFO -   - body_content_elser
+2025-08-11 18:15:06,462 - INFO -   - property-description
+2025-08-11 18:15:06,462 - INFO - Executing search on index: properties
+2025-08-11 18:15:06,805 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.342s]
+2025-08-11 18:15:06,807 - INFO - Search completed in 0.34 seconds
+2025-08-11 18:15:06,807 - INFO - Found 42 total results
+2025-08-11 18:15:06,807 - INFO - Returning 20 results to frontend
+2025-08-11 18:15:06,809 - INFO - 127.0.0.1 - - [11/Aug/2025 18:15:06] "POST /search HTTP/1.1" 200 -
+2025-08-11 18:15:07,087 - INFO - Building search query for: 'House with direct beach access and nature walks' with retriever_type: linear
+2025-08-11 18:15:07,088 - INFO - Linear retriever field boosts configured:
+2025-08-11 18:15:07,088 - INFO -   - body_content_e5^3
+2025-08-11 18:15:07,088 - INFO -   - body_content_elser
+2025-08-11 18:15:07,088 - INFO -   - property-description
+2025-08-11 18:15:07,088 - INFO - Final linear retriever field boosts:
+2025-08-11 18:15:07,088 - INFO -   - body_content_e5^3
+2025-08-11 18:15:07,089 - INFO -   - body_content_elser
+2025-08-11 18:15:07,089 - INFO -   - property-description
+2025-08-11 18:15:07,089 - INFO - Executing search on index: properties
+2025-08-11 18:15:07,272 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.182s]
+2025-08-11 18:15:07,276 - INFO - Search completed in 0.19 seconds
+2025-08-11 18:15:07,276 - INFO - Found 42 total results
+2025-08-11 18:15:07,277 - INFO - Returning 20 results to frontend
+2025-08-11 18:15:07,278 - INFO - 127.0.0.1 - - [11/Aug/2025 18:15:07] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:03:58,526 - INFO - 127.0.0.1 - - [12/Aug/2025 10:03:58] "GET / HTTP/1.1" 200 -
+2025-08-12 10:04:01,091 - INFO - Building search query for: 'beach' with retriever_type: linear
+2025-08-12 10:04:01,092 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:04:01,092 - INFO -   - body_content_e5
+2025-08-12 10:04:01,092 - INFO -   - body_content_elser
+2025-08-12 10:04:01,092 - INFO -   - property-description
+2025-08-12 10:04:01,092 - INFO - Final linear retriever field boosts:
+2025-08-12 10:04:01,092 - INFO -   - body_content_e5
+2025-08-12 10:04:01,092 - INFO -   - body_content_elser
+2025-08-12 10:04:01,093 - INFO -   - property-description
+2025-08-12 10:04:01,093 - INFO - Executing search on index: properties
+2025-08-12 10:04:01,950 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.857s]
+2025-08-12 10:04:01,956 - INFO - Search completed in 0.86 seconds
+2025-08-12 10:04:01,957 - INFO - Found 500 total results
+2025-08-12 10:04:01,957 - INFO - Returning 20 results to frontend
+2025-08-12 10:04:01,959 - INFO - 127.0.0.1 - - [12/Aug/2025 10:04:01] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:04:02,265 - INFO - Building search query for: 'beach' with retriever_type: linear
+2025-08-12 10:04:02,265 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:04:02,265 - INFO -   - body_content_e5
+2025-08-12 10:04:02,265 - INFO -   - body_content_elser
+2025-08-12 10:04:02,265 - INFO -   - property-description
+2025-08-12 10:04:02,265 - INFO - Final linear retriever field boosts:
+2025-08-12 10:04:02,265 - INFO -   - body_content_e5
+2025-08-12 10:04:02,265 - INFO -   - body_content_elser
+2025-08-12 10:04:02,265 - INFO -   - property-description
+2025-08-12 10:04:02,265 - INFO - Executing search on index: properties
+2025-08-12 10:04:02,447 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.181s]
+2025-08-12 10:04:02,449 - INFO - Search completed in 0.18 seconds
+2025-08-12 10:04:02,449 - INFO - Found 500 total results
+2025-08-12 10:04:02,449 - INFO - Returning 20 results to frontend
+2025-08-12 10:04:02,451 - INFO - 127.0.0.1 - - [12/Aug/2025 10:04:02] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:05:08,632 - INFO -  * Detected change in '/Users/sunilemanjee/Documents/GitHub/hotel-finder-query-constructor/search_ui.py', reloading
+2025-08-12 10:05:08,667 - INFO -  * Restarting with stat
+2025-08-12 10:06:24,004 - INFO - Starting Hotel Finder Search UI...
+2025-08-12 10:06:24,004 - INFO - Elasticsearch URL: https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443
+2025-08-12 10:06:24,004 - INFO - Elasticsearch Index: properties
+2025-08-12 10:06:24,004 - INFO - Using password auth: False
+2025-08-12 10:06:24,004 - INFO - Azure OpenAI configured: https://sa-openai.openai.azure.com/
+2025-08-12 10:06:24,052 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.140:5001
+2025-08-12 10:06:24,052 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-12 10:06:24,053 - INFO -  * Restarting with stat
+2025-08-12 10:06:24,270 - INFO - Starting Hotel Finder Search UI...
+2025-08-12 10:06:24,270 - INFO - Elasticsearch URL: https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443
+2025-08-12 10:06:24,270 - INFO - Elasticsearch Index: properties
+2025-08-12 10:06:24,270 - INFO - Using password auth: False
+2025-08-12 10:06:24,270 - INFO - Azure OpenAI configured: https://sa-openai.openai.azure.com/
+2025-08-12 10:06:24,291 - WARNING -  * Debugger is active!
+2025-08-12 10:06:24,307 - INFO -  * Debugger PIN: 213-792-015
+2025-08-12 10:06:26,847 - INFO - 127.0.0.1 - - [12/Aug/2025 10:06:26] "GET / HTTP/1.1" 200 -
+2025-08-12 10:06:30,265 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:06:30,265 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:06:30,265 - INFO -   - body_content_e5
+2025-08-12 10:06:30,265 - INFO -   - body_content_elser
+2025-08-12 10:06:30,265 - INFO -   - property-description
+2025-08-12 10:06:30,265 - INFO - Final linear retriever field boosts:
+2025-08-12 10:06:30,265 - INFO -   - body_content_e5
+2025-08-12 10:06:30,265 - INFO -   - body_content_elser
+2025-08-12 10:06:30,265 - INFO -   - property-description
+2025-08-12 10:06:30,265 - INFO - Executing search on index: properties
+2025-08-12 10:06:30,726 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.460s]
+2025-08-12 10:06:30,731 - INFO - Search completed in 0.46 seconds
+2025-08-12 10:06:30,731 - INFO - Found 500 total results
+2025-08-12 10:06:30,731 - INFO - Returning 20 results to frontend
+2025-08-12 10:06:30,733 - INFO - 127.0.0.1 - - [12/Aug/2025 10:06:30] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:06:31,186 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:06:31,186 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:06:31,186 - INFO -   - body_content_e5
+2025-08-12 10:06:31,186 - INFO -   - body_content_elser
+2025-08-12 10:06:31,186 - INFO -   - property-description
+2025-08-12 10:06:31,186 - INFO - Final linear retriever field boosts:
+2025-08-12 10:06:31,186 - INFO -   - body_content_e5
+2025-08-12 10:06:31,186 - INFO -   - body_content_elser
+2025-08-12 10:06:31,186 - INFO -   - property-description
+2025-08-12 10:06:31,186 - INFO - Executing search on index: properties
+2025-08-12 10:06:31,440 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.253s]
+2025-08-12 10:06:31,448 - INFO - Search completed in 0.26 seconds
+2025-08-12 10:06:31,448 - INFO - Found 500 total results
+2025-08-12 10:06:31,448 - INFO - Returning 20 results to frontend
+2025-08-12 10:06:31,451 - INFO - 127.0.0.1 - - [12/Aug/2025 10:06:31] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:05,845 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:05,845 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:05,845 - INFO -   - body_content_e5
+2025-08-12 10:07:05,845 - INFO -   - property-description
+2025-08-12 10:07:05,845 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:05,846 - INFO -   - body_content_e5
+2025-08-12 10:07:05,846 - INFO -   - property-description
+2025-08-12 10:07:05,846 - INFO - Executing search on index: properties
+2025-08-12 10:07:06,101 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.255s]
+2025-08-12 10:07:06,103 - INFO - Search completed in 0.26 seconds
+2025-08-12 10:07:06,103 - INFO - Found 500 total results
+2025-08-12 10:07:06,104 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:06,105 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:06] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:07,080 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:07,080 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:07,080 - INFO -   - body_content_e5
+2025-08-12 10:07:07,080 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:07,081 - INFO -   - body_content_e5
+2025-08-12 10:07:07,081 - INFO - Executing search on index: properties
+2025-08-12 10:07:07,313 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.232s]
+2025-08-12 10:07:07,320 - INFO - Search completed in 0.24 seconds
+2025-08-12 10:07:07,321 - INFO - Found 500 total results
+2025-08-12 10:07:07,321 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:07,323 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:07] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:08,221 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:08,221 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:08,221 - INFO -   - body_content_e5
+2025-08-12 10:07:08,221 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:08,221 - INFO -   - body_content_e5
+2025-08-12 10:07:08,221 - INFO - Executing search on index: properties
+2025-08-12 10:07:08,411 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.189s]
+2025-08-12 10:07:08,415 - INFO - Search completed in 0.19 seconds
+2025-08-12 10:07:08,415 - INFO - Found 500 total results
+2025-08-12 10:07:08,415 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:08,417 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:08] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:18,837 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:18,837 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:18,837 - INFO -   - body_content_e5
+2025-08-12 10:07:18,837 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:18,837 - INFO -   - body_content_e5
+2025-08-12 10:07:18,837 - INFO - Executing search on index: properties
+2025-08-12 10:07:19,074 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.237s]
+2025-08-12 10:07:19,077 - INFO - Search completed in 0.24 seconds
+2025-08-12 10:07:19,077 - INFO - Found 42 total results
+2025-08-12 10:07:19,077 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:19,079 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:19] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:20,329 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:20,329 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:20,329 - INFO -   - body_content_e5
+2025-08-12 10:07:20,329 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:20,329 - INFO -   - body_content_e5
+2025-08-12 10:07:20,329 - INFO - Executing search on index: properties
+2025-08-12 10:07:20,564 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.234s]
+2025-08-12 10:07:20,581 - INFO - Search completed in 0.25 seconds
+2025-08-12 10:07:20,581 - INFO - Found 42 total results
+2025-08-12 10:07:20,581 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:20,582 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:20] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:28,193 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:28,193 - WARNING - No fields selected for linear retriever - using minimal default
+2025-08-12 10:07:28,193 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:28,193 - INFO -   - property-description
+2025-08-12 10:07:28,193 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:28,193 - INFO -   - property-description
+2025-08-12 10:07:28,193 - INFO - Executing search on index: properties
+2025-08-12 10:07:28,476 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.283s]
+2025-08-12 10:07:28,477 - INFO - Search completed in 0.28 seconds
+2025-08-12 10:07:28,477 - INFO - Found 42 total results
+2025-08-12 10:07:28,477 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:28,478 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:28] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:29,109 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:29,110 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:29,110 - INFO -   - body_content_elser
+2025-08-12 10:07:29,110 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:29,110 - INFO -   - body_content_elser
+2025-08-12 10:07:29,110 - INFO - Executing search on index: properties
+2025-08-12 10:07:29,438 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.328s]
+2025-08-12 10:07:29,441 - INFO - Search completed in 0.33 seconds
+2025-08-12 10:07:29,441 - INFO - Found 42 total results
+2025-08-12 10:07:29,442 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:29,443 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:29] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:30,759 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:30,759 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:30,761 - INFO -   - body_content_elser
+2025-08-12 10:07:30,761 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:30,761 - INFO -   - body_content_elser
+2025-08-12 10:07:30,761 - INFO - Executing search on index: properties
+2025-08-12 10:07:31,118 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.357s]
+2025-08-12 10:07:31,121 - INFO - Search completed in 0.36 seconds
+2025-08-12 10:07:31,121 - INFO - Found 42 total results
+2025-08-12 10:07:31,121 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:31,124 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:31] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:33,903 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:33,904 - WARNING - No fields selected for linear retriever - using minimal default
+2025-08-12 10:07:33,904 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:33,904 - INFO -   - property-description
+2025-08-12 10:07:33,905 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:33,905 - INFO -   - property-description
+2025-08-12 10:07:33,905 - INFO - Executing search on index: properties
+2025-08-12 10:07:34,214 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.309s]
+2025-08-12 10:07:34,216 - INFO - Search completed in 0.31 seconds
+2025-08-12 10:07:34,217 - INFO - Found 42 total results
+2025-08-12 10:07:34,217 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:34,219 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:34] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:34,991 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:34,991 - WARNING - No fields selected for linear retriever - using minimal default
+2025-08-12 10:07:34,991 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:34,991 - INFO -   - property-description
+2025-08-12 10:07:34,991 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:34,991 - INFO -   - property-description
+2025-08-12 10:07:34,991 - INFO - Executing search on index: properties
+2025-08-12 10:07:35,241 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.250s]
+2025-08-12 10:07:35,246 - INFO - Search completed in 0.25 seconds
+2025-08-12 10:07:35,246 - INFO - Found 42 total results
+2025-08-12 10:07:35,247 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:35,249 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:35] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:46,909 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:46,910 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:46,910 - INFO -   - body_content_e5
+2025-08-12 10:07:46,910 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:46,910 - INFO -   - body_content_e5
+2025-08-12 10:07:46,910 - INFO - Executing search on index: properties
+2025-08-12 10:07:47,212 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.301s]
+2025-08-12 10:07:47,217 - INFO - Search completed in 0.31 seconds
+2025-08-12 10:07:47,217 - INFO - Found 42 total results
+2025-08-12 10:07:47,217 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:47,219 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:47] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:49,094 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:49,094 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:49,095 - INFO -   - body_content_e5
+2025-08-12 10:07:49,095 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:49,095 - INFO -   - body_content_e5
+2025-08-12 10:07:49,095 - INFO - Executing search on index: properties
+2025-08-12 10:07:49,403 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.308s]
+2025-08-12 10:07:49,408 - INFO - Search completed in 0.31 seconds
+2025-08-12 10:07:49,408 - INFO - Found 42 total results
+2025-08-12 10:07:49,408 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:49,410 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:49] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:54,200 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:54,200 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:54,200 - INFO -   - body_content_e5
+2025-08-12 10:07:54,200 - INFO -   - body_content_elser
+2025-08-12 10:07:54,200 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:54,201 - INFO -   - body_content_e5
+2025-08-12 10:07:54,201 - INFO -   - body_content_elser
+2025-08-12 10:07:54,201 - INFO - Executing search on index: properties
+2025-08-12 10:07:54,698 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.496s]
+2025-08-12 10:07:54,701 - INFO - Search completed in 0.50 seconds
+2025-08-12 10:07:54,701 - INFO - Found 42 total results
+2025-08-12 10:07:54,701 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:54,703 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:54] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:54,926 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:54,926 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:54,926 - INFO -   - body_content_elser
+2025-08-12 10:07:54,926 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:54,926 - INFO -   - body_content_elser
+2025-08-12 10:07:54,927 - INFO - Executing search on index: properties
+2025-08-12 10:07:55,179 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.252s]
+2025-08-12 10:07:55,183 - INFO - Search completed in 0.26 seconds
+2025-08-12 10:07:55,184 - INFO - Found 42 total results
+2025-08-12 10:07:55,184 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:55,185 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:55] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:56,696 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:56,696 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:56,696 - INFO -   - body_content_elser
+2025-08-12 10:07:56,697 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:56,697 - INFO -   - body_content_elser
+2025-08-12 10:07:56,697 - INFO - Executing search on index: properties
+2025-08-12 10:07:57,070 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.373s]
+2025-08-12 10:07:57,072 - INFO - Search completed in 0.38 seconds
+2025-08-12 10:07:57,072 - INFO - Found 42 total results
+2025-08-12 10:07:57,073 - INFO - Returning 20 results to frontend
+2025-08-12 10:07:57,074 - INFO - 127.0.0.1 - - [12/Aug/2025 10:07:57] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:07:59,914 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:07:59,914 - WARNING - No fields selected for linear retriever - using minimal default
+2025-08-12 10:07:59,914 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:07:59,915 - INFO -   - property-description
+2025-08-12 10:07:59,915 - INFO - Final linear retriever field boosts:
+2025-08-12 10:07:59,915 - INFO -   - property-description
+2025-08-12 10:07:59,915 - INFO - Executing search on index: properties
+2025-08-12 10:08:00,155 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.239s]
+2025-08-12 10:08:00,159 - INFO - Search completed in 0.24 seconds
+2025-08-12 10:08:00,159 - INFO - Found 42 total results
+2025-08-12 10:08:00,160 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:00,161 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:00] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:01,273 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:01,273 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:01,273 - INFO -   - property-description
+2025-08-12 10:08:01,274 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:01,274 - INFO -   - property-description
+2025-08-12 10:08:01,274 - INFO - Executing search on index: properties
+2025-08-12 10:08:01,502 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.228s]
+2025-08-12 10:08:01,506 - INFO - Search completed in 0.23 seconds
+2025-08-12 10:08:01,506 - INFO - Found 42 total results
+2025-08-12 10:08:01,506 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:01,507 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:01] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:02,420 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:02,421 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:02,421 - INFO -   - property-description
+2025-08-12 10:08:02,421 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:02,421 - INFO -   - property-description
+2025-08-12 10:08:02,421 - INFO - Executing search on index: properties
+2025-08-12 10:08:02,615 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.192s]
+2025-08-12 10:08:02,620 - INFO - Search completed in 0.20 seconds
+2025-08-12 10:08:02,621 - INFO - Found 42 total results
+2025-08-12 10:08:02,621 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:02,622 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:02] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:04,703 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:04,704 - WARNING - No fields selected for linear retriever - using minimal default
+2025-08-12 10:08:04,704 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:04,704 - INFO -   - property-description
+2025-08-12 10:08:04,704 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:04,704 - INFO -   - property-description
+2025-08-12 10:08:04,704 - INFO - Executing search on index: properties
+2025-08-12 10:08:04,935 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.230s]
+2025-08-12 10:08:04,939 - INFO - Search completed in 0.23 seconds
+2025-08-12 10:08:04,939 - INFO - Found 42 total results
+2025-08-12 10:08:04,940 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:04,941 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:04] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:06,416 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:06,416 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:06,416 - INFO -   - body_content_elser
+2025-08-12 10:08:06,417 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:06,417 - INFO -   - body_content_elser
+2025-08-12 10:08:06,417 - INFO - Executing search on index: properties
+2025-08-12 10:08:06,765 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.348s]
+2025-08-12 10:08:06,767 - INFO - Search completed in 0.35 seconds
+2025-08-12 10:08:06,768 - INFO - Found 42 total results
+2025-08-12 10:08:06,768 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:06,771 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:06] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:07,513 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:07,514 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:07,514 - INFO -   - body_content_elser
+2025-08-12 10:08:07,514 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:07,514 - INFO -   - body_content_elser
+2025-08-12 10:08:07,514 - INFO - Executing search on index: properties
+2025-08-12 10:08:07,767 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.253s]
+2025-08-12 10:08:07,769 - INFO - Search completed in 0.26 seconds
+2025-08-12 10:08:07,769 - INFO - Found 42 total results
+2025-08-12 10:08:07,770 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:07,773 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:07] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:08,632 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:08,633 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:08,633 - INFO -   - body_content_elser
+2025-08-12 10:08:08,633 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:08,633 - INFO -   - body_content_elser
+2025-08-12 10:08:08,634 - INFO - Executing search on index: properties
+2025-08-12 10:08:09,013 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.379s]
+2025-08-12 10:08:09,016 - INFO - Search completed in 0.38 seconds
+2025-08-12 10:08:09,016 - INFO - Found 42 total results
+2025-08-12 10:08:09,016 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:09,018 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:09] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:09,882 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:09,882 - WARNING - No fields selected for linear retriever - using minimal default
+2025-08-12 10:08:09,882 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:09,883 - INFO -   - property-description
+2025-08-12 10:08:09,883 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:09,883 - INFO -   - property-description
+2025-08-12 10:08:09,883 - INFO - Executing search on index: properties
+2025-08-12 10:08:10,075 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.192s]
+2025-08-12 10:08:10,079 - INFO - Search completed in 0.20 seconds
+2025-08-12 10:08:10,079 - INFO - Found 42 total results
+2025-08-12 10:08:10,079 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:10,081 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:10] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:10,307 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:10,308 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:10,308 - INFO -   - body_content_e5
+2025-08-12 10:08:10,308 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:10,308 - INFO -   - body_content_e5
+2025-08-12 10:08:10,308 - INFO - Executing search on index: properties
+2025-08-12 10:08:10,430 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.121s]
+2025-08-12 10:08:10,434 - INFO - Search completed in 0.12 seconds
+2025-08-12 10:08:10,434 - INFO - Found 42 total results
+2025-08-12 10:08:10,434 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:10,436 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:10] "POST /search HTTP/1.1" 200 -
+2025-08-12 10:08:11,167 - INFO - Building search query for: 'Amazing lake view with an updated kitchen and a open floor plan' with retriever_type: linear
+2025-08-12 10:08:11,167 - INFO - Linear retriever field boosts configured:
+2025-08-12 10:08:11,168 - INFO -   - body_content_e5
+2025-08-12 10:08:11,168 - INFO - Final linear retriever field boosts:
+2025-08-12 10:08:11,168 - INFO -   - body_content_e5
+2025-08-12 10:08:11,168 - INFO - Executing search on index: properties
+2025-08-12 10:08:11,371 - INFO - POST https://demo-c4ecc8.es.us-east-1.aws.elastic.cloud:443/properties/_search [status:200 duration:0.203s]
+2025-08-12 10:08:11,377 - INFO - Search completed in 0.21 seconds
+2025-08-12 10:08:11,377 - INFO - Found 42 total results
+2025-08-12 10:08:11,378 - INFO - Returning 20 results to frontend
+2025-08-12 10:08:11,380 - INFO - 127.0.0.1 - - [12/Aug/2025 10:08:11] "POST /search HTTP/1.1" 200 -

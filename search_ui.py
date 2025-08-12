@@ -507,7 +507,7 @@ def search():
         # Provide more specific error messages for common issues
         error_msg = str(e)
         if "model_deployment_timeout_exception" in error_msg:
-            error_msg = "The inference models are not ready yet. Please click the 'Wake Inference Endpoints' button to launch the models, then try your search again."
+            error_msg = "The inference models are not ready yet. Please wait a moment and try your search again."
         elif "text_similarity_reranker" in error_msg or "rank_docs_retriever" in error_msg:
             error_msg = f"Reranker error: {error_msg}. Please check if the reranker model is available in your Elasticsearch cluster and that the field '{reranking_params.get('reranker_field', 'meta_description')}' exists in your index."
         elif "inference_id" in error_msg:
@@ -516,179 +516,6 @@ def search():
             error_msg = "Field error: The specified field does not exist in the index."
         
         return jsonify({'error': error_msg})
-
-@app.route('/wake-elser', methods=['POST'])
-def wake_elser():
-    logger.info("Waking up inference models...")
-    try:
-        # Wake up ELSER model
-        logger.info(f"Waking up ELSER model: {ELSER_INFERENCE_ID}")
-        elser_response = es.inference.inference(
-            inference_id=ELSER_INFERENCE_ID,
-            input=['vector are so much fun']
-        )
-        logger.info("ELSER model woken up successfully")
-        
-        # Wake up multilingual E5 model
-        logger.info(f"Waking up E5 model: {E5_INFERENCE_ID}")
-        e5_response = es.inference.inference(
-            inference_id=E5_INFERENCE_ID,
-            input=['vector are so much fun']
-        )
-        logger.info("E5 model woken up successfully")
-        
-        # Wake up reranker endpoint by running a query with text_similarity_reranker
-        reranker_query = {
-            "_source": False,
-            "fields": [
-                "title",
-                "property-description",
-                "property-features",
-                "meta_description",
-                "headings",
-                "listing-agent-info",
-                "property-status",
-                "number-of-bedrooms",
-                "number-of-bathrooms",
-                "square-footage",
-                "home-price",
-                "annual-tax",
-                "maintenance-fee"
-            ],
-            "highlight": {
-                "fields": {}
-            },
-            "retriever": {
-                "text_similarity_reranker": {
-                    "field": "meta_description",
-                    "inference_id": RERANKER_INFERENCE_ID,
-                    "inference_text": "beach",
-                    "rank_window_size": 5,
-                    "retriever": {
-                        "rrf": {
-                            "rank_window_size": 10,
-                            "retrievers": [
-                                {
-                                    "standard": {
-                                        "filter": [
-                                            {
-                                                "bool": {
-                                                    "must": [
-                                                        {
-                                                            "range": {
-                                                                "home-price": {
-                                                                    "lte": 3720000
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "query": {
-                                            "semantic": {
-                                                "field": "body_content_e5",
-                                                "query": "beach"
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    "standard": {
-                                        "filter": [
-                                            {
-                                                "bool": {
-                                                    "must": [
-                                                        {
-                                                            "range": {
-                                                                "home-price": {
-                                                                    "lte": 3720000
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "query": {
-                                            "semantic": {
-                                                "field": "body_content_elser",
-                                                "query": "beach"
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    "standard": {
-                                        "filter": [
-                                            {
-                                                "bool": {
-                                                    "must": [
-                                                        {
-                                                            "range": {
-                                                                "home-price": {
-                                                                    "lte": 3720000
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "query": {
-                                            "multi_match": {
-                                                "fields": [
-                                                    "title",
-                                                    "property-description",
-                                                    "property-features",
-                                                    "meta_description",
-                                                    "headings"
-                                                ],
-                                                "query": "beach",
-                                                "type": "best_fields"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-        
-        # Execute the reranker query to wake up the reranking endpoint
-        logger.info("Waking up reranker model...")
-        reranker_response = es.search(
-            index=ES_INDEX,
-            body=reranker_query
-        )
-        logger.info("Reranker model woken up successfully")
-        
-        logger.info("All inference models woken up successfully")
-        return jsonify({'success': True})
-    except Exception as e:
-        logger.error(f"Error waking up inference models: {str(e)}")
-        
-        # Check if it's a 408 error (models still deploying)
-        if hasattr(e, 'status_code') and e.status_code == 408:
-            logger.info("Models are still deploying (408 error detected)")
-            return jsonify({
-                'success': False, 
-                'error': 'Models are deploying, not ready yet. Please try again in a few minutes.',
-                'deploying': True
-            })
-        
-        # Check for model deployment timeout exception
-        error_msg = str(e)
-        if "model_deployment_timeout_exception" in error_msg:
-            return jsonify({
-                'success': False, 
-                'error': 'Models are still deploying. Please try again in a few minutes.',
-                'deploying': True
-            })
-        
-        return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/check-reranker', methods=['POST'])
 def check_reranker():
@@ -779,7 +606,7 @@ def execute_query():
         # Provide more specific error messages for common issues
         error_msg = str(e)
         if "model_deployment_timeout_exception" in error_msg:
-            error_msg = "The inference models are not ready yet. Please click the 'Wake Inference Endpoints' button to launch the models, then try your search again."
+            error_msg = "The inference models are not ready yet. Please wait a moment and try your search again."
         
         return jsonify({'error': error_msg})
 

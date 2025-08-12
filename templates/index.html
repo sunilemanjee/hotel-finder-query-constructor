@@ -792,9 +792,7 @@
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <button id="wakeElserButton" class="btn btn-warning w-100">Wake Inference Endpoints</button>
-                </div>
+
             </div>
 
             <!-- Right Column: Dynamic width -->
@@ -1310,18 +1308,16 @@
                         errorMessage = `
                             <strong>Reranker Error:</strong> ${data.error}<br><br>
                             <strong>Troubleshooting steps:</strong><br>
-                            1. Click "Wake Inference Endpoints" to activate the models<br>
-                            2. Wait a few moments and try again<br>
-                            3. Check if your Elasticsearch cluster has the required models deployed
+                            1. Wait a few moments and try again<br>
+                            2. Check if your Elasticsearch cluster has the required models deployed
                         `;
                         errorClass = 'alert-warning';
                     } else if (data.error.includes('Inference model error')) {
                         errorMessage = `
                             <strong>Inference Model Error:</strong> ${data.error}<br><br>
                             <strong>Troubleshooting steps:</strong><br>
-                            1. Click "Wake Inference Endpoints" to activate the models<br>
-                            2. Wait a few moments and try again<br>
-                            3. Check if your Elasticsearch cluster has the required models deployed
+                            1. Wait a few moments and try again<br>
+                            2. Check if your Elasticsearch cluster has the required models deployed
                         `;
                         errorClass = 'alert-warning';
                     }
@@ -1605,34 +1601,7 @@
             });
         }
 
-        // Add ELSER wake-up functionality
-        document.getElementById('wakeElserButton').addEventListener('click', function() {
-            const button = this;
-            const originalText = button.textContent;
-            button.disabled = true;
-            button.textContent = 'Waking Inference Endpoints...';
 
-            fetch('/wake-elser', {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showTemporaryMessage('Inference Endpoints Awakened', 'success', 30000);
-                } else if (data.deploying) {
-                    showTemporaryMessage(data.error, 'warning', 30000);
-                } else {
-                    showTemporaryMessage('Error: ' + data.error, 'error');
-                }
-            })
-            .catch(error => {
-                showTemporaryMessage('Error: ' + error.message, 'error');
-            })
-            .finally(() => {
-                button.disabled = false;
-                button.textContent = originalText;
-            });
-        });
 
         // Add execute query functionality
         document.getElementById('executeQueryButton').addEventListener('click', function() {
