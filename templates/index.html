@@ -105,12 +105,30 @@
             overflow-y: auto;
             border-right: 1px solid #dee2e6;
             z-index: 1000;
+            box-sizing: border-box;
+            max-width: 350px;
+            min-width: 350px;
         }
         .right-pane {
             margin-left: 350px;
             padding: 1.5rem;
             background-color: #f8f9fa;
             min-height: 100vh;
+            box-sizing: border-box;
+            width: calc(100% - 350px);
+        }
+        /* Ensure container doesn't expand beyond viewport */
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        /* Ensure row doesn't cause horizontal overflow */
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+            max-width: 100%;
         }
         .container-fluid {
             padding-left: 0;
@@ -339,9 +357,13 @@
             background-color: #ffffff;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            padding: 1.5rem;
+            padding: 1rem;
             margin-top: 0.5em;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            overflow-x: auto;
+            box-sizing: border-box;
+            width: 100%;
         }
         
         .visual-explanation-content .progress {
@@ -367,6 +389,105 @@
         
         .visual-explanation-content .alert {
             margin-bottom: 1rem;
+        }
+        
+        /* Ensure AI-generated content doesn't break layout */
+        .visual-explanation-content * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Reduce excessive margins and padding in AI-generated content */
+        .visual-explanation-content {
+            padding: 1rem !important;
+        }
+        
+        .visual-explanation-content .container,
+        .visual-explanation-content .container-fluid {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            max-width: 100% !important;
+        }
+        
+        .visual-explanation-content .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        .visual-explanation-content .col,
+        .visual-explanation-content .col-md-*,
+        .visual-explanation-content .col-lg-*,
+        .visual-explanation-content .col-xl-* {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        
+        .visual-explanation-content .card {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        .visual-explanation-content .card-body {
+            padding: 1rem !important;
+        }
+        
+        .visual-explanation-content .alert {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        .visual-explanation-content table {
+            max-width: 100%;
+            overflow-x: auto;
+            display: block;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        .visual-explanation-content img {
+            max-width: 100%;
+            height: auto;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Remove excessive spacing from common Bootstrap elements */
+        .visual-explanation-content .mb-*,
+        .visual-explanation-content .mt-*,
+        .visual-explanation-content .ms-*,
+        .visual-explanation-content .me-* {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        .visual-explanation-content .pb-*,
+        .visual-explanation-content .pt-*,
+        .visual-explanation-content .ps-*,
+        .visual-explanation-content .pe-* {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        
+        /* Ensure all divs and sections use full width */
+        .visual-explanation-content div,
+        .visual-explanation-content section,
+        .visual-explanation-content article {
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Reduce spacing between elements */
+        .visual-explanation-content > * {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .visual-explanation-content > *:last-child {
+            margin-bottom: 0 !important;
         }
         
         .semantic-highlight {
@@ -3410,10 +3531,56 @@
             // Remove code block markers (with or without 'html')
             return html
                 .replace(/```html\s*([\s\S]*?)```/gi, '$1')
-                .replace(/```([\s\S]*?)```/gi, '$1');
+                .replace(/```([\s\S]*?)```/gi, '$1')
+                // Remove excessive margins and padding from inline styles
+                .replace(/margin-left:\s*[^;]+;?/gi, '')
+                .replace(/margin-right:\s*[^;]+;?/gi, '')
+                .replace(/padding-left:\s*[^;]+;?/gi, '')
+                .replace(/padding-right:\s*[^;]+;?/gi, '')
+                // Remove excessive width constraints
+                .replace(/width:\s*[^;]+;?/gi, '')
+                // Clean up container classes that might cause spacing issues
+                .replace(/class="[^"]*container[^"]*"/gi, 'class="container-fluid"')
+                // Remove any fixed widths that might cause layout issues
+                .replace(/style="[^"]*width:\s*[^;]+[^"]*"/gi, 'style=""');
+        }
+
+        function ensureLayoutIntegrity() {
+            // Ensure left pane maintains proper width and position
+            const leftPane = document.querySelector('.left-pane');
+            const rightPane = document.querySelector('.right-pane');
+            const container = document.querySelector('.container-fluid');
+            
+            if (leftPane) {
+                leftPane.style.width = '350px';
+                leftPane.style.maxWidth = '350px';
+                leftPane.style.minWidth = '350px';
+                leftPane.style.position = 'fixed';
+                leftPane.style.left = '0';
+                leftPane.style.top = '0';
+                leftPane.style.bottom = '0';
+                leftPane.style.zIndex = '1000';
+            }
+            
+            if (rightPane) {
+                rightPane.style.marginLeft = '350px';
+                rightPane.style.width = 'calc(100% - 350px)';
+                rightPane.style.boxSizing = 'border-box';
+            }
+            
+            if (container) {
+                container.style.maxWidth = '100vw';
+                container.style.overflowX = 'hidden';
+            }
+            
+            // Prevent horizontal scrolling
+            document.body.style.overflowX = 'hidden';
         }
 
         function generateVisualExplanation(explain, docId) {
+            // Ensure layout is properly maintained
+            ensureLayoutIntegrity();
+            
             // Find the result object for this docId
             let documentFields = null;
             if (window.lastSearchResults) {
@@ -3501,6 +3668,8 @@
                     // Strip any accidental code block markers before rendering
                     visualExplanationDiv.innerHTML = cleanLLMHtml(data.html_content);
                     // Keep button text as "Hide Visual Breakdown" since it's now loaded
+                    // Ensure layout integrity after content is loaded
+                    setTimeout(ensureLayoutIntegrity, 100);
                 }
             })
             .catch(e => {
@@ -3583,6 +3752,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Ensure layout integrity on page load
+            ensureLayoutIntegrity();
+            
+            // Ensure layout integrity on window resize
+            window.addEventListener('resize', function() {
+                setTimeout(ensureLayoutIntegrity, 100);
+            });
+            
             // Chat form submit handler
             document.body.addEventListener('submit', function(e) {
                 if (e.target && e.target.id === 'aiSummaryChatForm') {
